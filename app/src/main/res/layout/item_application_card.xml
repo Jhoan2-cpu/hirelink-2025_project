@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/applicationCard"
+    style="@style/Widget.HireLink.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/margin_small"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_medium">
+
+        <!-- Company Logo -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/logoCard"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:cardCornerRadius="@dimen/radius_medium"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/companyLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/margin_tiny"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_launcher_foreground" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Job Title -->
+        <TextView
+            android:id="@+id/jobTitle"
+            style="@style/TextAppearance.HireLink.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/logoCard"
+            app:layout_constraintTop_toTopOf="@id/logoCard"
+            tools:text="Desarrollador Android Senior" />
+
+        <!-- Company Name -->
+        <TextView
+            android:id="@+id/companyName"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/jobTitle"
+            app:layout_constraintTop_toBottomOf="@id/jobTitle"
+            tools:text="Tech Solutions S.A.C." />
+
+        <!-- Application Date -->
+        <TextView
+            android:id="@+id/applicationDate"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintStart_toStartOf="@id/jobTitle"
+            app:layout_constraintTop_toBottomOf="@id/companyName"
+            tools:text="Postulado hace 3 días" />
+
+        <!-- Status Chip -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/statusChip"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:clickable="false"
+            android:textSize="@dimen/text_size_small"
+            app:chipBackgroundColor="@color/success"
+            app:chipMinHeight="32dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logoCard"
+            tools:text="En revisión" />
+
+        <!-- Cancel Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancelButton"
+            style="@style/Widget.HireLink.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel_application"
+            android:textColor="@color/error"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintBottom_toBottomOf="@id/statusChip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/statusChip" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

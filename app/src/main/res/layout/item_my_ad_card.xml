@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/adCard"
+    style="@style/Widget.HireLink.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/margin_small"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_medium">
+
+        <!-- Company Logo -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/logoCard"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:cardCornerRadius="@dimen/radius_medium"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/companyLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/margin_tiny"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_launcher_foreground" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Job Title -->
+        <TextView
+            android:id="@+id/jobTitle"
+            style="@style/TextAppearance.HireLink.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toStartOf="@id/moreButton"
+            app:layout_constraintStart_toEndOf="@id/logoCard"
+            app:layout_constraintTop_toTopOf="@id/logoCard"
+            tools:text="Desarrollador Android Senior" />
+
+        <!-- Posted Date -->
+        <TextView
+            android:id="@+id/postedDate"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintEnd_toStartOf="@id/moreButton"
+            app:layout_constraintStart_toStartOf="@id/jobTitle"
+            app:layout_constraintTop_toBottomOf="@id/jobTitle"
+            tools:text="Publicado hace 3 días" />
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/statusText"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/success"
+            app:layout_constraintEnd_toStartOf="@id/moreButton"
+            app:layout_constraintStart_toStartOf="@id/jobTitle"
+            app:layout_constraintTop_toBottomOf="@id/postedDate"
+            tools:text="Estado: Disponible" />
+
+        <!-- More Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/moreButton"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_more_vert"
+            app:iconTint="@color/text_secondary"
+            android:contentDescription="Más opciones"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:id="@+id/buttons_ad_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logoCard">
+
+            <!-- Applicants Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/applicantsButton"
+                style="@style/Widget.HireLink.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@string/applicants"
+                android:textSize="@dimen/text_size_small"
+                app:icon="@drawable/ic_group"
+                app:iconSize="16dp" />
+
+            <!-- Edit Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/editButton"
+                style="@style/Widget.HireLink.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@string/edit_ad"
+                android:textSize="@dimen/text_size_small"
+                app:icon="@drawable/ic_edit"
+                app:iconSize="16dp"
+                app:iconTint="@color/primary" />
+
+        </LinearLayout>
+
+        <!-- Stats -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttons_ad_card">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_visibility"
+                app:tint="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/viewsCount"
+                style="@style/TextAppearance.HireLink.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_tiny"
+                android:textColor="@color/text_secondary"
+                tools:text="245 vistas" />
+
+            <View
+                android:layout_width="16dp"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="@dimen/margin_small"
+                android:background="@color/divider" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_group"
+                app:tint="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/applicantsCount"
+                style="@style/TextAppearance.HireLink.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_tiny"
+                android:textColor="@color/text_secondary"
+                tools:text="12 postulantes" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

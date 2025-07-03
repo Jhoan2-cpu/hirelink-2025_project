@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HireLink</string>
+
+    <!-- Authentication -->
+    <string name="welcome_back">Bienvenido,\nde nuevo</string>
+    <string name="join_us">Únete a nosotros</string>
+    <string name="create_account">Crea una cuenta nueva</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="first_name">Nombres</string>
+    <string name="last_name">Apellidos</string>
+    <string name="phone">Teléfono</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="register">Registrarse</string>
+    <string name="no_account">¿No tienes cuenta?</string>
+    <string name="already_have_account">¿Ya tienes cuenta?</string>
+    <string name="back">Volver</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_search">Buscar</string>
+    <string name="nav_applications">Postulaciones</string>
+    <string name="nav_my_ads">Mis Anuncios</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Search -->
+    <string name="search_job">Buscar empleo</string>
+    <string name="job_type">Tipo de Empleo</string>
+    <string name="location">Ubicación</string>
+    <string name="search">Buscar</string>
+    <string name="filters">Filtros</string>
+    <string name="apply_filters">Aplicar Filtros</string>
+    <string name="clear_filters">Limpiar Filtros</string>
+    <string name="results">Resultados</string>
+
+    <!-- Job Details -->
+    <string name="about_company">Acerca de la empresa</string>
+    <string name="about_job">Acerca del empleo</string>
+    <string name="required_skills">Habilidades Necesarias</string>
+    <string name="vacancies">Cantidad de Vacantes</string>
+    <string name="employment_type">Tipo de Empleo</string>
+    <string name="modality">Modalidad</string>
+    <string name="posted_date">Fecha</string>
+    <string name="position">Cargo</string>
+    <string name="status">Estado</string>
+    <string name="contact">Contacto</string>
+    <string name="apply">Solicitar</string>
+    <string name="view_location">Ubicación</string>
+
+    <!-- My Applications -->
+    <string name="my_applications">Mis Postulaciones</string>
+    <string name="cancel_application">Cancelar</string>
+    <string name="application_sent">Postulación enviada</string>
+
+    <!-- My Ads -->
+    <string name="my_ads">Mis Anuncios</string>
+    <string name="applicants">Postulantes</string>
+    <string name="edit_ad">Editar Post.</string>
+    <string name="close_ad">Cerrar Post.</string>
+    <string name="delete">Eliminar</string>
+    <string name="publish_ad">Publicar Anuncio</string>
+    <string name="edit_job">Editar Anuncio</string>
+    <string name="new_ad">Registro de Anuncio</string>
+    <string name="title">Título</string>
+    <string name="description">Descripción</string>
+    <string name="select_image">Adjuntar Imagen Referencial</string>
+    <string name="select_location">Ajustar Ubicación</string>
+    <string name="website">Sitio Web</string>
+
+    <!-- Applicants -->
+    <string name="accepted">Aceptados</string>
+    <string name="pending">Pendientes</string>
+    <string name="accept">Contratar</string>
+    <string name="reject">Rechazar</string>
+    <string name="dismiss">Despedir</string>
+
+    <!-- Profile -->
+    <string name="about_me">Acerca de mí</string>
+    <string name="experience">Experiencia</string>
+    <string name="skills">Habilidades</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="add_experience">Agregar Experiencia</string>
+    <string name="company">Compañía</string>
+    <string name="role">Cargo</string>
+    <string name="years">Años</string>
+
+    <!-- Work Modalities -->
+    <string name="remote">Remoto</string>
+    <string name="onsite">Presencial</string>
+    <string name="hybrid">Semi-Presencial</string>
+
+    <!-- Common -->
+    <string name="loading">Cargando...</string>
+    <string name="error">Error</string>
+    <string name="retry">Reintentar</string>
+    <string name="no_results">No se encontraron resultados</string>
+    <string name="required_field">Campo requerido</string>
+    <string name="invalid_email">Email inválido</string>
+    <string name="password_mismatch">Las contraseñas no coinciden</string>
+    <string name="logout">Cerrar Sesión</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="select_modality">Selecciona la modalidad del trabajo</string>
+    <string name="city">Ciudad</string>
+    <string name="company_name">Nombre de la empresa</string>
+    <string name="job_title">Cargo</string>
+    <string name="start_date">Fecha de inicio</string>
+    <string name="end_date">Fecha de fin</string>
+    <string name="currently_working_here">Actualmente trabajo aquí</string>
+    <string name="add_new_skill">Agregar nueva habilidad</string>
+    <string name="add">Agregar</string>
+    <string name="personal_data">Datos personales</string>
+    <string name="contact_data">Datos de contacto</string>
+</resources>
