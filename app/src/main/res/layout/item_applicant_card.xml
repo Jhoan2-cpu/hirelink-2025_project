@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/applicantCard"
+    style="@style/Widget.HireLink.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/margin_small"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_medium">
+
+        <!-- Profile Image -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/profileImageCard"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="2dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/profileImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/profile_random" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Applicant Name -->
+        <TextView
+            android:id="@+id/applicantName"
+            style="@style/TextAppearance.HireLink.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/statusChip"
+            app:layout_constraintStart_toEndOf="@id/profileImageCard"
+            app:layout_constraintTop_toTopOf="@id/profileImageCard"
+            tools:text="María González" />
+
+        <!-- Profession -->
+        <TextView
+            android:id="@+id/applicantProfession"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@id/applicantName"
+            app:layout_constraintStart_toStartOf="@id/applicantName"
+            app:layout_constraintTop_toBottomOf="@id/applicantName"
+            tools:text="Desarrolladora Android" />
+
+        <!-- Experience -->
+        <TextView
+            android:id="@+id/applicantExperience"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@id/applicantName"
+            app:layout_constraintStart_toStartOf="@id/applicantName"
+            app:layout_constraintTop_toBottomOf="@id/applicantProfession"
+            tools:text="3 años de experiencia" />
+
+        <!-- Status Chip -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/statusChip"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:clickable="false"
+            android:textSize="@dimen/text_size_small"
+            app:chipMinHeight="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Pendiente" />
+
+        <!-- Application Date -->
+        <TextView
+            android:id="@+id/applicationDate"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintStart_toStartOf="@id/applicantName"
+            app:layout_constraintTop_toBottomOf="@id/profileImageCard"
+            tools:text="Postulado hace 2 días" />
+
+        <!-- Skills Container -->
+        <LinearLayout
+            android:id="@+id/skillsContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/applicantName"
+            app:layout_constraintTop_toBottomOf="@id/applicationDate">
+
+            <!-- Skills se agregarán dinámicamente -->
+            <TextView
+                android:id="@+id/skillsLabel"
+                style="@style/TextAppearance.HireLink.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Habilidades: "
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:id="@+id/skillsText"
+                style="@style/TextAppearance.HireLink.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_size_small"
+                tools:text="Kotlin, Java, Android Studio, Git" />
+
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:id="@+id/actionButtons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            android:gravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/skillsContainer">
+
+            <!-- View Profile Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/viewProfileButton"
+                style="@style/Widget.HireLink.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Ver Perfil"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/text_size_small" />
+
+            <!-- Reject Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/rejectButton"
+                style="@style/Widget.HireLink.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@string/reject"
+                android:textColor="@color/error"
+                android:textSize="@dimen/text_size_small" />
+
+            <!-- Accept Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/acceptButton"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/accept"
+                android:textSize="@dimen/text_size_small"
+                app:backgroundTint="@color/success" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

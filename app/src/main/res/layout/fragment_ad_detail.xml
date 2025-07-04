@@ -1,336 +1,458 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background">
+    android:background="@color/background">
 
-    <LinearLayout
+    <!-- App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@color/primary"
+        app:elevation="4dp">
 
-        <!-- Header con botón de regreso -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@android:color/white"
+            app:title="Título - Tipo de Trabajo"
+            app:titleTextColor="@android:color/white" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/profile_header_gradient"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:elevation="4dp"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/margin_medium">
 
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:contentDescription="@string/back"
-                android:layout_height="wrap_content"
-                android:background="@color/new_color"
-                android:src="@drawable/ic_arrow_back"
-                app:tint="@android:color/white" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Detalle del Anuncio"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:gravity="center"
-                android:layout_marginEnd="40dp" />
-
-        </LinearLayout>
-
-        <!-- Card principal con información del anuncio -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="8dp">
-
-            <LinearLayout
+            <!-- Acerca de la empresa -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.HireLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@android:color/white">
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardElevation="@dimen/elevation_small">
 
-                <!-- Título y tipo de trabajo -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/gradient_background"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:id="@+id/tvTitulo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Título - Tipo de Trabajo"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/primary_text_light"
-                        android:gravity="center" />
-
-                </LinearLayout>
-
-                <!-- Información de la empresa -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:padding="@dimen/margin_medium">
 
                     <TextView
+                        style="@style/TextAppearance.HireLink.Title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
                         android:text="Acerca de la empresa:"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary"
-                        android:layout_marginBottom="8dp" />
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_size_medium"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvDescripcionEmpresa"
+                        style="@style/TextAppearance.HireLink.Caption"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500..."
-                        android:textSize="14sp"
-                        android:textColor="#212121"
-                        android:lineSpacingExtra="2dp"
-                        android:layout_marginBottom="16dp" />
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_size_small"
+                        tools:text="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen." />
 
-                    <!-- Habilidades necesarias -->
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Acerca del empleo -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.HireLink.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardElevation="@dimen/elevation_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_medium">
+
                     <TextView
+                        style="@style/TextAppearance.HireLink.Title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:text="Acerca del empleo:"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_size_medium"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvDescripcionEmpleo"
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_size_small"
+                        tools:text="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen." />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Habilidades Necesarias -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.HireLink.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardElevation="@dimen/elevation_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_medium">
+
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
                         android:text="Habilidades Necesarias:"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary"
-                        android:layout_marginBottom="8dp" />
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_size_medium"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvHabilidades"
+                        style="@style/TextAppearance.HireLink.Caption"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="• Flutter Avanzado\n• Dart\n• Firebase\n• API REST"
-                        android:textSize="14sp"
-                        android:textColor="#212121"
-                        android:layout_marginBottom="16dp" />
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_size_small"
+                        tools:text="• Lorem Ipsum es simplemente el texto de relleno de las imprentas\n• Lorem Ipsum es simplemente el texto de relleno de las imprentas\n• Lorem Ipsum es simplemente el texto de relleno de las imprentas\n• Lorem Ipsum es simplemente el texto de relleno de las imprentas\n• Lorem Ipsum es simplemente el texto de relleno de las imprentas" />
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-        </androidx.cardview.widget.CardView>
-
-        <!-- Card de información adicional -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
-
-            <LinearLayout
+            <!-- Información del Trabajo -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.HireLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@android:color/white"
-                android:padding="20dp">
-
-                <!-- Información en filas -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Fecha:"
-                        android:textStyle="bold"
-                        android:textColor="#757575" />
-
-                    <TextView
-                        android:id="@+id/tvFecha"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="DD/MM/AAAA"
-                        android:textColor="#212121" />
-
-                </LinearLayout>
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardElevation="@dimen/elevation_small">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_medium">
 
                     <TextView
-                        android:layout_width="0dp"
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Tipo de Empleo:"
-                        android:textStyle="bold"
-                        android:textColor="#757575" />
-
-                    <TextView
-                        android:id="@+id/tvTipoEmpleo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Full-time"
-                        android:textColor="#212121" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Cargo:"
-                        android:textStyle="bold"
-                        android:textColor="#757575" />
-
-                    <TextView
-                        android:id="@+id/tvCargo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Senior"
-                        android:textColor="#212121" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Modalidad:"
-                        android:textStyle="bold"
-                        android:textColor="#757575" />
-
-                    <TextView
-                        android:id="@+id/tvModalidad"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Remoto/Presencial"
-                        android:textColor="#212121" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Estado:"
-                        android:textStyle="bold"
-                        android:textColor="#757575" />
-
-                    <TextView
-                        android:id="@+id/tvEstado"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Disponible"
-                        android:textColor="#4CAF50"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:text="Información del Trabajo"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_size_medium"
                         android:textStyle="bold" />
 
+                    <!-- Cantidad de Vacantes -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Cantidad de Vacantes:"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvCantidadVacantes"
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            tools:text="3" />
+
+                    </LinearLayout>
+
+                    <!-- Fecha -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Fecha:"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvFecha"
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            tools:text="DD/MM/AAAA" />
+
+                    </LinearLayout>
+
+                    <!-- Tipo de Empleo -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tipo de Empleo:"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvTipoEmpleo"
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            tools:text="Tiempo Completo" />
+
+                    </LinearLayout>
+
+                    <!-- Cargo -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Cargo:"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvCargo"
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            tools:text="Desarrollador" />
+
+                    </LinearLayout>
+
+                    <!-- Modalidad -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Modalidad:"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvModalidad"
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            tools:text="Remoto" />
+
+                    </LinearLayout>
+
+                    <!-- Estado -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Estado:"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvEstado"
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/success"
+                            android:textStyle="bold"
+                            tools:text="Disponible" />
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-        </androidx.cardview.widget.CardView>
-
-        <!-- Card de contacto -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
-
-            <LinearLayout
+            <!-- Información de Contacto -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.HireLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@android:color/white"
-                android:padding="20dp">
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardElevation="@dimen/elevation_small">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Contacto"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary"
-                    android:layout_marginBottom="12dp" />
-
-                <!-- Botones de contacto -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_medium">
 
-                    <Button
-                        android:id="@+id/btnTelefono"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/profile_header_gradient"
-                        android:text="Teléfono"
-                        android:textColor="@android:color/white"
-                        android:textStyle="bold"
-                        android:layout_marginEnd="8dp"
-                        android:elevation="4dp" />
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:text="Contacto:"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_size_medium"
+                        android:textStyle="bold" />
 
-                    <Button
-                        android:id="@+id/btnEmail"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/profile_random"
-                        android:text="Email"
-                        android:textColor="@android:color/white"
-                        android:textStyle="bold"
-                        android:layout_marginStart="8dp"
-                        android:elevation="4dp" />
+                    <!-- Información de contacto -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_phone"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            android:id="@+id/tvTelefono"
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            tools:text="+51 999 999 999" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_email"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            android:id="@+id/tvEmail"
+                            style="@style/TextAppearance.HireLink.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            tools:text="contacto@empresa.com" />
+
+                    </LinearLayout>
+
+                    <!-- Botones de contacto -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnTelefono"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_small"
+                            android:layout_weight="1"
+                            android:text="Llamar"
+                            app:icon="@drawable/ic_phone"
+                            app:iconGravity="textStart" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnEmail"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_weight="1"
+                            android:text="Email"
+                            app:icon="@drawable/ic_email"
+                            app:iconGravity="textStart" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-        </androidx.cardview.widget.CardView>
+        </LinearLayout>
 
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

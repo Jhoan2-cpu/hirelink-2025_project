@@ -124,7 +124,17 @@
         <action
             android:id="@+id/action_myAdsApplicantsFragment_to_profileFragment"
             app:destination="@id/profileViewFragment" />
+        <action
+            android:id="@+id/action_myAdsApplicantsFragment_to_applicantProfileFragment"
+            app:destination="@id/applicantProfileFragment" />
     </fragment>
+
+    <!-- Agregar este nuevo fragment al final del archivo, antes de </navigation> -->
+    <fragment
+        android:id="@+id/applicantProfileFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.profile.ApplicantProfileFragment"
+        android:label="Perfil del Postulante" />
+
 
     <fragment
         android:id="@+id/profileViewFragment"

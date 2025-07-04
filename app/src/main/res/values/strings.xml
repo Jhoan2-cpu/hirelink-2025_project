@@ -114,4 +114,24 @@
     <string name="add">Agregar</string>
     <string name="personal_data">Datos personales</string>
     <string name="contact_data">Datos de contacto</string>
+
+    <!-- AdDetailFragment -->
+    <string name="job_information">Información del Trabajo</string>
+    <string name="vacancy_count">Cantidad de Vacantes:</string>
+    <string name="date">Fecha:</string>
+    <string name="contact_info">Contacto:</string>
+    <string name="call">Llamar</string>
+    <string name="job_detail">Detalle del Anuncio</string>
+
+    <!-- Estados de trabajo -->
+    <string name="status_active">Activo</string>
+    <string name="status_paused">Pausado</string>
+    <string name="status_closed">Cerrado</string>
+    <string name="status_available">Disponible</string>
+
+    <!-- Mensajes de error -->
+    <string name="error_phone_app">No se pudo abrir la aplicación de teléfono</string>
+    <string name="error_email_app">No se pudo abrir la aplicación de email</string>
+    <string name="email_subject">Consulta sobre: %s</string>
+    <string name="email_body">Hola,\n\nMe interesa conocer más sobre la oferta de trabajo: %s\n\nSaludos</string>
 </resources>

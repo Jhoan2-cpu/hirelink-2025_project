@@ -16,7 +16,6 @@ import com.example.hirelink_2025.ui.adapters.MyAdAdapter
 
 //import com.example.hirelink_2025.viewmodels.ads.MyAdsViewModel
 
-
 class MyAdsFragment : Fragment() {
 
     private var _binding: FragmentMyAdsBinding? = null
@@ -43,30 +42,49 @@ class MyAdsFragment : Fragment() {
         adapter = MyAdAdapter(
             onJobClick = { jobAd ->
                 val fragment = AdDetailFragment.newInstance(
-                    titulo = "jobAd.titulo",
-                    descripcion = "jobAd.descripcion",
-                    habilidades = "jobAd.habilidades",
-                    fecha = "jobAd.fechaPublicacion",
-                    tipoEmpleo = "jobAd.tipoEmpleo",
-                    cargo = "jobAd.cargo",
-                    modalidad = "jobAd.modalidad",
-                    estado = "jobAd.estado",
-                    telefono = "jobAd.telefono",
-                    email = "jobAd.email"
+                    titulo = jobAd.title,
+                    descripcion = jobAd.description,
+                    habilidades = jobAd.requirements.joinToString(", "),
+                    fecha = jobAd.postedDate,
+                    tipoEmpleo = jobAd.employmentType,
+                    cargo = jobAd.title,
+                    modalidad = jobAd.modality,
+                    estado = jobAd.status.name,
+                    telefono = "123456789", // Placeholder
+                    email = "contact@company.com" // Placeholder
                 )
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.main, fragment) // Este debe ser el ID del FrameLayout contenedor
+                    .replace(R.id.main, fragment)
                     .addToBackStack(null)
                     .commit()
             },
             onEditClick = { jobAd ->
-                // Acción al hacer clic en editar
+                // Navegar a editar anuncio
+                findNavController().navigate(
+                    R.id.action_myAdsFragment_to_myAdsEditFragment,
+                    Bundle().apply {
+                        putString("job_id", jobAd.id)
+                        putString("job_title", jobAd.title)
+                    }
+                )
             },
-            onDeleteClick = {jobAd ->
-
+            onDeleteClick = { jobAd ->
+                // Eliminar anuncio (implementar lógica)
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    "Eliminar: ${jobAd.title}",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
             },
             onApplicantsClick = { jobAd ->
-                // Acción al hacer clic en postulantes
+                // NAVEGACIÓN A POSTULANTES - IMPLEMENTADA
+                findNavController().navigate(
+                    R.id.action_myAdsFragment_to_myAdsApplicantsFragment,
+                    Bundle().apply {
+                        putString("job_id", jobAd.id)
+                        putString("job_title", jobAd.title)
+                    }
+                )
             }
         )
 
@@ -88,54 +106,61 @@ class MyAdsFragment : Fragment() {
                 location = "Lima, Perú",
                 modality = "Remoto",
                 salary = "S/ 5000 - S/ 6000",
-                description = "Desarrolla apps modernas con Kotlin y Jetpack.",
-                requirements = listOf("Kotlin", "MVVM", "Jetpack Compose"),
-                postedDate = "Publicado hace 3 días",
-                vacancies = 2,
+                description = "Desarrolla apps modernas con Kotlin y Jetpack Compose. Únete a nuestro equipo innovador.",
+                requirements = listOf("Kotlin", "Android Studio", "Git", "REST APIs"),
+                postedDate = "Hace 2 días",
+                vacancies = 3,
                 employmentType = "Tiempo completo",
-                isBookmarked = false,
-                hasApplied = false,
                 status = JobStatus.ACTIVE
             ),
             Job(
                 id = "2",
-                title = "QA Tester",
-                companyName = "SoftLab",
+                title = "Diseñador UI/UX",
+                companyName = "CreativeStudio",
                 companyLogo = null,
                 location = "Arequipa, Perú",
+                modality = "Híbrido",
+                salary = "S/ 3500 - S/ 4500",
+                description = "Crea experiencias digitales extraordinarias. Buscamos un diseñador apasionado por la innovación.",
+                requirements = listOf("Figma", "Adobe XD", "Prototyping", "User Research"),
+                postedDate = "Hace 1 semana",
+                vacancies = 2,
+                employmentType = "Tiempo completo",
+                status = JobStatus.ACTIVE
+            ),
+            Job(
+                id = "3",
+                title = "Desarrollador Backend",
+                companyName = "TechSolutions",
+                companyLogo = null,
+                location = "Trujillo, Perú",
                 modality = "Presencial",
-                salary = "S/ 3500 - S/ 4000",
-                description = "Encargado de pruebas funcionales y automatizadas.",
-                requirements = listOf("Selenium", "JUnit", "Postman"),
-                postedDate = "Publicado hace 2 días",
+                salary = "S/ 4000 - S/ 5500",
+                description = "Construye la infraestructura que impulsa nuestras aplicaciones. Experiencia en Node.js requerida.",
+                requirements = listOf("Node.js", "MongoDB", "Express", "AWS"),
+                postedDate = "Hace 3 días",
                 vacancies = 1,
-                employmentType = "Medio tiempo",
-                isBookmarked = true,
-                hasApplied = true,
+                employmentType = "Tiempo completo",
+                status = JobStatus.ACTIVE
+            ),
+            Job(
+                id = "4",
+                title = "Analista de Datos",
+                companyName = "DataCorp",
+                companyLogo = null,
+                location = "Lima, Perú",
+                modality = "Remoto",
+                salary = "S/ 4500 - S/ 6000",
+                description = "Convierte datos en insights valiosos. Únete a nuestro equipo de analytics.",
+                requirements = listOf("Python", "SQL", "Power BI", "Machine Learning"),
+                postedDate = "Hace 5 días",
+                vacancies = 2,
+                employmentType = "Tiempo completo",
                 status = JobStatus.CLOSED
             )
         )
 
-        if (dummyAds.isEmpty()) {
-            showEmptyState()
-        } else {
-            showAds(dummyAds)
-        }
-
-        // Estadísticas simuladas
-        binding.activeAdsCount.text = dummyAds.count { it.status == JobStatus.ACTIVE }.toString()
-        binding.totalApplicantsCount.text = dummyAds.sumOf { it.vacancies }.toString() //aquí podría ir aplicants en ves de vancancies, nNOO DEBE IR APLICANTS
-    }
-
-    private fun showEmptyState() {
-        binding.emptyStateLayout.visibility = View.VISIBLE
-        binding.adsRecyclerView.visibility = View.GONE
-    }
-
-    private fun showAds(ads: List<Job>) {
-        binding.emptyStateLayout.visibility = View.GONE
-        binding.adsRecyclerView.visibility = View.VISIBLE
-        adapter.submitList(ads)
+        adapter.submitList(dummyAds)
     }
 
     override fun onDestroyView() {
