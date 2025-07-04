@@ -18,9 +18,3 @@ data class Job(
     val hasApplied: Boolean = false,
     val status: JobStatus = JobStatus.ACTIVE
 )
-
-enum class JobStatus {
-    ACTIVE,
-    CLOSED,
-    DRAFT
-}

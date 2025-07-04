@@ -134,4 +134,143 @@
     <string name="error_email_app">No se pudo abrir la aplicación de email</string>
     <string name="email_subject">Consulta sobre: %s</string>
     <string name="email_body">Hola,\n\nMe interesa conocer más sobre la oferta de trabajo: %s\n\nSaludos</string>
+
+
+    <!-- Agregar a strings.xml -->
+
+    <!-- Job Status Names -->
+    <string name="status_draft">Borrador</string>
+    <string name="status_pending_review">Pendiente de Revisión</string>
+    <string name="status_full">Lleno</string>
+    <string name="status_expired">Expirado</string>
+    <string name="status_rejected">Rechazado</string>
+    <string name="status_suspended">Suspendido</string>
+
+    <!-- Job Actions -->
+    <string name="action_edit">Editar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_publish">Publicar</string>
+    <string name="action_pause">Pausar</string>
+    <string name="action_resume">Reanudar</string>
+    <string name="action_close">Cerrar</string>
+    <string name="action_reactivate">Reactivar</string>
+    <string name="action_renew">Renovar</string>
+    <string name="action_view_applicants">Ver Postulantes</string>
+    <string name="action_duplicate">Duplicar</string>
+    <string name="action_share">Compartir</string>
+    <string name="action_statistics">Estadísticas</string>
+
+    <!-- Help Messages -->
+    <string name="help_draft">Tu anuncio está guardado como borrador. Puedes editarlo y publicarlo cuando esté listo.</string>
+    <string name="help_pending_review">Tu anuncio está siendo revisado por nuestro equipo. Será publicado pronto.</string>
+    <string name="help_active">Tu anuncio está activo y recibiendo postulaciones. Los candidatos pueden aplicar.</string>
+    <string name="help_paused">Tu anuncio está pausado temporalmente. No aparece en búsquedas hasta que lo reactives.</string>
+    <string name="help_full">Tu anuncio ha alcanzado el límite de postulaciones. Ya no acepta más candidatos.</string>
+    <string name="help_closed">Tu anuncio ha sido cerrado. Las postulaciones ya no son posibles.</string>
+    <string name="help_expired">Tu anuncio ha expirado. Puedes renovarlo para volverlo a publicar.</string>
+    <string name="help_rejected">Tu anuncio fue rechazado. Por favor, revisa las políticas y edítalo antes de volver a enviarlo.</string>
+    <string name="help_suspended">Tu anuncio ha sido suspendido por violación de políticas. Contacta al soporte para más información.</string>
+
+    <!-- Status Change Messages -->
+    <string name="status_changed_to_draft">Anuncio guardado como borrador</string>
+    <string name="status_changed_to_active">Anuncio publicado exitosamente</string>
+    <string name="status_changed_to_paused">Anuncio pausado</string>
+    <string name="status_changed_to_closed">Anuncio cerrado</string>
+    <string name="status_changed_to_expired">Anuncio expirado</string>
+
+    <!-- Status Filter Options -->
+    <string name="filter_all_status">Todos los estados</string>
+    <string name="filter_published">Publicados</string>
+    <string name="filter_pending">Pendientes</string>
+    <string name="filter_active_only">Solo activos</string>
+
+    <!-- Confirmation Messages -->
+    <string name="confirm_delete_job">¿Estás seguro de que deseas eliminar este anuncio?</string>
+    <string name="confirm_close_job">¿Estás seguro de que deseas cerrar este anuncio? Ya no recibirá más postulaciones.</string>
+    <string name="confirm_publish_job">¿Estás seguro de que deseas publicar este anuncio?</string>
+    <string name="confirm_pause_job">¿Deseas pausar este anuncio? No aparecerá en las búsquedas hasta que lo reactives.</string>
+
+    <!-- Error Messages -->
+    <string name="error_invalid_status_transition">No se puede cambiar el estado del anuncio</string>
+    <string name="error_cannot_edit_job">No puedes editar este anuncio en su estado actual</string>
+    <string name="error_cannot_delete_job">No puedes eliminar este anuncio en su estado actual</string>
+
+    <!-- Success Messages -->
+    <string name="success_job_published">¡Anuncio publicado exitosamente!</string>
+    <string name="success_job_paused">Anuncio pausado correctamente</string>
+    <string name="success_job_closed">Anuncio cerrado correctamente</string>
+    <string name="success_job_deleted">Anuncio eliminado correctamente</string>
+
+    <!-- Statistics -->
+    <string name="stats_total_jobs">Total de anuncios</string>
+    <string name="stats_active_jobs">Anuncios activos</string>
+    <string name="stats_draft_jobs">Borradores</string>
+    <string name="stats_closed_jobs">Cerrados</string>
+    <string name="stats_success_rate">Tasa de éxito</string>
+    <string name="stats_published_jobs">Publicados</string>
+    <string name="stats_pending_jobs">Pendientes</string>
+
+
+
+    <!-- Agregar a colors.xml -->
+
+    <!-- Job Status Colors - Text Colors -->
+    <color name="status_draft_text">#6B7280</color>            <!-- Gray 500 -->
+    <color name="status_pending_text">#D97706</color>          <!-- Orange 600 -->
+    <color name="status_active_text">#059669</color>           <!-- Green 600 -->
+    <color name="status_paused_text">#7C3AED</color>           <!-- Purple 600 -->
+    <color name="status_full_text">#DC2626</color>             <!-- Red 600 -->
+    <color name="status_closed_text">#4B5563</color>           <!-- Gray 600 -->
+    <color name="status_expired_text">#B91C1C</color>          <!-- Red 700 -->
+    <color name="status_rejected_text">#DC2626</color>         <!-- Red 600 -->
+    <color name="status_suspended_text">#7F1D1D</color>        <!-- Red 900 -->
+
+    <!-- Job Status Colors - Background Tints -->
+    <color name="status_draft_background">#F9FAFB</color>      <!-- Gray 50 -->
+    <color name="status_pending_background">#FFFBEB</color>    <!-- Orange 50 -->
+    <color name="status_active_background">#ECFDF5</color>     <!-- Green 50 -->
+    <color name="status_paused_background">#F5F3FF</color>     <!-- Purple 50 -->
+    <color name="status_full_background">#FEF2F2</color>       <!-- Red 50 -->
+    <color name="status_closed_background">#F9FAFB</color>     <!-- Gray 50 -->
+    <color name="status_expired_background">#FEF2F2</color>    <!-- Red 50 -->
+    <color name="status_rejected_background">#FEF2F2</color>   <!-- Red 50 -->
+    <color name="status_suspended_background">#FEF2F2</color>  <!-- Red 50 -->
+
+    <!-- Job Status Colors - Darker Variants for Borders -->
+    <color name="status_draft_border">#E5E7EB</color>          <!-- Gray 200 -->
+    <color name="status_pending_border">#FED7AA</color>        <!-- Orange 200 -->
+    <color name="status_active_border">#BBF7D0</color>         <!-- Green 200 -->
+    <color name="status_paused_border">#DDD6FE</color>         <!-- Purple 200 -->
+    <color name="status_full_border">#FECACA</color>           <!-- Red 200 -->
+    <color name="status_closed_border">#E5E7EB</color>         <!-- Gray 200 -->
+    <color name="status_expired_border">#FECACA</color>        <!-- Red 200 -->
+    <color name="status_rejected_border">#FECACA</color>       <!-- Red 200 -->
+    <color name="status_suspended_border">#FECACA</color>      <!-- Red 200 -->
+
+    <!-- Success/Error Colors -->
+    <color name="success_color">#059669</color>                <!-- Green 600 -->
+    <color name="error_color">#DC2626</color>                  <!-- Red 600 -->
+    <color name="warning_color">#D97706</color>                <!-- Orange 600 -->
+    <color name="info_color">#2563EB</color>                   <!-- Blue 600 -->
+
+    <!-- Status Indicator Colors (for smaller badges) -->
+    <color name="indicator_draft">#9CA3AF</color>              <!-- Gray 400 -->
+    <color name="indicator_pending">#F59E0B</color>            <!-- Orange 500 -->
+    <color name="indicator_active">#10B981</color>             <!-- Green 500 -->
+    <color name="indicator_paused">#8B5CF6</color>             <!-- Purple 500 -->
+    <color name="indicator_full">#EF4444</color>               <!-- Red 500 -->
+    <color name="indicator_closed">#6B7280</color>             <!-- Gray 500 -->
+    <color name="indicator_expired">#DC2626</color>            <!-- Red 600 -->
+    <color name="indicator_rejected">#EF4444</color>           <!-- Red 500 -->
+    <color name="indicator_suspended">#991B1B</color>          <!-- Red 800 -->
+
+    <!-- Gradient Colors for Status Cards -->
+    <color name="gradient_draft_start">#F9FAFB</color>
+    <color name="gradient_draft_end">#F3F4F6</color>
+    <color name="gradient_active_start">#ECFDF5</color>
+    <color name="gradient_active_end">#D1FAE5</color>
+    <color name="gradient_pending_start">#FFFBEB</color>
+    <color name="gradient_pending_end">#FEF3C7</color>
+    <color name="gradient_error_start">#FEF2F2</color>
+    <color name="gradient_error_end">#FECACA</color>
 </resources>

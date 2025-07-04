@@ -1,25 +1,34 @@
 package com.example.hirelink_2025.ui.fragments.ads
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.hirelink_2025.R
-//import androidx.fragment.app.viewModels
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentMyAdsBinding
 import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.models.JobStatus
 import com.example.hirelink_2025.ui.adapters.MyAdAdapter
+import com.example.hirelink_2025.viewmodels.ads.MyAdsViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 
-//import com.example.hirelink_2025.viewmodels.ads.MyAdsViewModel
-
+/**
+ * Fragment para mostrar los anuncios laborales del usuario
+ * Siguiendo arquitectura MVVM - Solo maneja la UI
+ */
 class MyAdsFragment : Fragment() {
 
     private var _binding: FragmentMyAdsBinding? = null
     private val binding get() = _binding!!
+
+    // ViewModel usando by viewModels() delegate
+    private val viewModel: MyAdsViewModel by viewModels()
 
     private lateinit var adapter: MyAdAdapter
 
@@ -35,132 +44,264 @@ class MyAdsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
-        loadFakeAds()
+        setupObservers()
     }
 
+    /**
+     * Configura la UI inicial
+     */
     private fun setupUI() {
+        setupRecyclerView()
+        setupClickListeners()
+    }
+
+    /**
+     * Configura el RecyclerView y su adapter
+     */
+    private fun setupRecyclerView() {
         adapter = MyAdAdapter(
-            onJobClick = { jobAd ->
-                val fragment = AdDetailFragment.newInstance(
-                    titulo = jobAd.title,
-                    descripcion = jobAd.description,
-                    habilidades = jobAd.requirements.joinToString(", "),
-                    fecha = jobAd.postedDate,
-                    tipoEmpleo = jobAd.employmentType,
-                    cargo = jobAd.title,
-                    modalidad = jobAd.modality,
-                    estado = jobAd.status.name,
-                    telefono = "123456789", // Placeholder
-                    email = "contact@company.com" // Placeholder
-                )
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.main, fragment)
-                    .addToBackStack(null)
-                    .commit()
-            },
-            onEditClick = { jobAd ->
-                // Navegar a editar anuncio
-                findNavController().navigate(
-                    R.id.action_myAdsFragment_to_myAdsEditFragment,
-                    Bundle().apply {
-                        putString("job_id", jobAd.id)
-                        putString("job_title", jobAd.title)
-                    }
-                )
-            },
-            onDeleteClick = { jobAd ->
-                // Eliminar anuncio (implementar lógica)
-                android.widget.Toast.makeText(
-                    requireContext(),
-                    "Eliminar: ${jobAd.title}",
-                    android.widget.Toast.LENGTH_SHORT
-                ).show()
-            },
-            onApplicantsClick = { jobAd ->
-                // NAVEGACIÓN A POSTULANTES - IMPLEMENTADA
-                findNavController().navigate(
-                    R.id.action_myAdsFragment_to_myAdsApplicantsFragment,
-                    Bundle().apply {
-                        putString("job_id", jobAd.id)
-                        putString("job_title", jobAd.title)
-                    }
-                )
-            }
+            onJobClick = { job -> handleJobClick(job) },
+            onEditClick = { job -> handleEditClick(job) },
+            onDeleteClick = { job -> handleDeleteClick(job) },
+            onApplicantsClick = { job -> handleApplicantsClick(job) }
         )
 
-        binding.adsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.adsRecyclerView.adapter = adapter
-
-        binding.createAdFab.setOnClickListener {
-            findNavController().navigate(R.id.action_myAdsFragment_to_myAdsRegisterFragment)
+        binding.adsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@MyAdsFragment.adapter
         }
     }
 
-    private fun loadFakeAds() {
-        val dummyAds = listOf(
-            Job(
-                id = "1",
-                title = "Desarrollador Android",
-                companyName = "InnovaTech",
-                companyLogo = null,
-                location = "Lima, Perú",
-                modality = "Remoto",
-                salary = "S/ 5000 - S/ 6000",
-                description = "Desarrolla apps modernas con Kotlin y Jetpack Compose. Únete a nuestro equipo innovador.",
-                requirements = listOf("Kotlin", "Android Studio", "Git", "REST APIs"),
-                postedDate = "Hace 2 días",
-                vacancies = 3,
-                employmentType = "Tiempo completo",
-                status = JobStatus.ACTIVE
-            ),
-            Job(
-                id = "2",
-                title = "Diseñador UI/UX",
-                companyName = "CreativeStudio",
-                companyLogo = null,
-                location = "Arequipa, Perú",
-                modality = "Híbrido",
-                salary = "S/ 3500 - S/ 4500",
-                description = "Crea experiencias digitales extraordinarias. Buscamos un diseñador apasionado por la innovación.",
-                requirements = listOf("Figma", "Adobe XD", "Prototyping", "User Research"),
-                postedDate = "Hace 1 semana",
-                vacancies = 2,
-                employmentType = "Tiempo completo",
-                status = JobStatus.ACTIVE
-            ),
-            Job(
-                id = "3",
-                title = "Desarrollador Backend",
-                companyName = "TechSolutions",
-                companyLogo = null,
-                location = "Trujillo, Perú",
-                modality = "Presencial",
-                salary = "S/ 4000 - S/ 5500",
-                description = "Construye la infraestructura que impulsa nuestras aplicaciones. Experiencia en Node.js requerida.",
-                requirements = listOf("Node.js", "MongoDB", "Express", "AWS"),
-                postedDate = "Hace 3 días",
-                vacancies = 1,
-                employmentType = "Tiempo completo",
-                status = JobStatus.ACTIVE
-            ),
-            Job(
-                id = "4",
-                title = "Analista de Datos",
-                companyName = "DataCorp",
-                companyLogo = null,
-                location = "Lima, Perú",
-                modality = "Remoto",
-                salary = "S/ 4500 - S/ 6000",
-                description = "Convierte datos en insights valiosos. Únete a nuestro equipo de analytics.",
-                requirements = listOf("Python", "SQL", "Power BI", "Machine Learning"),
-                postedDate = "Hace 5 días",
-                vacancies = 2,
-                employmentType = "Tiempo completo",
-                status = JobStatus.CLOSED
-            )
+    /**
+     * Configura los listeners de clicks
+     */
+    private fun setupClickListeners() {
+        // FAB para crear nuevo anuncio
+        binding.createAdFab.setOnClickListener {
+            findNavController().navigate(R.id.action_myAdsFragment_to_myAdsRegisterFragment)
+        }
+
+        // Botones de filtro (si existen en el layout)
+        binding.apply {
+            // Asumiendo que hay botones de filtro en el layout
+            // Si no existen, estos se pueden omitir
+            /*
+            activeAdsButton?.setOnClickListener {
+                viewModel.loadActiveAds()
+            }
+
+            closedAdsButton?.setOnClickListener {
+                viewModel.loadClosedAds()
+            }
+
+            draftAdsButton?.setOnClickListener {
+                viewModel.loadDraftAds()
+            }
+
+            allAdsButton?.setOnClickListener {
+                viewModel.loadMyAds()
+            }
+            */
+        }
+    }
+
+    /**
+     * Configura los observadores del ViewModel
+     */
+    private fun setupObservers() {
+        // Observar lista de anuncios
+        viewModel.myAds.observe(viewLifecycleOwner) { ads ->
+            adapter.submitList(ads)
+            updateEmptyState(ads.isEmpty())
+        }
+
+        // Observar estadísticas
+        viewModel.adsStats.observe(viewLifecycleOwner) { stats ->
+            updateStatsUI(stats)
+        }
+
+        // Observar estado de carga
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            updateLoadingState(isLoading)
+        }
+
+        // Observar estado vacío
+        viewModel.isEmpty.observe(viewLifecycleOwner) { isEmpty ->
+            updateEmptyState(isEmpty)
+        }
+
+        // Observar mensajes de error
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (message.isNotEmpty()) {
+                showErrorMessage(message)
+                viewModel.clearErrorMessage()
+            }
+        }
+
+        // Observar éxito en eliminación
+        viewModel.deleteSuccess.observe(viewLifecycleOwner) { message ->
+            if (message.isNotEmpty()) {
+                showSuccessMessage(message)
+                viewModel.clearSuccessMessages()
+            }
+        }
+
+        // Observar éxito en actualización
+        viewModel.updateSuccess.observe(viewLifecycleOwner) { message ->
+            if (message.isNotEmpty()) {
+                showSuccessMessage(message)
+                viewModel.clearSuccessMessages()
+            }
+        }
+    }
+
+    /**
+     * Maneja el click en un anuncio para ver detalles
+     */
+    private fun handleJobClick(job: Job) {
+        val fragment = AdDetailFragment.newInstance(
+            titulo = job.title,
+            descripcion = job.description,
+            habilidades = job.requirements.joinToString(", "),
+            fecha = job.postedDate,
+            tipoEmpleo = job.employmentType,
+            cargo = job.title,
+            modalidad = job.modality,
+            estado = job.status.name,
+            telefono = "123456789", // Placeholder
+            email = "contact@company.com" // Placeholder
         )
 
-        adapter.submitList(dummyAds)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.main, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    /**
+     * Maneja el click para editar un anuncio
+     */
+    private fun handleEditClick(job: Job) {
+        findNavController().navigate(
+            R.id.action_myAdsFragment_to_myAdsEditFragment,
+            Bundle().apply {
+                putString("job_id", job.id)
+                putString("job_title", job.title)
+            }
+        )
+    }
+
+    /**
+     * Maneja el click para eliminar un anuncio
+     */
+    private fun handleDeleteClick(job: Job) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Eliminar anuncio")
+            .setMessage("¿Estás seguro que deseas eliminar '${job.title}'?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                viewModel.deleteAd(job)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    /**
+     * Maneja el click para ver postulantes
+     */
+    private fun handleApplicantsClick(job: Job) {
+        findNavController().navigate(
+            R.id.action_myAdsFragment_to_myAdsApplicantsFragment,
+            Bundle().apply {
+                putString("job_id", job.id)
+                putString("job_title", job.title)
+            }
+        )
+    }
+
+    /**
+     * Actualiza la UI con las estadísticas
+     */
+    private fun updateStatsUI(stats: com.example.hirelink_2025.repository.AdsStats) {
+        binding.apply {
+            // Asumiendo que hay views para mostrar estadísticas
+            // Si no existen en el layout, se pueden omitir
+            /*
+            totalAdsText?.text = stats.totalAds.toString()
+            activeAdsText?.text = stats.activeAds.toString()
+            closedAdsText?.text = stats.closedAds.toString()
+            draftAdsText?.text = stats.draftAds.toString()
+            totalViewsText?.text = stats.totalViews.toString()
+            totalApplicantsText?.text = stats.totalApplicants.toString()
+            */
+        }
+    }
+
+    /**
+     * Actualiza el estado de carga
+     */
+    private fun updateLoadingState(isLoading: Boolean) {
+        binding.apply {
+            if (isLoading) {
+                // Mostrar loading - puede ser un ProgressBar
+                // progressBar?.visibility = View.VISIBLE
+                // adsRecyclerView.visibility = View.GONE
+            } else {
+                // Ocultar loading
+                // progressBar?.visibility = View.GONE
+                // adsRecyclerView.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    /**
+     * Actualiza el estado vacío
+     */
+    private fun updateEmptyState(isEmpty: Boolean) {
+        binding.apply {
+            if (isEmpty) {
+                // Mostrar estado vacío
+                // emptyStateLayout?.visibility = View.VISIBLE
+                // adsRecyclerView.visibility = View.GONE
+            } else {
+                // Ocultar estado vacío
+                // emptyStateLayout?.visibility = View.GONE
+                // adsRecyclerView.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    /**
+     * Muestra un mensaje de error
+     */
+    private fun showErrorMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+            .setAction("Reintentar") {
+                viewModel.refreshData()
+            }
+            .show()
+    }
+
+    /**
+     * Muestra un mensaje de éxito
+     */
+    private fun showSuccessMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT)
+            .setBackgroundTint(resources.getColor(R.color.success, null))
+            .show()
+    }
+
+    /**
+     * Método público para actualizar datos desde el exterior
+     */
+    fun refreshData() {
+        viewModel.refreshData()
+    }
+
+    /**
+     * Método público para filtrar por estado
+     */
+    fun filterByStatus(status: JobStatus) {
+        viewModel.filterAdsByStatus(status)
     }
 
     override fun onDestroyView() {

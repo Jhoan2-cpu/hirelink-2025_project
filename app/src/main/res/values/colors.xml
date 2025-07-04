@@ -51,4 +51,38 @@
     <color name="success_light">#E8F5E8</color>
     <color name="warning_light">#FFF3E0</color>
     <color name="error_light">#FFEBEE</color>
+
+
+
+    <!-- Agregar a res/values/colors.xml (colores básicos para que funcione) -->
+
+    <!-- Text Colors -->
+    <color name="text_tertiary">#9CA3AF</color>      <!-- Gray 400 -->
+
+    <!-- Card Colors -->
+    <color name="card_stroke">#E5E7EB</color>        <!-- Gray 200 -->
+    <color name="card_background">#FFFFFF</color>    <!-- White -->
+
+    <!-- Status Colors (básicos) -->
+    <color name="status_active">#059669</color>      <!-- Green 600 -->
+    <color name="status_closed">#6B7280</color>      <!-- Gray 500 -->
+    <color name="status_draft">#D97706</color>       <!-- Orange 600 -->
+
+    <!-- Primary Colors -->
+    <color name="on_primary">#FFFFFF</color>         <!-- White -->
+
+    <!-- Secondary Colors -->
+    <color name="on_secondary">#FFFFFF</color>       <!-- White -->
+
+    <!-- Error Colors -->
+    <color name="on_error">#FFFFFF</color>           <!-- White -->
+
+    <!-- Success Colors -->
+    <color name="on_success">#FFFFFF</color>         <!-- White -->
+
+    <!-- Warning Colors -->
+    <color name="on_warning">#FFFFFF</color>         <!-- White -->
+
+    <!-- Info Colors -->
+    <color name="on_info">#FFFFFF</color>            <!-- White -->
 </resources>
