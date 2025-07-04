@@ -1,7 +1,4 @@
 package com.example.hirelink_2025.models
-
-
-// Clase de datos para representar un trabajo
 data class JobResult(
     val id: Int,
     val title: String,
@@ -11,5 +8,11 @@ data class JobResult(
     val type: String,
     val publishedDate: String,
     val description: String,
-    var isBookmarked: Boolean = false
+    var isBookmarked: Boolean = false,
+
+    // Campos adicionales para filtros
+    val status: String = "Activo",
+    val experienceLevel: String = "Intermedio",
+    val employmentType: String = "Tiempo completo",
+    val modality: String = "Presencial"
 )

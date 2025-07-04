@@ -7,39 +7,36 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.hirelink_2025.R
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.chip.ChipGroup
-import android.widget.TextView
-import android.widget.ProgressBar
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.PopupMenu
+import com.example.hirelink_2025.R
+import com.example.hirelink_2025.databinding.FragmentSearchResultListBinding
 import com.example.hirelink_2025.models.JobResult
 import com.example.hirelink_2025.ui.adapters.JobResultsAdapter
-import com.google.android.material.card.MaterialCardView
-
+import com.google.android.material.button.MaterialButton
 
 class SearchResultListFragment : Fragment() {
 
-    // Referencias a las vistas
-    private lateinit var backButton: MaterialButton
-    private lateinit var titleText: TextView
-    private lateinit var filterMenuButton: MaterialButton
-    private lateinit var resultsRecyclerView: RecyclerView
-    private lateinit var emptyStateLayout: LinearLayout
-    private lateinit var progressBar: ProgressBar
-    private lateinit var resultsCountText: TextView
-    private lateinit var filterMenuCard: MaterialCardView
-
-    // Estado del menú de filtros
+    private lateinit var binding: FragmentSearchResultListBinding
     private var isFilterMenuVisible = false
-
-    // Adapter para el RecyclerView
     private lateinit var jobResultsAdapter: JobResultsAdapter
 
-    // Variables para almacenar los datos de búsqueda
+    // Lista completa de trabajos (datos de prueba)
+    private val allJobs = mutableListOf<JobResult>()
+
+    // Lista filtrada que se muestra
+    private var filteredJobs = mutableListOf<JobResult>()
+
+    // Variables para almacenar los filtros seleccionados
+    private var selectedStatus: String = "Todos"
+    private var selectedExperience: String = "Todos"
+    private var selectedDate: String = "Cualquier fecha"
+    private var selectedPosition: String = "Todos"
+    private var selectedEmploymentType: String = "Todos"
+    private var selectedModality: String = "Todos"
+    private var selectedLocation: String = "Todas"
+
+    // Variables para los criterios de búsqueda
     private var jobType: String? = null
     private var location: String? = null
 
@@ -47,90 +44,43 @@ class SearchResultListFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_search_result_list, container, false)
+    ): View {
+        binding = FragmentSearchResultListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Inicializar vistas
-        initViews(view)
+        // Obtener argumentos de navegación
+        arguments?.let {
+            jobType = it.getString("job_type")
+            location = it.getString("location")
+        }
 
-        // Recibir argumentos de navegación
-        getSearchArguments()
-
-        // Configurar UI
         setupUI()
-
-        // Configurar RecyclerView
         setupRecyclerView()
-
-        // Configurar botones
-        setupButtons()
-
-        // Configurar manejo del botón atrás
-        setupBackPressedCallback()
-
-        // Realizar búsqueda
-        performSearch()
-    }
-
-    private fun setupBackPressedCallback() {
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (isFilterMenuVisible) {
-                    hideFilterMenu()
-                } else {
-                    findNavController().popBackStack()
-                }
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }
-
-    private fun initViews(view: View) {
-        backButton = view.findViewById(R.id.backButton)
-        titleText = view.findViewById(R.id.titleText)
-        filterMenuButton = view.findViewById(R.id.filterMenuButton)
-        resultsRecyclerView = view.findViewById(R.id.resultsRecyclerView)
-        emptyStateLayout = view.findViewById(R.id.emptyStateLayout)
-        progressBar = view.findViewById(R.id.progressBar)
-        resultsCountText = view.findViewById(R.id.resultsCountText)
-        filterMenuCard = view.findViewById(R.id.filterMenuCard)
-    }
-
-    private fun getSearchArguments() {
-        arguments?.let { bundle ->
-            jobType = bundle.getString("job_type")
-            location = bundle.getString("location")
-        }
+        setupFilterMenuButtons()
+        generateTestData()
+        showResults()
     }
 
     private fun setupUI() {
         // Actualizar título con los criterios de búsqueda
-        titleText.text = buildSearchTitle()
+        binding.titleText.text = buildSearchTitle()
 
-        // Configurar touch listener para cerrar menú
-        setupTouchListeners()
-    }
-
-    private fun setupTouchListeners() {
-        // Cerrar menú al tocar el RecyclerView
-        resultsRecyclerView.setOnTouchListener { _, _ ->
-            if (isFilterMenuVisible) {
-                hideFilterMenu()
-            }
-            false
+        // Botón back
+        binding.backButton.setOnClickListener {
+            findNavController().popBackStack()
         }
 
-        // Cerrar menú al tocar fuera del área del menú
-        view?.setOnTouchListener { _, _ ->
-            if (isFilterMenuVisible) {
-                hideFilterMenu()
-            }
-            false
+        // Botón menú de filtros
+        binding.filterMenuButton.setOnClickListener {
+            toggleFilterMenu()
         }
+
+        // Actualizar texto de chips con filtros por defecto
+        updateChipsText()
     }
 
     private fun buildSearchTitle(): String {
@@ -141,7 +91,7 @@ class SearchResultListFragment : Fragment() {
                 "$jobType - Todas las ubicaciones"
             !location.isNullOrEmpty() ->
                 "Todos los trabajos - $location"
-            else -> "Cargo, área o empresa - Ubicación"
+            else -> "Resultados de búsqueda"
         }
     }
 
@@ -158,49 +108,354 @@ class SearchResultListFragment : Fragment() {
             }
         )
 
-        resultsRecyclerView.apply {
+        binding.resultsRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = jobResultsAdapter
         }
     }
 
-    private fun setupButtons() {
-        // Botón back
-        backButton.setOnClickListener {
-            findNavController().popBackStack()
-        }
+    private fun generateTestData() {
+        allJobs.clear()
 
-        // Botón menú de filtros
-        filterMenuButton.setOnClickListener {
-            toggleFilterMenu()
-        }
+        val companies = listOf(
+            "Google", "Microsoft", "Amazon", "Apple", "Netflix", "Spotify",
+            "Uber", "Airbnb", "Facebook", "Twitter", "LinkedIn", "Adobe",
+            "Oracle", "SAP", "Salesforce", "Dropbox", "Slack", "Zoom",
+            "TikTok", "Snapchat", "Pinterest", "Reddit", "Discord", "Twitch"
+        )
 
-        // Configurar botones del menú de filtros
-        setupFilterMenuButtons()
+        val jobTitles = listOf(
+            "Desarrollador Frontend", "Desarrollador Backend", "Desarrollador Full Stack",
+            "Ingeniero de Software", "Arquitecto de Software", "DevOps Engineer",
+            "Analista de Datos", "Científico de Datos", "Ingeniero de Machine Learning",
+            "Diseñador UX/UI", "Product Manager", "Scrum Master",
+            "Especialista en Marketing Digital", "Community Manager", "Content Creator",
+            "Gerente de Ventas", "Ejecutivo Comercial", "Business Analyst",
+            "Consultor IT", "Administrador de Sistemas", "Especialista en Ciberseguridad",
+            "QA Engineer", "Tester de Software", "Ingeniero de Calidad"
+        )
+
+        val locations = listOf(
+            "Lima, Perú", "Arequipa, Perú", "Trujillo, Perú", "Chiclayo, Perú",
+            "Piura, Perú", "Cusco, Perú", "Huancayo, Perú", "Iquitos, Perú",
+            "Remoto", "Híbrido - Lima", "Híbrido - Arequipa", "Nacional"
+        )
+
+        val experienceLevels = listOf("Principiante", "Intermedio", "Avanzado", "Senior")
+        val employmentTypes = listOf("Tiempo completo", "Tiempo parcial", "Contrato", "Freelance", "Práctica")
+        val modalities = listOf("Presencial", "Remoto", "Híbrido")
+        val statuses = listOf("Activo", "Finalizado", "Pausado")
+
+        // Generar 50 trabajos de prueba
+        for (i in 1..50) {
+            val company = companies.random()
+            val title = jobTitles.random()
+            val locationJob = locations.random()
+            val experienceLevel = experienceLevels.random()
+            val employmentType = employmentTypes.random()
+            val modality = modalities.random()
+            val status = statuses.random()
+
+            val baseSalary = when (experienceLevel) {
+                "Principiante" -> (2000..3500).random()
+                "Intermedio" -> (3500..5500).random()
+                "Avanzado" -> (5500..8000).random()
+                "Senior" -> (8000..12000).random()
+                else -> (2000..5000).random()
+            }
+
+            val maxSalary = baseSalary + (500..2000).random()
+            val daysAgo = (1..30).random()
+
+            val job = JobResult(
+                id = i,
+                title = title,
+                company = company,
+                location = locationJob,
+                salary = "S/. $baseSalary - $maxSalary",
+                type = "$employmentType - $modality",
+                publishedDate = "Hace ${daysAgo} día${if (daysAgo > 1) "s" else ""}",
+                description = "Buscamos un $title para unirse a nuestro equipo en $company. Trabajo $employmentType en modalidad $modality en $locationJob. Nivel de experiencia requerido: $experienceLevel.",
+                isBookmarked = (i % 4 == 0), // Algunos trabajos marcados como favoritos
+                // Campos adicionales para filtros
+                status = status,
+                experienceLevel = experienceLevel,
+                employmentType = employmentType,
+                modality = modality
+            )
+
+            allJobs.add(job)
+        }
     }
 
     private fun setupFilterMenuButtons() {
-        val filterMenuButtons = listOf(
-            R.id.filterStatusButton,
-            R.id.filterDateButton,
-            R.id.filterExperienceButton,
-            R.id.filterPositionButton,
-            R.id.filterEmploymentTypeButton,
-            R.id.filterModalityButton,
-            R.id.filterLocationButton
-        )
+        // Configurar cada botón de filtro
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterStatusButton)?.setOnClickListener {
+            showStatusPopupMenu(it)
+        }
 
-        filterMenuButtons.forEach { buttonId ->
-            filterMenuCard.findViewById<MaterialButton>(buttonId)?.setOnClickListener { button ->
-                val filterName = (button as MaterialButton).text.toString()
-                handleFilterSelection(filterName)
-            }
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterDateButton)?.setOnClickListener {
+            showDatePopupMenu(it)
+        }
+
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterExperienceButton)?.setOnClickListener {
+            showExperiencePopupMenu(it)
+        }
+
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterPositionButton)?.setOnClickListener {
+            showPositionPopupMenu(it)
+        }
+
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterEmploymentTypeButton)?.setOnClickListener {
+            showEmploymentTypePopupMenu(it)
+        }
+
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterModalityButton)?.setOnClickListener {
+            showModalityPopupMenu(it)
+        }
+
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterLocationButton)?.setOnClickListener {
+            showLocationPopupMenu(it)
         }
 
         // Botón "Mostrar resultados"
-        filterMenuCard.findViewById<MaterialButton>(R.id.showResultsButton)?.setOnClickListener {
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.showResultsButton)?.setOnClickListener {
             applyFiltersAndShowResults()
         }
+    }
+
+    private fun showStatusPopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.filter_status_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            selectedStatus = when (item.itemId) {
+                R.id.status_active -> "Activo"
+                R.id.status_finished -> "Finalizado"
+                R.id.status_paused -> "Pausado"
+                R.id.status_all -> "Todos"
+                else -> "Todos"
+            }
+            updateChipsText()
+            applyFilters()
+            true
+        }
+
+        popupMenu.show()
+    }
+
+    private fun showExperiencePopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.filter_experience_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            selectedExperience = when (item.itemId) {
+                R.id.exp_beginner -> "Principiante"
+                R.id.exp_intermediate -> "Intermedio"
+                R.id.exp_advanced -> "Avanzado"
+                R.id.exp_senior -> "Senior"
+                R.id.exp_all -> "Todos"
+                else -> "Todos"
+            }
+            updateChipsText()
+            applyFilters()
+            true
+        }
+
+        popupMenu.show()
+    }
+
+    private fun showDatePopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.filter_date_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            selectedDate = when (item.itemId) {
+                R.id.date_last_week -> "Última semana"
+                R.id.date_last_month -> "Último mes"
+                R.id.date_last_3_months -> "Últimos 3 meses"
+                R.id.date_all -> "Cualquier fecha"
+                else -> "Cualquier fecha"
+            }
+            updateChipsText()
+            applyFilters()
+            true
+        }
+
+        popupMenu.show()
+    }
+
+    private fun showPositionPopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.filter_position_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            selectedPosition = when (item.itemId) {
+                R.id.pos_developer -> "Desarrollador"
+                R.id.pos_designer -> "Diseñador"
+                R.id.pos_manager -> "Gerente"
+                R.id.pos_analyst -> "Analista"
+                R.id.pos_marketing -> "Marketing"
+                R.id.pos_sales -> "Ventas"
+                R.id.pos_other -> "Otros"
+                else -> "Todos"
+            }
+            updateChipsText()
+            applyFilters()
+            true
+        }
+
+        popupMenu.show()
+    }
+
+    private fun showEmploymentTypePopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.filter_employment_type_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            selectedEmploymentType = when (item.itemId) {
+                R.id.emp_full_time -> "Tiempo completo"
+                R.id.emp_part_time -> "Tiempo parcial"
+                R.id.emp_contract -> "Contrato"
+                R.id.emp_freelance -> "Freelance"
+                R.id.emp_internship -> "Práctica"
+                R.id.emp_all -> "Todos"
+                else -> "Todos"
+            }
+            updateChipsText()
+            applyFilters()
+            true
+        }
+
+        popupMenu.show()
+    }
+
+    private fun showModalityPopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.filter_modality_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            selectedModality = when (item.itemId) {
+                R.id.mod_presencial -> "Presencial"
+                R.id.mod_remote -> "Remoto"
+                R.id.mod_hybrid -> "Híbrido"
+                R.id.mod_all -> "Todos"
+                else -> "Todos"
+            }
+            updateChipsText()
+            applyFilters()
+            true
+        }
+
+        popupMenu.show()
+    }
+
+    private fun showLocationPopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.filter_location_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            selectedLocation = when (item.itemId) {
+                R.id.loc_same_city -> "Misma ciudad"
+                R.id.loc_same_region -> "Misma región"
+                R.id.loc_national -> "Nacional"
+                R.id.loc_international -> "Internacional"
+                R.id.loc_all -> "Todas"
+                else -> "Todas"
+            }
+            updateChipsText()
+            applyFilters()
+            true
+        }
+
+        popupMenu.show()
+    }
+
+    private fun updateChipsText() {
+        // Actualizar el texto de los chips con los filtros seleccionados
+        binding.statusChip.text = selectedStatus
+        binding.dateChip.text = selectedDate
+
+        // Actualizar el contador de resultados
+        updateResultsCount()
+    }
+
+    private fun updateResultsCount() {
+        val count = filteredJobs.size
+        binding.resultsCountText.text = when (count) {
+            0 -> "Sin resultados"
+            1 -> "1 Resultado"
+            else -> "$count Resultados"
+        }
+
+        // Actualizar el botón "Mostrar resultados"
+        binding.filterMenuCard.findViewById<MaterialButton>(R.id.showResultsButton)?.text =
+            "Mostrar $count resultados"
+    }
+
+    private fun applyFilters() {
+        filteredJobs.clear()
+
+        filteredJobs.addAll(allJobs.filter { job ->
+            // Filtrar por estado
+            val statusMatch = selectedStatus == "Todos" || job.status == selectedStatus
+
+            // Filtrar por experiencia
+            val experienceMatch = selectedExperience == "Todos" || job.experienceLevel == selectedExperience
+
+            // Filtrar por fecha (simplificado)
+            val dateMatch = selectedDate == "Cualquier fecha" || isJobWithinDateRange(job)
+
+            // Filtrar por cargo
+            val positionMatch = selectedPosition == "Todos" || job.title.contains(selectedPosition, ignoreCase = true)
+
+            // Filtrar por tipo de empleo
+            val employmentMatch = selectedEmploymentType == "Todos" || job.employmentType == selectedEmploymentType
+
+            // Filtrar por modalidad
+            val modalityMatch = selectedModality == "Todos" || job.modality == selectedModality
+
+            // Filtrar por ubicación (simplificado)
+            val locationMatch = selectedLocation == "Todas" ||
+                    (selectedLocation == "Nacional" && job.location.contains("Perú", ignoreCase = true)) ||
+                    (selectedLocation == "Remoto" && job.location.contains("Remoto", ignoreCase = true))
+
+            // Debe cumplir todos los filtros
+            statusMatch && experienceMatch && dateMatch && positionMatch &&
+                    employmentMatch && modalityMatch && locationMatch
+        })
+
+        showResults()
+    }
+
+    private fun isJobWithinDateRange(job: JobResult): Boolean {
+        // Extraer el número de días del campo publishedDate
+        val publishedText = job.publishedDate
+        val daysAgo = publishedText.replace("Hace ", "").replace(" días", "").replace(" día", "").toIntOrNull() ?: 0
+
+        return when (selectedDate) {
+            "Última semana" -> daysAgo <= 7
+            "Último mes" -> daysAgo <= 30
+            "Últimos 3 meses" -> daysAgo <= 90
+            else -> true
+        }
+    }
+
+    private fun showResults() {
+        if (filteredJobs.isEmpty() && allJobs.isNotEmpty()) {
+            showEmptyState()
+        } else {
+            jobResultsAdapter.submitList(filteredJobs.toList())
+            binding.resultsRecyclerView.visibility = View.VISIBLE
+            binding.emptyStateLayout.visibility = View.GONE
+        }
+
+        updateResultsCount()
+    }
+
+    private fun showEmptyState() {
+        binding.resultsRecyclerView.visibility = View.GONE
+        binding.emptyStateLayout.visibility = View.VISIBLE
     }
 
     private fun toggleFilterMenu() {
@@ -211,166 +466,36 @@ class SearchResultListFragment : Fragment() {
         } else {
             hideFilterMenu()
         }
-
-        // Actualizar icono del botón (opcional)
-        updateFilterButtonIcon()
-    }
-
-    private fun updateFilterButtonIcon() {
-        // Opcional: cambiar el ícono cuando el menú está abierto
-        val iconRes = if (isFilterMenuVisible) {
-            R.drawable.ic_close  // Crear este ícono si lo necesitas
-        } else {
-            R.drawable.ic_filter_list
-        }
-        // filterMenuButton.setIconResource(iconRes)
     }
 
     private fun showFilterMenu() {
-        filterMenuCard.visibility = View.VISIBLE
-        filterMenuCard.alpha = 0f
-        filterMenuCard.animate()
+        binding.filterMenuCard.visibility = View.VISIBLE
+        binding.filterMenuCard.animate()
             .alpha(1f)
             .setDuration(200)
             .start()
     }
 
     private fun hideFilterMenu() {
-        filterMenuCard.animate()
+        binding.filterMenuCard.animate()
             .alpha(0f)
             .setDuration(200)
             .withEndAction {
-                filterMenuCard.visibility = View.GONE
+                binding.filterMenuCard.visibility = View.GONE
             }
             .start()
     }
 
-    private fun handleFilterSelection(filterName: String) {
-        Toast.makeText(requireContext(), "Filtro seleccionado: $filterName", Toast.LENGTH_SHORT).show()
-        // Aquí implementarías la lógica específica para cada filtro
-    }
-
     private fun applyFiltersAndShowResults() {
+        // Aplicar filtros
+        applyFilters()
+
+        // Ocultar el menú de filtros
         hideFilterMenu()
+        isFilterMenuVisible = false
 
-        // Mostrar loading mientras se aplican los filtros
-        showLoading(true)
-
-        // Simular aplicación de filtros
-        view?.postDelayed({
-            // Aquí aplicarías los filtros reales
-            val filteredJobs = generateSampleJobs(jobType, location)
-
-            showLoading(false)
-            showResults(filteredJobs)
-
-            Toast.makeText(requireContext(), "Filtros aplicados correctamente", Toast.LENGTH_SHORT).show()
-        }, 800)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // Limpiar recursos si es necesario
-    }
-
-    private fun performSearch() {
-        // Mostrar loading
-        showLoading(true)
-
-        // Simular búsqueda de trabajos
-        searchJobs(jobType, location)
-    }
-
-    private fun searchJobs(jobType: String?, location: String?) {
-        // Simular delay de red
-        view?.postDelayed({
-            // Generar datos de ejemplo
-            val jobs = generateSampleJobs(jobType, location)
-
-            // Ocultar loading
-            showLoading(false)
-
-            // Mostrar resultados
-            showResults(jobs)
-        }, 1500) // Simular 1.5 segundos de carga
-    }
-
-    private fun generateSampleJobs(jobType: String?, location: String?): List<JobResult> {
-        val jobs = mutableListOf<JobResult>()
-
-        // Generar trabajos de ejemplo basados en la búsqueda
-        val jobTypeToShow = jobType ?: "Desarrollador"
-        val locationToShow = location ?: "Lima"
-
-        val companies = listOf(
-            "TechCorp S.A.C.",
-            "Innovate Solutions",
-            "Digital Peru",
-            "Software House",
-            "StartupTech",
-            "CodeFactory",
-            "DevPeru",
-            "TechSolutions"
-        )
-
-        val jobVariants = listOf("Senior", "Junior", "Mid-level", "Lead", "Principal")
-        val workTypes = listOf("Remoto", "Híbrido", "Presencial")
-
-        for (i in 1..8) {
-            val variant = jobVariants[i % jobVariants.size]
-            val company = companies[i % companies.size]
-            val workType = workTypes[i % workTypes.size]
-            val baseSalary = 2000 + (i * 800)
-            val maxSalary = baseSalary + 1500
-
-            jobs.add(
-                JobResult(
-                    id = i,
-                    title = "$jobTypeToShow $variant",
-                    company = company,
-                    location = locationToShow,
-                    salary = "S/. $baseSalary - $maxSalary",
-                    type = workType,
-                    publishedDate = "Hace ${i} día${if (i > 1) "s" else ""}",
-                    description = "Buscamos un $jobTypeToShow $variant para unirse a nuestro equipo en $company. Trabajo $workType en $locationToShow.",
-                    isBookmarked = i % 3 == 0 // Algunos trabajos marcados como favoritos
-                )
-            )
-        }
-
-        return jobs
-    }
-
-    private fun showLoading(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        resultsRecyclerView.visibility = if (show) View.GONE else View.VISIBLE
-        emptyStateLayout.visibility = View.GONE
-    }
-
-    private fun showResults(jobs: List<JobResult>) {
-        if (jobs.isEmpty()) {
-            showEmptyState()
-        } else {
-            jobResultsAdapter.submitList(jobs)
-            resultsRecyclerView.visibility = View.VISIBLE
-            emptyStateLayout.visibility = View.GONE
-
-            // Actualizar contador de resultados
-            updateResultsCount(jobs.size)
-        }
-    }
-
-    private fun updateResultsCount(count: Int) {
-        resultsCountText.text = when (count) {
-            0 -> "Sin resultados"
-            1 -> "1 Resultado"
-            else -> "$count Resultados"
-        }
-    }
-
-    private fun showEmptyState() {
-        resultsRecyclerView.visibility = View.GONE
-        emptyStateLayout.visibility = View.VISIBLE
+        // Mostrar mensaje de confirmación
+        Toast.makeText(requireContext(), "Filtros aplicados - ${filteredJobs.size} resultados", Toast.LENGTH_SHORT).show()
     }
 
     private fun navigateToJobDetail(job: JobResult) {
@@ -396,6 +521,19 @@ class SearchResultListFragment : Fragment() {
     }
 
     private fun handleBookmarkClick(job: JobResult) {
+        // Actualizar el estado del bookmark en la lista
+        val index = filteredJobs.indexOfFirst { it.id == job.id }
+        if (index != -1) {
+            filteredJobs[index].isBookmarked = !filteredJobs[index].isBookmarked
+            jobResultsAdapter.notifyItemChanged(index)
+        }
+
+        // También actualizar en la lista completa
+        val allIndex = allJobs.indexOfFirst { it.id == job.id }
+        if (allIndex != -1) {
+            allJobs[allIndex].isBookmarked = !allJobs[allIndex].isBookmarked
+        }
+
         val message = if (job.isBookmarked) {
             "Guardado en favoritos: ${job.title}"
         } else {
@@ -408,4 +546,15 @@ class SearchResultListFragment : Fragment() {
         Toast.makeText(requireContext(), "Aplicando a: ${job.title}", Toast.LENGTH_SHORT).show()
         // Aquí implementarías la lógica de aplicación
     }
+
+    // Clase para encapsular los criterios de filtro
+    data class FilterCriteria(
+        val status: String,
+        val experience: String,
+        val date: String,
+        val position: String,
+        val employmentType: String,
+        val modality: String,
+        val location: String
+    )
 }
