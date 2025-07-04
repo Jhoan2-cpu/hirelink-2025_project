@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/background"
+    tools:context=".ui.fragments.profile.ProfileFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -77,13 +78,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
-                    android:textColor="@color/surface_variant"
+                    android:text="Nombre del usuario"
+                    android:textColor="@color/text_on_primary"
                     android:textSize="@dimen/text_size_title"
+                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/profileImageCard"
-                    android:textStyle="bold"
-                    android:text="Nombre del usuario" />
+                    app:layout_constraintTop_toBottomOf="@id/profileImageCard" />
 
                 <!-- Profession -->
                 <TextView
@@ -92,11 +93,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_tiny"
-                    android:textColor="@color/text_secondary"
+                    android:text="Ingeniero de Sistemas"
+                    android:textColor="@color/text_primary"
+                    android:alpha="0.8"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/userName"
-                    android:text="Ingeniero de Sistemas" />
+                    app:layout_constraintTop_toBottomOf="@id/userName" />
 
                 <!-- Location -->
                 <LinearLayout
@@ -114,7 +116,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_location_small"
-                        app:tint="@color/text_secondary" />
+                        app:tint="@color/text_primary" />
 
                     <TextView
                         android:id="@+id/userLocation"
@@ -122,8 +124,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_tiny"
-                        android:textColor="@color/text_secondary"
-                        android:text="Chimbote, Perú" />
+                        android:text="Chimbote, Perú"
+                        android:textColor="@color/text_primary"
+                        android:alpha="0.8" />
 
                 </LinearLayout>
 
@@ -185,8 +188,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_medium"
-                            android:textColor="@color/text_primary"
-                            android:text="+51 980440594" />
+                            android:text="+51 980440594"
+                            android:textColor="@color/text_primary" />
 
                     </LinearLayout>
 
@@ -210,8 +213,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_medium"
-                            android:textColor="@color/text_primary"
-                            android:text="usuario@gmail.com" />
+                            android:text="usuario@gmail.com"
+                            android:textColor="@color/text_primary" />
 
                     </LinearLayout>
 
@@ -254,7 +257,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
-                android:minHeight="200dp" />
+                android:minHeight="300dp" />
 
         </LinearLayout>
 
