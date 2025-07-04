@@ -8,14 +8,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentAdDetailBinding
+import com.example.hirelink_2025.viewmodels.ads.AdDetailViewModel
+import com.example.hirelink_2025.viewmodels.ads.AdData
+import kotlinx.coroutines.launch
 
+/**
+ * Fragment para mostrar detalles de un anuncio
+ * Implementa arquitectura MVVM
+ */
 class AdDetailFragment : Fragment() {
 
     private var _binding: FragmentAdDetailBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: AdDetailViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,8 +41,11 @@ class AdDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupToolbar()
-        loadData()
+        setupObservers()
         setupClickListeners()
+
+        // Cargar datos
+        viewModel.loadAdData(arguments)
     }
 
     private fun setupToolbar() {
@@ -40,47 +54,54 @@ class AdDetailFragment : Fragment() {
         }
     }
 
-    private fun loadData() {
-        // Obtener datos de los argumentos del fragmento
-        arguments?.let { args ->
-            val titulo = args.getString("titulo", "Sin título")
-            val descripcion = args.getString("descripcion", "Sin descripción")
-            val habilidades = args.getString("habilidades", "No especificadas")
-            val fecha = args.getString("fecha", "Sin fecha")
-            val tipoEmpleo = args.getString("tipo_empleo", "No especificado")
-            val cargo = args.getString("cargo", "No especificado")
-            val modalidad = args.getString("modalidad", "No especificada")
-            val estado = args.getString("estado", "Sin estado")
-            val telefono = args.getString("telefono", "+51 999 999 999")
-            val email = args.getString("email", "contacto@empresa.com")
-            val cantidadVacantes = args.getString("cantidad_vacantes", "1")
-
-            // Configurar título en toolbar
-            binding.toolbar.title = titulo
-
-            // Asignar datos a las vistas
-            with(binding) {
-                tvDescripcionEmpresa.text = descripcion
-                tvDescripcionEmpleo.text = descripcion // Podrías tener descripciones separadas
-                tvHabilidades.text = formatearHabilidades(habilidades)
-                tvCantidadVacantes.text = cantidadVacantes
-                tvFecha.text = fecha
-                tvTipoEmpleo.text = tipoEmpleo
-                tvCargo.text = cargo
-                tvModalidad.text = modalidad
-                tvEstado.text = estado
-                tvTelefono.text = telefono
-                tvEmail.text = email
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                handleLoadingState(state.isLoading)
+                handleErrorState(state.error)
+                state.adData?.let { updateUI(it) }
             }
-
-            // Configurar color del estado
-            configurarColorEstado(estado)
         }
     }
 
-    private fun formatearHabilidades(habilidades: String): String {
-        // Convertir lista separada por comas a formato de bullet points
-        return habilidades.split(",").joinToString("\n") { "• ${it.trim()}" }
+    private fun handleLoadingState(isLoading: Boolean) {
+        // Cambiar opacidad solo de los botones y contenido principal
+        binding.btnTelefono.isEnabled = !isLoading
+        binding.btnEmail.isEnabled = !isLoading
+
+        // Si quieres mostrar un indicador visual de carga
+        binding.btnTelefono.alpha = if (isLoading) 0.5f else 1.0f
+        binding.btnEmail.alpha = if (isLoading) 0.5f else 1.0f
+    }
+
+    private fun handleErrorState(error: String?) {
+        error?.let {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
+        }
+    }
+
+    private fun updateUI(adData: AdData) {
+        // Configurar título en toolbar
+        binding.toolbar.title = adData.titulo
+
+        // Asignar datos a las vistas
+        with(binding) {
+            tvDescripcionEmpresa.text = adData.descripcion
+            tvDescripcionEmpleo.text = adData.descripcion
+            tvHabilidades.text = viewModel.formatHabilidades(adData.habilidades)
+            tvCantidadVacantes.text = adData.cantidadVacantes
+            tvFecha.text = adData.fecha
+            tvTipoEmpleo.text = adData.tipoEmpleo
+            tvCargo.text = adData.cargo
+            tvModalidad.text = adData.modalidad
+            tvEstado.text = adData.estado
+            tvTelefono.text = adData.telefono
+            tvEmail.text = adData.email
+        }
+
+        // Configurar color del estado
+        configurarColorEstado(adData.estado)
     }
 
     private fun configurarColorEstado(estado: String) {

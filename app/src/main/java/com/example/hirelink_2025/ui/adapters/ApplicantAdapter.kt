@@ -1,6 +1,7 @@
 package com.example.hirelink_2025.ui.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -11,10 +12,14 @@ import com.example.hirelink_2025.databinding.ItemApplicantCardBinding
 import com.example.hirelink_2025.models.Applicant
 import com.example.hirelink_2025.models.ApplicationStatus
 
+/**
+ * Adapter para mostrar aplicantes en RecyclerView
+ * Sigue las mejores prácticas de MVVM - no contiene lógica de negocio
+ */
 class ApplicantAdapter(
     private val onViewProfileClick: (Applicant) -> Unit,
-    private val onAcceptClick: (Applicant) -> Unit,
-    private val onRejectClick: (Applicant) -> Unit
+    private val onAcceptClick: ((Applicant) -> Unit)? = null,
+    private val onRejectClick: ((Applicant) -> Unit)? = null
 ) : ListAdapter<Applicant, ApplicantAdapter.ApplicantViewHolder>(ApplicantDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicantViewHolder {
@@ -27,7 +32,11 @@ class ApplicantAdapter(
     }
 
     override fun onBindViewHolder(holder: ApplicantViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val applicant = getItem(position)
+        holder.bind(applicant)
+
+        // Configurar clicks usando los métodos públicos del holder
+        holder.setupClickListeners(applicant, onViewProfileClick, onAcceptClick, onRejectClick)
     }
 
     inner class ApplicantViewHolder(
@@ -35,84 +44,125 @@ class ApplicantAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(applicant: Applicant) = with(binding) {
-            // Información básica
+            // Información básica del aplicante
             applicantName.text = applicant.name
             applicantProfession.text = applicant.profession
             applicantExperience.text = applicant.experience
             applicationDate.text = applicant.applicationDate
 
-            // Mostrar habilidades (máximo 3 para evitar que se vea muy largo)
-            val skillsString = applicant.skills.take(3).joinToString(", ")
-            binding.skillsText.text = if (applicant.skills.size > 3) {
-                "$skillsString, +${applicant.skills.size - 3} más"
-            } else {
-                skillsString
-            }
+            // Mostrar skills como chips o texto
+            val skillsText = applicant.skills.joinToString(", ")
+            applicantSkills.text = skillsText
 
-            // Configurar chip de estado
-            setupStatusChip(applicant.status)
+            // Configurar estado visual según el status
+            updateStatusVisual(applicant.status)
 
             // Configurar botones según el estado
             setupActionButtons(applicant)
-
-            // Click listeners
-            applicantCard.setOnClickListener { onViewProfileClick(applicant) }
-            viewProfileButton.setOnClickListener { onViewProfileClick(applicant) }
-            acceptButton.setOnClickListener { onAcceptClick(applicant) }
-            rejectButton.setOnClickListener { onRejectClick(applicant) }
         }
 
-        private fun setupStatusChip(status: ApplicationStatus) = with(binding) {
+        /**
+         * Método público para configurar los click listeners
+         */
+        fun setupClickListeners(
+            applicant: Applicant,
+            onViewProfile: (Applicant) -> Unit,
+            onAccept: ((Applicant) -> Unit)?,
+            onReject: ((Applicant) -> Unit)?
+        ) = with(binding) {
+            // Botón ver perfil siempre disponible
+            viewProfileButton?.setOnClickListener { onViewProfile(applicant) }
+
+            // Solo configurar botones si existen en el layout y hay callbacks
+            if (applicant.status == ApplicationStatus.PENDING) {
+                acceptButton?.setOnClickListener { onAccept?.invoke(applicant) }
+                rejectButton?.setOnClickListener { onReject?.invoke(applicant) }
+
+                // Mostrar/ocultar botones según si hay callbacks
+                acceptButton?.visibility = if (onAccept != null) View.VISIBLE else View.GONE
+                rejectButton?.visibility = if (onReject != null) View.VISIBLE else View.GONE
+            } else {
+                // Para estados no pendientes, ocultar botones de acción
+                acceptButton?.visibility = View.GONE
+                rejectButton?.visibility = View.GONE
+            }
+        }
+
+        /**
+         * Actualizar visual según el estado del aplicante
+         */
+        private fun updateStatusVisual(status: ApplicationStatus) = with(binding) {
+            val context = root.context
+
             when (status) {
                 ApplicationStatus.PENDING -> {
-                    statusChip.text = "Pendiente"
-                    statusChip.setChipBackgroundColorResource(R.color.warning)
-                    statusChip.setTextColor(ContextCompat.getColor(itemView.context, R.color.warning_text))
+                    statusIndicator?.setBackgroundColor(
+                        ContextCompat.getColor(context, R.color.warning)
+                    )
+                    statusText?.text = "Pendiente"
+                    statusText?.setTextColor(
+                        ContextCompat.getColor(context, R.color.warning)
+                    )
                 }
                 ApplicationStatus.ACCEPTED -> {
-                    statusChip.text = "Aceptado"
-                    statusChip.setChipBackgroundColorResource(R.color.success)
-                    statusChip.setTextColor(ContextCompat.getColor(itemView.context, R.color.success_text))
+                    statusIndicator?.setBackgroundColor(
+                        ContextCompat.getColor(context, R.color.success)
+                    )
+                    statusText?.text = "Aceptado"
+                    statusText?.setTextColor(
+                        ContextCompat.getColor(context, R.color.success)
+                    )
                 }
                 ApplicationStatus.REJECTED -> {
-                    statusChip.text = "Rechazado"
-                    statusChip.setChipBackgroundColorResource(R.color.error)
-                    statusChip.setTextColor(ContextCompat.getColor(itemView.context, R.color.error_text))
+                    statusIndicator?.setBackgroundColor(
+                        ContextCompat.getColor(context, R.color.error)
+                    )
+                    statusText?.text = "Rechazado"
+                    statusText?.setTextColor(
+                        ContextCompat.getColor(context, R.color.error)
+                    )
                 }
             }
         }
 
+        /**
+         * Configurar botones de acción según el estado
+         */
         private fun setupActionButtons(applicant: Applicant) = with(binding) {
             when (applicant.status) {
                 ApplicationStatus.PENDING -> {
                     // Mostrar botones de aceptar y rechazar
-                    acceptButton.visibility = android.view.View.VISIBLE
-                    rejectButton.visibility = android.view.View.VISIBLE
-                    acceptButton.text = "Contratar"
-                    rejectButton.text = "Rechazar"
+                    acceptButton?.text = "Aceptar"
+                    rejectButton?.text = "Rechazar"
+                    actionButtonsLayout?.visibility = View.VISIBLE
                 }
+
                 ApplicationStatus.ACCEPTED -> {
-                    // Mostrar solo opción de despedir
-                    acceptButton.visibility = android.view.View.GONE
-                    rejectButton.visibility = android.view.View.VISIBLE
-                    rejectButton.text = "Despedir"
+                    // Mostrar estado de contratado
+                    acceptButton?.text = "Contratado"
+                    acceptButton?.isEnabled = false
+                    rejectButton?.text = "Despedir"
+                    actionButtonsLayout?.visibility = View.VISIBLE
                 }
+
                 ApplicationStatus.REJECTED -> {
                     // Ocultar botones de acción
-                    acceptButton.visibility = android.view.View.GONE
-                    rejectButton.visibility = android.view.View.GONE
+                    actionButtonsLayout?.visibility = View.GONE
                 }
             }
         }
     }
+}
 
-    class ApplicantDiffCallback : DiffUtil.ItemCallback<Applicant>() {
-        override fun areItemsTheSame(oldItem: Applicant, newItem: Applicant): Boolean {
-            return oldItem.id == newItem.id
-        }
+/**
+ * DiffCallback para optimizar las actualizaciones del RecyclerView
+ */
+class ApplicantDiffCallback : DiffUtil.ItemCallback<Applicant>() {
+    override fun areItemsTheSame(oldItem: Applicant, newItem: Applicant): Boolean {
+        return oldItem.id == newItem.id
+    }
 
-        override fun areContentsTheSame(oldItem: Applicant, newItem: Applicant): Boolean {
-            return oldItem == newItem
-        }
+    override fun areContentsTheSame(oldItem: Applicant, newItem: Applicant): Boolean {
+        return oldItem == newItem
     }
 }

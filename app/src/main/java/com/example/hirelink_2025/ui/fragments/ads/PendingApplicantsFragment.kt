@@ -1,4 +1,4 @@
-package com.example.hirelink_2025.ui.fragments.applications
+package com.example.hirelink_2025.ui.fragments.ads
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,16 +8,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hirelink_2025.databinding.FragmentAcceptedApplicantsBinding
+import com.example.hirelink_2025.databinding.FragmentPendingApplicantsBinding
 import com.example.hirelink_2025.models.Applicant
 import com.example.hirelink_2025.ui.adapters.ApplicantAdapter
-import com.example.hirelink_2025.ui.fragments.ads.MyAdsApplicantsFragment
 import com.example.hirelink_2025.viewmodels.ads.MyAdsApplicantsViewModel
 import kotlinx.coroutines.launch
 
-class AcceptedApplicantsFragment : Fragment() {
+class PendingApplicantsFragment : Fragment() {
 
-    private var _binding: FragmentAcceptedApplicantsBinding? = null
+    private var _binding: FragmentPendingApplicantsBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: MyAdsApplicantsViewModel by activityViewModels()
@@ -27,8 +26,8 @@ class AcceptedApplicantsFragment : Fragment() {
     companion object {
         private const val ARG_JOB_ID = "job_id"
 
-        fun newInstance(jobId: String): AcceptedApplicantsFragment {
-            return AcceptedApplicantsFragment().apply {
+        fun newInstance(jobId: String): PendingApplicantsFragment {
+            return PendingApplicantsFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_JOB_ID, jobId)
                 }
@@ -48,7 +47,7 @@ class AcceptedApplicantsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAcceptedApplicantsBinding.inflate(inflater, container, false)
+        _binding = FragmentPendingApplicantsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -62,11 +61,11 @@ class AcceptedApplicantsFragment : Fragment() {
     private fun setupRecyclerView() {
         applicantAdapter = ApplicantAdapter(
             onViewProfileClick = { applicant -> navigateToProfile(applicant) },
-            onAcceptClick = null,
-            onRejectClick = null
+            onAcceptClick = { applicant -> acceptApplicant(applicant) },
+            onRejectClick = { applicant -> rejectApplicant(applicant) }
         )
 
-        binding.acceptedApplicantsRecyclerView.apply {
+        binding.pendingApplicantsRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = applicantAdapter
         }
@@ -74,7 +73,7 @@ class AcceptedApplicantsFragment : Fragment() {
 
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.acceptedApplicants.collect { applicants ->
+            viewModel.pendingApplicants.collect { applicants ->
                 updateApplicantsList(applicants)
                 updateEmptyState(applicants.isEmpty())
             }
@@ -87,10 +86,20 @@ class AcceptedApplicantsFragment : Fragment() {
 
     private fun updateEmptyState(isEmpty: Boolean) {
         if (isEmpty) {
-            binding.acceptedApplicantsRecyclerView.visibility = View.GONE
+            binding.pendingApplicantsRecyclerView.visibility = View.GONE
         } else {
-            binding.acceptedApplicantsRecyclerView.visibility = View.VISIBLE
+            binding.pendingApplicantsRecyclerView.visibility = View.VISIBLE
         }
+    }
+
+    private fun acceptApplicant(applicant: Applicant) {
+        // Solo pasar el applicantId, no el jobId
+        viewModel.acceptApplicant(applicant.id)
+    }
+
+    private fun rejectApplicant(applicant: Applicant) {
+        // Solo pasar el applicantId, no el jobId
+        viewModel.rejectApplicant(applicant.id)
     }
 
     private fun navigateToProfile(applicant: Applicant) {
