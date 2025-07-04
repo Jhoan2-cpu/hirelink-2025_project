@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
+    <!-- Reemplaza la sección del AppBarLayout en tu fragment_search_result_list.xml -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -13,6 +14,7 @@
         android:background="@color/surface"
         app:elevation="4dp">
 
+        <!-- Header con título y botón de filtro -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -27,71 +29,227 @@
                 app:iconTint="@color/text_primary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="Back"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/titleText"
                 style="@style/TextAppearance.HireLink.Title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/results"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Cargo, área o empresa - Ubicación"
                 android:textColor="@color/text_primary"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/filterButton"
+                app:layout_constraintEnd_toStartOf="@id/filterMenuButton"
                 app:layout_constraintStart_toEndOf="@id/backButton"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/filterButton"
+                android:id="@+id/filterMenuButton"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:icon="@drawable/ic_filter"
+                app:icon="@drawable/ic_filter_list"
                 app:iconTint="@color/text_primary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:text="Menu"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Filter Chips -->
+        <!-- Chips de filtro activos -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
             android:paddingVertical="@dimen/margin_small"
+            android:scrollbars="none"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/filterChipGroup"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/margin_medium"
-                app:singleLine="true">
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/margin_medium">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/statusChip"
-                    style="@style/Widget.HireLink.Chip"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_small"
                     android:text="Estado"
-                    app:chipIcon="@drawable/ic_arrow_drop_down" />
+                    android:textColor="@color/text_primary"
+                    app:chipIcon="@drawable/ic_arrow_drop_down"
+                    app:chipIconTint="@color/text_secondary"
+                    app:chipStrokeColor="@color/new_color"
+                    app:chipStrokeWidth="1dp" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/dateChip"
-                    style="@style/Widget.HireLink.Chip"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_small"
                     android:text="Fecha de Publicación"
-                    app:chipIcon="@drawable/ic_arrow_drop_down" />
+                    android:textColor="@color/text_primary"
+                    app:chipIcon="@drawable/ic_arrow_drop_down"
+                    app:chipIconTint="@color/text_secondary"
+                    app:chipStrokeColor="@color/new_color"
+                    app:chipStrokeWidth="1dp" />
 
-            </com.google.android.material.chip.ChipGroup>
+                <TextView
+                    android:id="@+id/resultsCountText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingHorizontal="@dimen/margin_small"
+                    android:text="# Resultados"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
 
         </HorizontalScrollView>
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Menú de filtros desplegable (inicialmente oculto) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/filterMenuCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/radius_medium"
+        app:cardElevation="8dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/margin_medium">
+
+            <!-- Título del menú -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/margin_medium"
+                android:text="Filtros"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Opciones de filtro -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterStatusButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="Estado"
+                android:textAlignment="textStart"
+                app:icon="@drawable/ic_circle_bullet"
+                app:iconGravity="start"
+                app:iconTint="@color/text_secondary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterDateButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="Fecha de Publicación"
+                android:textAlignment="textStart"
+                app:icon="@drawable/ic_arrow_drop_down"
+                app:iconGravity="start"
+                app:iconTint="@color/text_secondary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterExperienceButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="Nivel de Experiencia"
+                android:textAlignment="textStart"
+                app:icon="@drawable/ic_circle_bullet"
+                app:iconGravity="start"
+                app:iconTint="@color/text_secondary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterPositionButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="Cargo"
+                android:textAlignment="textStart"
+                app:icon="@drawable/ic_circle_bullet"
+                app:iconGravity="start"
+                app:iconTint="@color/text_secondary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterEmploymentTypeButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="Tipo de Empleo"
+                android:textAlignment="textStart"
+                app:icon="@drawable/ic_circle_bullet"
+                app:iconGravity="start"
+                app:iconTint="@color/text_secondary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterModalityButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="Modalidad"
+                android:textAlignment="textStart"
+                app:icon="@drawable/ic_circle_bullet"
+                app:iconGravity="start"
+                app:iconTint="@color/text_secondary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterLocationButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="Ubicación"
+                android:textAlignment="textStart"
+                app:icon="@drawable/ic_circle_bullet"
+                app:iconGravity="start"
+                app:iconTint="@color/text_secondary" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="@dimen/margin_small"
+                android:background="@color/new_color" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/showResultsButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="✓ Mostrar # resultados"
+                android:textAlignment="textStart"
+                android:textColor="@color/primary"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="start"
+                app:iconTint="@color/primary" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Results RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -110,15 +268,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/ic_launcher_foreground"
-            android:alpha="0.3" />
+            android:alpha="0.3"
+            android:src="@drawable/ic_launcher_foreground" />
 
         <TextView
             style="@style/TextAppearance.HireLink.Title"

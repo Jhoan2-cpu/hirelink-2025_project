@@ -5,52 +5,125 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    // Referencias a las vistas
+    private lateinit var jobTypeEditText: TextInputEditText
+    private lateinit var locationEditText: TextInputEditText
+    private lateinit var jobTypeInputLayout: TextInputLayout
+    private lateinit var locationInputLayout: TextInputLayout
+    private lateinit var searchButton: MaterialButton
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SearchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic fun newInstance(param1: String, param2: String) =
-                SearchFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
-                    }
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initViews(view)
+        setupSearchButton()
+        setupTextWatchers() // Opcional: para limpiar errores al escribir
+    }
+
+    private fun initViews(view: View) {
+        jobTypeEditText = view.findViewById(R.id.jobTypeEditText)
+        locationEditText = view.findViewById(R.id.locationEditText)
+        jobTypeInputLayout = view.findViewById(R.id.jobTypeInputLayout)
+        locationInputLayout = view.findViewById(R.id.locationInputLayout)
+        searchButton = view.findViewById(R.id.searchButton)
+    }
+
+    private fun setupSearchButton() {
+        searchButton.setOnClickListener {
+            performSearch()
+        }
+    }
+
+    private fun setupTextWatchers() {
+        // Opcional: Limpiar errores cuando el usuario empiece a escribir
+        jobTypeEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) jobTypeInputLayout.error = null
+        }
+
+        locationEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) locationInputLayout.error = null
+        }
+    }
+
+    private fun performSearch() {
+        val jobType = jobTypeEditText.text.toString().trim()
+        val location = locationEditText.text.toString().trim()
+
+        // Limpiar errores previos
+        clearErrors()
+
+        // Validar campos
+        if (!validateFields(jobType, location)) {
+            return
+        }
+
+        // Deshabilitar botón mientras navega (opcional)
+        searchButton.isEnabled = false
+
+        // Navegar al fragment de resultados
+        navigateToSearchResults(jobType, location)
+    }
+
+    private fun validateFields(jobType: String, location: String): Boolean {
+        var isValid = true
+
+        if (jobType.isEmpty() && location.isEmpty()) {
+            jobTypeInputLayout.error = "Ingresa al menos un criterio"
+            locationInputLayout.error = "Ingresa al menos un criterio"
+            isValid = false
+        }
+
+        // Validaciones adicionales si las necesitas
+        // if (jobType.length < 3) {
+        //     jobTypeInputLayout.error = "Mínimo 3 caracteres"
+        //     isValid = false
+        // }
+
+        return isValid
+    }
+
+    private fun clearErrors() {
+        jobTypeInputLayout.error = null
+        locationInputLayout.error = null
+    }
+
+    private fun navigateToSearchResults(jobType: String, location: String) {
+        val bundle = Bundle().apply {
+            putString("job_type", jobType)
+            putString("location", location)
+        }
+
+        try {
+            findNavController().navigate(
+                R.id.action_searchFragment_to_searchResultListFragment,
+                bundle
+            )
+        } catch (e: Exception) {
+            // Manejar error de navegación
+            searchButton.isEnabled = true
+            // Mostrar mensaje de error si es necesario
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Rehabilitar botón cuando regrese a la pantalla
+        searchButton.isEnabled = true
     }
 }
