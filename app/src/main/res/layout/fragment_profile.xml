@@ -272,6 +272,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_edit"
-        app:tint="@color/text_on_primary" />
+        app:tint="@color/gradient_start" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

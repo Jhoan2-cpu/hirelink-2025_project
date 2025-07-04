@@ -1,3 +1,4 @@
+// ProfileEditExperienceFragment.kt
 package com.example.hirelink_2025.ui.fragments.profile
 
 import android.os.Bundle
@@ -5,56 +6,165 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.hirelink_2025.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hirelink_2025.databinding.FragmentProfileEditExperienceBinding
+import com.example.hirelink_2025.ui.adapters.ExperienceEditAdapter
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileEditExperienceFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileEditExperienceFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private lateinit var binding: FragmentProfileEditExperienceBinding
+    private lateinit var experienceAdapter: ExperienceEditAdapter
+    private val experiences = mutableListOf<ProfileEditFragment.Experience>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentProfileEditExperienceBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupClickListeners()
+        loadExistingExperiences()
+    }
+
+    private fun setupRecyclerView() {
+        experienceAdapter = ExperienceEditAdapter(
+            experiences = experiences,
+            onEditClick = { experience -> showEditExperienceDialog(experience) },
+            onDeleteClick = { experience -> deleteExperience(experience) }
+        )
+
+        binding.experienceRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = experienceAdapter
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_edit_experience, container, false)
+    private fun setupClickListeners() {
+        binding.addExperienceButton.setOnClickListener {
+            showAddExperienceDialog()
+        }
+    }
+
+    private fun loadExistingExperiences() {
+        // Cargar experiencias existentes
+        experiences.add(
+            ProfileEditFragment.Experience(
+                position = "Analista",
+                company = "Universidad Nacional Del Santo",
+                description = "Desarrollador técnico en la empresa x trabajando 2 años.",
+                years = 2
+            )
+        )
+        experienceAdapter.notifyDataSetChanged()
+    }
+
+    private fun showAddExperienceDialog() {
+        showExperienceDialog(null)
+    }
+
+    private fun showEditExperienceDialog(experience: ProfileEditFragment.Experience) {
+        showExperienceDialog(experience)
+    }
+
+    private fun showExperienceDialog(experience: ProfileEditFragment.Experience?) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(
+            com.example.hirelink_2025.R.layout.dialog_add_experience, null
+        )
+
+        val positionInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(
+            com.example.hirelink_2025.R.id.positionInput
+        )
+        val companyInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(
+            com.example.hirelink_2025.R.id.companyInput
+        )
+        val descriptionInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(
+            com.example.hirelink_2025.R.id.descriptionInput
+        )
+        val yearsInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(
+            com.example.hirelink_2025.R.id.yearsInput
+        )
+
+        val saveButton = dialogView.findViewById<com.google.android.material.button.MaterialButton>(
+            com.example.hirelink_2025.R.id.saveExperienceButton
+        )
+        val cancelButton = dialogView.findViewById<com.google.android.material.button.MaterialButton>(
+            com.example.hirelink_2025.R.id.cancelExperienceButton
+        )
+
+        // Si estamos editando, llenar los campos
+        experience?.let {
+            positionInput.setText(it.position)
+            companyInput.setText(it.company)
+            descriptionInput.setText(it.description)
+            yearsInput.setText(it.years.toString())
+        }
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        saveButton.setOnClickListener {
+            val position = positionInput.text.toString().trim()
+            val company = companyInput.text.toString().trim()
+            val description = descriptionInput.text.toString().trim()
+            val years = yearsInput.text.toString().toIntOrNull() ?: 0
+
+            if (position.isNotEmpty() && company.isNotEmpty()) {
+                val newExperience = ProfileEditFragment.Experience(
+                    position = position,
+                    company = company,
+                    description = description,
+                    years = years
+                )
+
+                if (experience != null) {
+                    // Editar existente
+                    val index = experiences.indexOf(experience)
+                    if (index != -1) {
+                        experiences[index] = newExperience
+                    }
+                } else {
+                    // Agregar nuevo
+                    experiences.add(newExperience)
+                }
+
+                experienceAdapter.notifyDataSetChanged()
+                dialog.dismiss()
+            }
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun deleteExperience(experience: ProfileEditFragment.Experience) {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("Eliminar Experiencia")
+        builder.setMessage("¿Estás seguro de que quieres eliminar esta experiencia?")
+
+        builder.setPositiveButton("Eliminar") { _, _ ->
+            experiences.remove(experience)
+            experienceAdapter.notifyDataSetChanged()
+        }
+
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileEditExperienceFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileEditExperienceFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance() = ProfileEditExperienceFragment()
     }
 }

@@ -1,60 +1,251 @@
 package com.example.hirelink_2025.ui.fragments.profile
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
+import com.example.hirelink_2025.databinding.FragmentProfileEditBinding
+import com.example.hirelink_2025.ui.adapters.ProfileEditPagerAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileEditFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileEditFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private lateinit var binding: FragmentProfileEditBinding
+    private lateinit var pagerAdapter: ProfileEditPagerAdapter
+
+    // Variables para los datos editables
+    private var currentEducation: String = ""
+    private var currentLocation: String = ""
+    private var currentPhone: String = ""
+    private var currentEmail: String = ""
+    private var profileImageUri: Uri? = null
+
+    // Launcher para seleccionar imagen
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                profileImageUri = uri
+                binding.profileImage.setImageURI(uri)
+                Toast.makeText(requireContext(), "Imagen seleccionada", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_edit, container, false)
+    ): View {
+        binding = FragmentProfileEditBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileEditFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileEditFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        loadCurrentData()
+        setupUI()
+        setupViewPager()
+        setupClickListeners()
     }
+
+    private fun loadCurrentData() {
+        // Cargar datos actuales del usuario (SharedPreferences, Room, etc.)
+        // Por ahora usamos datos de ejemplo
+        currentEducation = "Ingeniero de Sistemas"
+        currentLocation = "Chimbote, Perú"
+        currentPhone = "+51 980440594"
+        currentEmail = "usuario@gmail.com"
+
+        // Llenar los inputs con datos actuales
+        with(binding) {
+            educationInput.setText(currentEducation)
+            locationInput.setText(currentLocation)
+            phoneInput.setText(currentPhone)
+            emailInput.setText(currentEmail)
+        }
+    }
+
+    private fun setupUI() {
+        // Configurar la interfaz inicial
+        binding.userName.text = "Nombre del usuario"
+    }
+
+    private fun setupViewPager() {
+        // Setup ViewPager2 con TabLayout para modo edición
+        pagerAdapter = ProfileEditPagerAdapter(requireActivity())
+        binding.profileViewPager.adapter = pagerAdapter
+
+        // Conectar TabLayout con ViewPager2
+        TabLayoutMediator(binding.profileTabLayout, binding.profileViewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Acerca de mí"
+                1 -> "Experiencia"
+                2 -> "Habilidades"
+                else -> ""
+            }
+        }.attach()
+    }
+
+    private fun setupClickListeners() {
+        // Botón Guardar
+        binding.saveButton.setOnClickListener {
+            saveProfileChanges()
+        }
+
+        // Botón Cancelar
+        binding.cancelButton.setOnClickListener {
+            showCancelConfirmation()
+        }
+
+        // Click en imagen de perfil para cambiarla
+        binding.profileImage.setOnClickListener {
+            openImagePicker()
+        }
+
+        binding.profileImageCard.setOnClickListener {
+            openImagePicker()
+        }
+    }
+
+    private fun saveProfileChanges() {
+        // Validar campos
+        val education = binding.educationInput.text.toString().trim()
+        val location = binding.locationInput.text.toString().trim()
+        val phone = binding.phoneInput.text.toString().trim()
+        val email = binding.emailInput.text.toString().trim()
+
+        // Validaciones básicas
+        if (education.isEmpty()) {
+            binding.educationInput.error = "La educación es requerida"
+            return
+        }
+
+        if (location.isEmpty()) {
+            binding.locationInput.error = "La ubicación es requerida"
+            return
+        }
+
+        if (phone.isEmpty()) {
+            binding.phoneInput.error = "El teléfono es requerido"
+            return
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.emailInput.error = "Email válido es requerido"
+            return
+        }
+
+        // Guardar cambios
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("Guardar Cambios")
+        builder.setMessage("¿Estás seguro de que quieres guardar los cambios en tu perfil?")
+
+        builder.setPositiveButton("Guardar") { _, _ ->
+            // TODO: Implementar guardado real (SharedPreferences, Room, API)
+            saveDataToStorage(education, location, phone, email)
+
+            Toast.makeText(requireContext(), "Perfil actualizado exitosamente", Toast.LENGTH_LONG).show()
+
+            // Regresar al perfil principal
+            findNavController().popBackStack()
+        }
+
+        builder.setNegativeButton("Continuar editando") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
+    }
+
+    private fun saveDataToStorage(education: String, location: String, phone: String, email: String) {
+        // Implementar guardado real de datos
+        val sharedPrefs = requireContext().getSharedPreferences("user_profile", android.content.Context.MODE_PRIVATE)
+        with(sharedPrefs.edit()) {
+            putString("education", education)
+            putString("location", location)
+            putString("phone", phone)
+            putString("email", email)
+            if (profileImageUri != null) {
+                putString("profile_image_uri", profileImageUri.toString())
+            }
+            apply()
+        }
+    }
+
+    private fun showCancelConfirmation() {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("Cancelar Edición")
+        builder.setMessage("¿Estás seguro de que quieres cancelar? Se perderán todos los cambios no guardados.")
+
+        builder.setPositiveButton("Sí, cancelar") { _, _ ->
+            findNavController().popBackStack()
+        }
+
+        builder.setNegativeButton("Continuar editando") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
+    }
+
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+
+        try {
+            imagePickerLauncher.launch(Intent.createChooser(intent, "Seleccionar imagen de perfil"))
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "No se pudo abrir el selector de imágenes", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Métodos para obtener datos actuales de las tabs
+    fun getCurrentAboutMe(): String {
+        // Obtener texto actual de "Acerca de mí" desde el fragment correspondiente
+        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
+    }
+
+    fun getCurrentExperiences(): List<Experience> {
+        // Obtener experiencias actuales
+        return listOf(
+            Experience(
+                position = "Analista",
+                company = "Universidad Nacional Del Santo",
+                description = "Desarrollador técnico en la empresa x trabajando 2 años.",
+                years = 2
+            )
+        )
+    }
+
+    fun getCurrentSkills(): List<String> {
+        // Obtener habilidades actuales
+        return listOf(
+            "Programador en Python",
+            "Manejo de Power BI"
+        )
+    }
+
+    // Data class para experiencias
+    data class Experience(
+        val position: String,
+        val company: String,
+        val description: String,
+        val years: Int
+    )
 }
+
+// NOTA: El ProfileEditPagerAdapter está en un archivo separado:
+// ProfileEditPagerAdapter.kt en el paquete com.example.hirelink_2025.ui.adapters
