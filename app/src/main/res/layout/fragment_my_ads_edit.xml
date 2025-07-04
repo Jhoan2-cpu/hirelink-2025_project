@@ -1,28 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragmentMyAdsEdit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="@color/background"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Título del formulario -->
-        <TextView
-            android:id="@+id/editAdTitle"
-            android:layout_width="wrap_content"
+        <!-- Header con título y estado -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Editar Anuncio"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="16dp" />
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/editAdTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Editar Anuncio"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentStatusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                tools:text="Estado: Activo" />
+
+        </LinearLayout>
+
+        <!-- Loading Progress Bar -->
+        <ProgressBar
+            android:id="@+id/loadingProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginBottom="16dp"
+            android:indeterminate="true"
+            android:visibility="gone" />
 
         <!-- Título del anuncio -->
         <com.google.android.material.textfield.TextInputLayout
@@ -30,13 +57,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Título del anuncio"
+            app:errorEnabled="true"
             app:startIconDrawable="@drawable/ic_title">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/titleEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapWords" />
+                android:inputType="textCapWords"
+                android:maxLines="2" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Descripción -->
@@ -44,17 +74,20 @@
             android:id="@+id/descriptionInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Descripción"
             android:layout_marginTop="12dp"
+            android:hint="Descripción"
+            app:errorEnabled="true"
             app:startIconDrawable="@drawable/ic_description">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/descriptionEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minLines="4"
                 android:gravity="top"
-                android:inputType="textMultiLine" />
+                android:inputType="textMultiLine"
+                android:minLines="4"
+                android:maxLines="8" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Modalidad -->
@@ -65,15 +98,16 @@
             android:layout_marginTop="12dp"
             android:hint="Modalidad"
             app:endIconMode="dropdown_menu"
-            app:startIconDrawable="@drawable/ic_modality">
+            app:errorEnabled="true"
+            app:startIconDrawable="@drawable/ic_work">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/modalityDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="Seleccionar modalidad"
-                android:importantForAccessibility="yes"
-                android:minHeight="48dp" />
+                android:inputType="none"
+                android:focusable="false" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Ubicación -->
@@ -83,6 +117,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Ubicación"
+            app:errorEnabled="true"
             app:startIconDrawable="@drawable/ic_location">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -90,18 +125,63 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Botón para guardar -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/saveAdButton"
+        <!-- Botones de acción -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Guardar Cambios"
             android:layout_marginTop="24dp"
-            style="@style/Widget.MaterialComponents.Button"
-            app:icon="@drawable/ic_save"
-            app:iconPadding="8dp" />
+            android:orientation="vertical">
+
+            <!-- Botón Publicar (solo para DRAFT) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/publishButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Publicar Anuncio"
+                android:visibility="gone"
+                app:icon="@drawable/ic_publish"
+                app:iconPadding="8dp"
+                style="@style/Widget.MaterialComponents.Button" />
+
+            <!-- Botón Guardar Cambios -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveAdButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Guardar Cambios"
+                app:icon="@drawable/ic_save"
+                app:iconPadding="8dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <!-- Botón Cambiar Estado -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/statusButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Cambiar Estado"
+                android:visibility="gone"
+                app:icon="@drawable/ic_swap_horiz"
+                app:iconPadding="8dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+            <!-- Botón Descartar Cambios -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/discardButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Descartar Cambios"
+                app:icon="@drawable/ic_close"
+                app:iconPadding="8dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

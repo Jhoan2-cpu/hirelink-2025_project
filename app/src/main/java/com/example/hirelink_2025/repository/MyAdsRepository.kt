@@ -106,6 +106,32 @@ class MyAdsRepository {
     }
 
     /**
+     * Obtiene un job por ID
+     */
+    fun getJobById(jobId: String): Flow<Job?> = flow {
+        delay(500)
+        emit(mockAds.find { it.id == jobId })
+    }
+
+    /**
+     * Actualiza un job completo
+     */
+    suspend fun updateJob(job: Job): Boolean {
+        delay(300)
+        return try {
+            val index = mockAds.indexOfFirst { it.id == job.id }
+            if (index != -1) {
+                mockAds[index] = job
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /**
      * Inicializa los datos mock - ACTUALIZADO con todos los estados
      */
     private fun initializeMockData() {
