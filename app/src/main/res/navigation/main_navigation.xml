@@ -71,11 +71,25 @@
         android:id="@+id/myApplicationsFragment"
         android:name="com.example.hirelink_2025.ui.fragments.applications.MyApplicationsFragment"
         android:label="@string/nav_applications">
+
         <action
-            android:id="@+id/action_myApplicationsFragment_to_jobDescriptionDetailFragment"
-            app:destination="@id/jobDescriptionDetailFragment" />
+            android:id="@+id/action_myApplicationsFragment_to_applicationDetailFragment"
+            app:destination="@id/applicationDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
     </fragment>
 
+    <!-- NUEVO FRAGMENT - Agregar al final antes de </navigation> -->
+
+
+    <fragment
+        android:id="@+id/applicationDetailFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.applications.ApplicationDetailFragment"
+        android:label="Detalles de Postulación"
+        tools:layout="@layout/fragment_application_detail" />
     <!-- My Ads Flow -->
     <fragment
         android:id="@+id/myAdsFragment"
@@ -84,9 +98,6 @@
         <action
             android:id="@+id/action_myAdsFragment_to_myAdsRegisterFragment"
             app:destination="@id/myAdsRegisterFragment" />
-        <action
-            android:id="@+id/action_myAdsFragment_to_jobDescriptionDetailFragment"
-            app:destination="@id/jobDescriptionDetailFragment" />
         <action
             android:id="@+id/action_myAdsFragment_to_myAdsEditFragment"
             app:destination="@id/myAdsEditFragment" />

@@ -84,8 +84,7 @@ class MainActivity : AppCompatActivity() {
 
             // myApplicactions section (mantener jobsFragment activo)
             R.id.myApplicationsFragment,
-            R.id.jobDescriptionDetailFragment,
-            R.id.jobLocationDetailDialog -> R.id.myApplicationsFragment
+            R.id.applicationDetailFragment -> R.id.myApplicationsFragment
 
             // myAds section (mantener jobsFragment activo)
             R.id.myAdsFragment,

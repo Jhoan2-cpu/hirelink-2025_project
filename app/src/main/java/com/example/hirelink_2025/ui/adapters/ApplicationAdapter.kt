@@ -13,8 +13,10 @@ import com.google.android.material.chip.Chip
 
 class ApplicationAdapter(
     private val apps: List<Application>,
-    private val onCancelClicked: (Application) -> Unit
+    private val onCancelClicked: (Application) -> Unit,
+    private val onItemClicked: (Application) -> Unit  // ✅ AGREGAR ESTE PARÁMETRO
 ) : RecyclerView.Adapter<ApplicationAdapter.ViewHolder>() {
+
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val logoImage: ImageView = view.findViewById(R.id.companyLogo)
@@ -39,8 +41,14 @@ class ApplicationAdapter(
         holder.statusChip.text = app.status
         holder.logoImage.setImageResource(app.logoResId)
 
+        // ✅ CLICK EN BOTÓN CANCELAR
         holder.cancelButton.setOnClickListener {
             onCancelClicked(app)
+        }
+
+        // ✅ CLICK EN TODA LA TARJETA
+        holder.itemView.setOnClickListener {
+            onItemClicked(app)
         }
     }
 

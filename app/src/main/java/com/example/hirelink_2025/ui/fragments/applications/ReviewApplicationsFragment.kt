@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentActiveApplicationsBinding
@@ -57,11 +58,42 @@ class ReviewApplicationsFragment : Fragment() {
             )
         )
 
-        adapter = ApplicationAdapter(sampleList) { item ->
-            Toast.makeText(requireContext(), "Cancelaste: ${item.jobTitle}", Toast.LENGTH_SHORT).show()
-        }
+        // ✅ CORREGIR: Pasar los 3 parámetros requeridos
+        adapter = ApplicationAdapter(
+            apps = sampleList,
+            onCancelClicked = { item ->
+                Toast.makeText(requireContext(), "Cancelaste: ${item.jobTitle}", Toast.LENGTH_SHORT).show()
+            },
+            onItemClicked = { item ->
+                // ✅ NUEVA FUNCIONALIDAD: Navegar a detalles
+                navigateToApplicationDetail(item)
+            }
+        )
 
         binding.applicationsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.applicationsRecyclerView.adapter = adapter
+    }
+
+
+    /**
+     * Navega a los detalles de la postulación
+     */
+    private fun navigateToApplicationDetail(application: Application) {
+        val bundle = Bundle().apply {
+            putString("job_title", application.jobTitle)
+            putString("company_name", application.companyName)
+            putString("application_date", application.applicationDate)
+            putString("status", application.status)
+            putInt("company_logo", application.logoResId)
+            putString("job_description", "Descripción detallada del trabajo...")
+            putString("job_requirements", "Kotlin, Android, MVVM")
+            putString("employment_type", "Tiempo completo")
+            putString("modality", "Remoto")
+        }
+
+        findNavController().navigate(
+            R.id.action_myApplicationsFragment_to_applicationDetailFragment,
+            bundle
+        )
     }
 }
