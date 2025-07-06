@@ -1,4 +1,4 @@
-package com.example.hirelink_2025.ui.fragments.profile
+package com.example.hirelink_2025.ui.fragments.applications
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,15 +11,12 @@ import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentApplicantProfileBinding
 import com.example.hirelink_2025.models.Applicant
 import com.example.hirelink_2025.models.ApplicationStatus
-import com.example.hirelink_2025.ui.adapters.ApplicantProfilePagerAdapter
-import com.google.android.material.tabs.TabLayoutMediator
 
 class ApplicantProfileFragment : Fragment() {
 
     private var _binding: FragmentApplicantProfileBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var pagerAdapter: ApplicantProfilePagerAdapter
     private lateinit var applicant: Applicant
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +34,7 @@ class ApplicantProfileFragment : Fragment() {
                 status = ApplicationStatus.valueOf(args.getString(ARG_APPLICATION_STATUS) ?: "PENDING"),
                 profileImage = args.getString(ARG_PROFILE_IMAGE),
                 jobId = args.getString(ARG_JOB_ID) ?: "",
-                coverLetter = args.getString(ARG_COVER_LETTER)
+                coverLetter = args.getString(ARG_COVER_LETTER) ?: ""
             )
         }
     }
@@ -54,65 +51,49 @@ class ApplicantProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupToolbar()
         setupUserProfile()
-        setupViewPager()
         setupClickListeners()
     }
-
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
-        binding.toolbar.title = "Perfil del Postulante"
-    }
-
     private fun setupUserProfile() {
         with(binding) {
             // Información básica del postulante
-            userName.text = applicant.name
-            userProfession.text = applicant.profession
-            userExperience.text = applicant.experience
+            applicantName.text = applicant.name
+            applicantProfession.text = applicant.profession
 
             // Información de contacto
-            userEmail.text = applicant.email
-            userPhone.text = applicant.phone
+            applicantEmail.text = applicant.email
+            applicantPhone.text = applicant.phone
+
+            // Experiencia y habilidades
+            applicantExperience.text = applicant.experience
+            applicantSkills.text = applicant.skills.joinToString(", ")
 
             // Estado de la aplicación
-            applicationStatus.text = when (applicant.status) {
-                ApplicationStatus.PENDING -> "Postulación Pendiente"
-                ApplicationStatus.ACCEPTED -> "Postulación Aceptada"
-                ApplicationStatus.REJECTED -> "Postulación Rechazada"
+            applicantStatus.text = when (applicant.status) {
+                ApplicationStatus.PENDING -> "Pendiente"
+                ApplicationStatus.ACCEPTED -> "Aceptado"
+                ApplicationStatus.REJECTED -> "Rechazado"
             }
 
-            // Color del estado
+            // Color del estado - CORREGIDO
             val statusColor = when (applicant.status) {
-                ApplicationStatus.PENDING -> R.color.warning
-                ApplicationStatus.ACCEPTED -> R.color.success
-                ApplicationStatus.REJECTED -> R.color.error
+                ApplicationStatus.PENDING -> R.color.orange_pending
+                ApplicationStatus.ACCEPTED -> R.color.green_accept
+                ApplicationStatus.REJECTED -> R.color.red_reject
             }
-            applicationStatus.setTextColor(resources.getColor(statusColor, null))
-
-            // Fecha de aplicación
-            applicationDate.text = "Aplicó ${applicant.applicationDate}"
+            applicantStatus.setTextColor(requireContext().getColor(statusColor))
 
             // Imagen de perfil (usar imagen por defecto)
-            profileImage.setImageResource(R.drawable.profile_random)
-        }
-    }
+            applicantPhoto.setImageResource(R.drawable.profile_random)
 
-    private fun setupViewPager() {
-        pagerAdapter = ApplicantProfilePagerAdapter(requireActivity(), applicant)
-        binding.profileViewPager.adapter = pagerAdapter
-
-        TabLayoutMediator(binding.profileTabLayout, binding.profileViewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> "Acerca de"
-                1 -> "Experiencia"
-                2 -> "Habilidades"
-                else -> ""
+            // Carta de presentación
+            if (!applicant.coverLetter.isNullOrEmpty()) {
+                coverLetter.text = applicant.coverLetter
+                coverLetterCard.visibility = View.VISIBLE
+            } else {
+                coverLetterCard.visibility = View.GONE
             }
-        }.attach()
+        }
     }
 
     private fun setupClickListeners() {
@@ -121,9 +102,13 @@ class ApplicantProfileFragment : Fragment() {
             contactApplicant()
         }
 
-        // Botón de llamada
-        binding.callButton.setOnClickListener {
-            callApplicant()
+        // Botones de aceptar/rechazar
+        binding.acceptButton.setOnClickListener {
+            acceptApplicant()
+        }
+
+        binding.rejectButton.setOnClickListener {
+            rejectApplicant()
         }
     }
 
@@ -140,15 +125,16 @@ class ApplicantProfileFragment : Fragment() {
         }
     }
 
-    private fun callApplicant() {
-        try {
-            val intent = android.content.Intent(android.content.Intent.ACTION_DIAL).apply {
-                data = android.net.Uri.parse("tel:${applicant.phone}")
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No se pudo iniciar la llamada", Toast.LENGTH_SHORT).show()
-        }
+    private fun acceptApplicant() {
+        // TODO: Implementar lógica para aceptar aplicante
+        Toast.makeText(requireContext(), "Aplicante aceptado", Toast.LENGTH_SHORT).show()
+        findNavController().popBackStack()
+    }
+
+    private fun rejectApplicant() {
+        // TODO: Implementar lógica para rechazar aplicante
+        Toast.makeText(requireContext(), "Aplicante rechazado", Toast.LENGTH_SHORT).show()
+        findNavController().popBackStack()
     }
 
     override fun onDestroyView() {

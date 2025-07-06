@@ -5,171 +5,141 @@ import androidx.lifecycle.viewModelScope
 import com.example.hirelink_2025.models.Applicant
 import com.example.hirelink_2025.models.ApplicationStatus
 import com.example.hirelink_2025.repository.ApplicantsRepository
-import com.example.hirelink_2025.repository.MockApplicantsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel para manejar la lógica de presentación de los aplicantes
- * Sigue el patrón MVVM: no contiene referencias directas a la Vista
+ * ViewModel que maneja la lógica de aplicantes
+ * MVVM: Separa lógica de negocio de la UI
  */
 class MyAdsApplicantsViewModel(
-    private val repository: ApplicantsRepository = MockApplicantsRepository()
+    private val repository: ApplicantsRepository
 ) : ViewModel() {
 
-    // Estados privados (solo el ViewModel puede modificarlos)
+    // Estado interno privado
     private val _uiState = MutableStateFlow(ApplicantsUiState())
     val uiState: StateFlow<ApplicantsUiState> = _uiState.asStateFlow()
 
-    // Estados específicos para diferentes tipos de aplicantes
-    private val _pendingApplicants = MutableStateFlow<List<Applicant>>(emptyList())
-    val pendingApplicants: StateFlow<List<Applicant>> = _pendingApplicants.asStateFlow()
+    private val _allApplicants = MutableStateFlow<List<Applicant>>(emptyList())
 
-    private val _acceptedApplicants = MutableStateFlow<List<Applicant>>(emptyList())
-    val acceptedApplicants: StateFlow<List<Applicant>> = _acceptedApplicants.asStateFlow()
+    // Estados públicos derivados para los fragments
+    val pendingApplicants: StateFlow<List<Applicant>> = _allApplicants
+        .map { applicants -> applicants.filter { it.status == ApplicationStatus.PENDING } }
+        .stateIn(
+            scope = viewModelScope,
+            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    private val _rejectedApplicants = MutableStateFlow<List<Applicant>>(emptyList())
-    val rejectedApplicants: StateFlow<List<Applicant>> = _rejectedApplicants.asStateFlow()
+    val acceptedApplicants: StateFlow<List<Applicant>> = _allApplicants
+        .map { applicants -> applicants.filter { it.status == ApplicationStatus.ACCEPTED } }
+        .stateIn(
+            scope = viewModelScope,
+            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    // Estado para mensajes de error
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
-
-    // Estado para mensajes de éxito
-    private val _successMessage = MutableStateFlow<String?>(null)
-    val successMessage: StateFlow<String?> = _successMessage.asStateFlow()
+    private var currentJobId: String? = null
 
     /**
-     * Cargar aplicantes por ID de trabajo
+     * Inicializar con un job específico
      */
-    fun loadApplicants(jobId: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+    fun initializeWithJob(jobId: String) {
+        if (currentJobId != jobId) {
+            currentJobId = jobId
+            loadApplicants(jobId)
+        }
+    }
 
+    /**
+     * Cargar aplicantes del repository
+     */
+    private fun loadApplicants(jobId: String) {
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+
+        viewModelScope.launch {
             try {
-                repository.getApplicantsByJobId(jobId)
-                    .catch { throwable ->
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            error = throwable.message ?: "Error desconocido"
-                        )
-                        _errorMessage.value = "Error al cargar aplicantes: ${throwable.message}"
-                    }
-                    .collect { applicants ->
-                        updateApplicantsLists(applicants)
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            isEmpty = applicants.isEmpty(),
-                            error = null
-                        )
-                    }
+                repository.getApplicantsByJobId(jobId).collect { applicants ->
+                    _allApplicants.value = applicants
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = null
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     error = e.message ?: "Error desconocido"
                 )
-                _errorMessage.value = "Error inesperado: ${e.message}"
             }
         }
     }
 
     /**
-     * Aceptar un aplicante
+     * Aceptar aplicante
      */
     fun acceptApplicant(applicantId: String) {
         viewModelScope.launch {
-            val result = repository.updateApplicantStatus(applicantId, ApplicationStatus.ACCEPTED)
+            _uiState.value = _uiState.value.copy(isLoading = true)
 
-            result.fold(
-                onSuccess = {
-                    _successMessage.value = "Aplicante aceptado exitosamente"
-                    // Los datos se actualizarán automáticamente a través del Flow del repository
-                },
-                onFailure = { throwable ->
-                    _errorMessage.value = "Error al aceptar aplicante: ${throwable.message}"
+            repository.updateApplicantStatus(applicantId, ApplicationStatus.ACCEPTED)
+                .onSuccess {
+                    _uiState.value = _uiState.value.copy(isLoading = false)
+                    // Los datos se actualizarán automáticamente por el Flow
                 }
-            )
+                .onFailure { error ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = error.message ?: "Error al aceptar aplicante"
+                    )
+                }
         }
     }
 
     /**
-     * Rechazar un aplicante
+     * Rechazar aplicante
      */
     fun rejectApplicant(applicantId: String) {
         viewModelScope.launch {
-            val result = repository.updateApplicantStatus(applicantId, ApplicationStatus.REJECTED)
+            _uiState.value = _uiState.value.copy(isLoading = true)
 
-            result.fold(
-                onSuccess = {
-                    _successMessage.value = "Aplicante rechazado"
-                    // Los datos se actualizarán automáticamente a través del Flow del repository
-                },
-                onFailure = { throwable ->
-                    _errorMessage.value = "Error al rechazar aplicante: ${throwable.message}"
+            repository.updateApplicantStatus(applicantId, ApplicationStatus.REJECTED)
+                .onSuccess {
+                    _uiState.value = _uiState.value.copy(isLoading = false)
                 }
-            )
+                .onFailure { error ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = error.message ?: "Error al rechazar aplicante"
+                    )
+                }
         }
     }
 
     /**
-     * Actualizar las listas de aplicantes por estado
+     * Obtener aplicante por ID - CORREGIDO
      */
-    private fun updateApplicantsLists(allApplicants: List<Applicant>) {
-        _pendingApplicants.value = allApplicants.filter { it.status == ApplicationStatus.PENDING }
-        _acceptedApplicants.value = allApplicants.filter { it.status == ApplicationStatus.ACCEPTED }
-        _rejectedApplicants.value = allApplicants.filter { it.status == ApplicationStatus.REJECTED }
+    fun getApplicantById(applicantId: String): Applicant? {
+        // Usar _allApplicants en lugar de las propiedades inexistentes
+        return _allApplicants.value.find { it.id == applicantId }
     }
 
     /**
-     * Obtener aplicante por ID
+     * Limpiar errores
      */
-    fun getApplicantById(applicantId: String, onResult: (Applicant?) -> Unit) {
-        viewModelScope.launch {
-            val result = repository.getApplicantById(applicantId)
-            result.fold(
-                onSuccess = { applicant ->
-                    onResult(applicant)
-                },
-                onFailure = { throwable ->
-                    _errorMessage.value = "Error al obtener aplicante: ${throwable.message}"
-                    onResult(null)
-                }
-            )
-        }
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
     }
-
-    /**
-     * Limpiar mensajes de error
-     */
-    fun clearErrorMessage() {
-        _errorMessage.value = null
-    }
-
-    /**
-     * Limpiar mensajes de éxito
-     */
-    fun clearSuccessMessage() {
-        _successMessage.value = null
-    }
-
-    /**
-     * Obtener contadores para la UI
-     */
-    fun getPendingCount(): Int = _pendingApplicants.value.size
-    fun getAcceptedCount(): Int = _acceptedApplicants.value.size
-    fun getRejectedCount(): Int = _rejectedApplicants.value.size
-    fun getTotalCount(): Int = getPendingCount() + getAcceptedCount() + getRejectedCount()
 }
 
 /**
- * Data class para representar el estado de la UI
+ * Estado de la UI
  */
 data class ApplicantsUiState(
     val isLoading: Boolean = false,
-    val isEmpty: Boolean = false,
     val error: String? = null
 )

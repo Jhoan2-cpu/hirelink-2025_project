@@ -9,30 +9,37 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentMyAdsApplicantsBinding
+import com.example.hirelink_2025.models.Applicant
+import com.example.hirelink_2025.models.ApplicationStatus
+import com.example.hirelink_2025.ui.adapters.ApplicantsAdapter
 import com.example.hirelink_2025.ui.adapters.ApplicantsPagerAdapter
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
 import com.example.hirelink_2025.viewmodels.ads.MyAdsApplicantsViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
 
-/**
- * Fragment principal para mostrar los aplicantes de un trabajo
- * Sigue el patrón MVVM: solo maneja la lógica de presentación
- */
 class MyAdsApplicantsFragment : Fragment() {
 
     private var _binding: FragmentMyAdsApplicantsBinding? = null
     private val binding get() = _binding!!
 
-    // ViewModel: delegación lazy para obtener la instancia
-    private val viewModel: MyAdsApplicantsViewModel by viewModels()
+    // ViewModel con Factory (MVVM)
+    private val viewModel: MyAdsApplicantsViewModel by viewModels {
+        ViewModelFactory()
+    }
 
-    // Adapter para el ViewPager
+    // Adapters
     private lateinit var pagerAdapter: ApplicantsPagerAdapter
+    private lateinit var applicantsAdapter: ApplicantsAdapter
 
-    // Parámetros del fragment
+    // Variables del job
     private var jobId: String? = null
     private var jobTitle: String? = null
 
@@ -70,152 +77,166 @@ class MyAdsApplicantsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        try {
-            val jobId = arguments?.getString("job_id")
-            val jobTitle = arguments?.getString("job_title", "Postulantes")
+        setupToolbar()
+        setupRecyclerView()
+        setupTabLayout()
+        setupObservers()
+        loadTestData()
 
-            if (jobId.isNullOrEmpty()) {
-                Toast.makeText(requireContext(), "ID de trabajo no válido", Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
-                return
-            }
-
-            // Configurar UI
-            setupToolbar(jobTitle.toString())
-            setupTabLayout()
-            setupObservers()
-
-            // Cargar datos
-            viewModel.loadApplicants(jobId)
-
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            findNavController().popBackStack()
-        }
+        // Inicializar con job ID si está disponible
+        jobId?.let { viewModel.initializeWithJob(it) }
     }
 
-    /**
-     * Configurar toolbar con título y navegación
-     */
-    private fun setupToolbar(jobTitle: String) {
-        // Si tienes un toolbar en el layout, configurarlo aquí
-        binding.applicantsTitle?.text = "Postulantes - $jobTitle"
-
-        // Si hay botón de back, configurarlo
-        // binding.backButton?.setOnClickListener {
-        //     findNavController().popBackStack()
-        // }
-    }
-
-    /**
-     * Configurar TabLayout con ViewPager
-     */
-    private fun setupTabLayout() {
-        jobId?.let { id ->
-            pagerAdapter = ApplicantsPagerAdapter(requireActivity(), id)
-            binding.applicantsViewPager.adapter = pagerAdapter
-
-            // Configurar TabLayout con ViewPager
-            TabLayoutMediator(binding.applicantsTabLayout, binding.applicantsViewPager) { tab, position ->
-                tab.text = when (position) {
-                    0 -> "Aceptados"
-                    1 -> "Pendientes"
-                    else -> "Tab $position"
-                }
-            }.attach()
-        }
-    }
-
-    /**
-     * Configurar la interfaz de usuario
-     */
-    private fun setupUI() {
-        // Configurar título
+    private fun setupToolbar() {
         jobTitle?.let { title ->
             binding.applicantsTitle?.text = "Postulantes - $title"
         }
-
-        // Configurar ViewPager y Tabs
-        setupViewPager()
     }
 
-    /**
-     * Configurar ViewPager con los tabs
-     */
-    private fun setupViewPager() {
+    private fun setupRecyclerView() {
+        applicantsAdapter = createApplicantsAdapter()
+
+        // El adapter se usa en los fragments internos del ViewPager
+        // No hay RecyclerView directo en este fragment principal
+        Log.d("MyAdsApplicants", "Adapter creado para ViewPager fragments")
+    }
+
+    private fun setupTabLayout() {
         jobId?.let { id ->
             pagerAdapter = ApplicantsPagerAdapter(requireActivity(), id)
-            binding.applicantsViewPager.adapter = pagerAdapter
 
-            // Configurar TabLayout con ViewPager
-            TabLayoutMediator(binding.applicantsTabLayout, binding.applicantsViewPager) { tab, position ->
-                tab.text = when (position) {
-                    0 -> "Aceptados"
-                    1 -> "Pendientes"
-                    else -> "Tab $position"
+            // Pasar el adapter a los fragments del pager
+            pagerAdapter.setApplicantsAdapter(applicantsAdapter)
+
+            binding.applicantsViewPager?.adapter = pagerAdapter
+
+            binding.applicantsTabLayout?.let { tabLayout ->
+                binding.applicantsViewPager?.let { viewPager ->
+                    TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                        tab.text = when (position) {
+                            0 -> "Aceptados"
+                            1 -> "Pendientes"
+                            else -> "Tab $position"
+                        }
+                    }.attach()
                 }
-            }.attach()
+            }
         }
     }
 
-    /**
-     * Configurar observers para los estados del ViewModel
-     */
+    private fun createApplicantsAdapter(): ApplicantsAdapter {
+        return ApplicantsAdapter { applicant ->
+            Log.d("MyAdsApplicants", "Navegando a perfil de: ${applicant.name}")
+
+            try {
+                val bundle = Bundle().apply {
+                    putString("applicant_id", applicant.id)
+                    putString("applicant_name", applicant.name)
+                    putString("applicant_email", applicant.email)
+                    putString("applicant_phone", applicant.phone)
+                    putString("applicant_profession", applicant.profession)
+                    putString("applicant_experience", applicant.experience)
+                    putStringArrayList("applicant_skills", ArrayList(applicant.skills))
+                    putString("application_date", applicant.applicationDate)
+                    putString("application_status", applicant.status.name)
+                    putString("profile_image", applicant.profileImage)
+                    putString("job_id", applicant.jobId)
+                    putString("cover_letter", applicant.coverLetter)
+                }
+
+                findNavController().navigate(
+                    R.id.action_myAdsApplicantsFragment_to_applicantProfileFragment,
+                    bundle
+                )
+
+            } catch (e: Exception) {
+                Log.e("MyAdsApplicants", "Error en navegación: ${e.message}")
+                // Fallback: mostrar detalles en diálogo
+                showApplicantDetailsDialog(applicant)
+            }
+        }
+    }
+
+    private fun loadTestData() {
+        // Datos de prueba
+        val mockApplicants = listOf(
+            Applicant(
+                id = "1",
+                name = "Ana García",
+                email = "ana.garcia@email.com",
+                phone = "+34 666 123 456",
+                profession = "Desarrolladora Frontend",
+                experience = "3 años de experiencia en React y Vue.js",
+                skills = listOf("JavaScript", "React", "Vue.js", "CSS3", "HTML5"),
+                applicationDate = "15/01/2025",
+                status = ApplicationStatus.PENDING,
+                profileImage = null,
+                jobId = jobId ?: "job123",
+                coverLetter = "Me interesa mucho esta posición porque..."
+            ),
+            Applicant(
+                id = "2",
+                name = "Carlos Rodríguez",
+                email = "carlos.rodriguez@email.com",
+                phone = "+34 677 654 321",
+                profession = "Diseñador UX/UI",
+                experience = "5 años diseñando interfaces de usuario",
+                skills = listOf("Figma", "Adobe XD", "Sketch", "Prototyping"),
+                applicationDate = "14/01/2025",
+                status = ApplicationStatus.ACCEPTED,
+                profileImage = null,
+                jobId = jobId ?: "job123",
+                coverLetter = "Mi experiencia en diseño de interfaces..."
+            ),
+            Applicant(
+                id = "3",
+                name = "María López",
+                email = "maria.lopez@email.com",
+                phone = "+34 688 987 654",
+                profession = "Backend Developer",
+                experience = "4 años con Java y Spring Boot",
+                skills = listOf("Java", "Spring Boot", "MySQL", "Docker"),
+                applicationDate = "13/01/2025",
+                status = ApplicationStatus.REJECTED,
+                profileImage = null,
+                jobId = jobId ?: "job123",
+                coverLetter = "Creo que mi experiencia en backend..."
+            )
+        )
+
+        applicantsAdapter.submitList(mockApplicants)
+    }
+
     private fun setupObservers() {
-        // Observar estado general de la UI
+        // Observar estado de la UI
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
                 updateLoadingState(state.isLoading)
                 state.error?.let { error ->
                     showErrorMessage(error)
+                    viewModel.clearError()
                 }
             }
         }
 
-        // Observar mensajes de error
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.errorMessage.collect { message ->
-                message?.let {
-                    showErrorMessage(it)
-                    viewModel.clearErrorMessage()
-                }
-            }
-        }
-
-        // Observar mensajes de éxito
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.successMessage.collect { message ->
-                message?.let {
-                    showSuccessMessage(it)
-                    viewModel.clearSuccessMessage()
-                }
-            }
-        }
-
-        // Observar contadores para actualizar badges en tabs si es necesario
+        // Observar contadores para badges
         observeApplicantCounts()
     }
 
-    /**
-     * Observar contadores de aplicantes
-     */
     private fun observeApplicantCounts() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.pendingApplicants.collect { pendingList ->
-                updateTabBadge(1, pendingList.size) // Tab de pendientes
+                updateTabBadge(1, pendingList.size)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.acceptedApplicants.collect { acceptedList ->
-                updateTabBadge(0, acceptedList.size) // Tab de aceptados
+                updateTabBadge(0, acceptedList.size)
             }
         }
     }
 
-    /**
-     * Actualizar badges en los tabs
-     */
     private fun updateTabBadge(tabIndex: Int, count: Int) {
         val tabLayout = binding.applicantsTabLayout
         val tab = tabLayout.getTabAt(tabIndex)
@@ -230,61 +251,80 @@ class MyAdsApplicantsFragment : Fragment() {
         }
     }
 
-    /**
-     * Actualizar estado de carga
-     */
     private fun updateLoadingState(isLoading: Boolean) {
         binding.applicantsProgressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.applicantsViewPager.visibility = if (isLoading) View.GONE else View.VISIBLE
+        binding.applicantsViewPager?.visibility = if (isLoading) View.GONE else View.VISIBLE
     }
 
-    /**
-     * Mostrar mensaje de error
-     */
     private fun showErrorMessage(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
             .setAction("Reintentar") {
-                jobId?.let { viewModel.loadApplicants(it) }
+                jobId?.let { viewModel.initializeWithJob(it) }
             }
             .show()
     }
 
-    /**
-     * Mostrar mensaje de éxito
-     */
-    private fun showSuccessMessage(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT)
-            .setBackgroundTint(resources.getColor(R.color.success, null))
-            .show()
-    }
-
-    /**
-     * Navegación a perfil de aplicante
-     */
     fun navigateToApplicantProfile(applicantId: String) {
-        viewModel.getApplicantById(applicantId) { applicant ->
-            applicant?.let {
-                // Crear bundle con datos del aplicante
-                val args = Bundle().apply {
-                    putString("applicant_id", it.id)
-                    putString("applicant_name", it.name)
-                    putString("applicant_email", it.email)
-                    putString("applicant_phone", it.phone)
-                    putString("applicant_profession", it.profession)
-                    putString("applicant_experience", it.experience)
-                    putStringArrayList("applicant_skills", ArrayList(it.skills))
-                    putString("application_date", it.applicationDate)
-                    putString("application_status", it.status.name)
-                    putString("profile_image", it.profileImage)
-                    putString("job_id", it.jobId)
-                    putString("cover_letter", it.coverLetter)
-                }
+        val args = Bundle().apply {
+            putString("applicant_id", applicantId)
+            putString("job_id", jobId)
+        }
 
-                findNavController().navigate(
-                    R.id.action_myAdsApplicantsFragment_to_applicantProfileFragment,
-                    args
-                )
-            }
+        try {
+            findNavController().navigate(
+                R.id.action_myAdsApplicantsFragment_to_applicantProfileFragment,
+                args
+            )
+        } catch (e: Exception) {
+            showApplicantDetailsDialog(applicantId)
+        }
+    }
+
+    private fun showApplicantDetailsDialog(applicantId: String) {
+        val applicant = viewModel.getApplicantById(applicantId)
+        showApplicantDetailsDialog(applicant)
+    }
+
+    private fun showApplicantDetailsDialog(applicant: Applicant?) {
+        if (applicant != null) {
+            val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Perfil de ${applicant.name}")
+                .setMessage(buildApplicantDetails(applicant))
+                .setPositiveButton("Cerrar") { dialog, _ -> dialog.dismiss() }
+                .setNeutralButton("Contactar") { _, _ ->
+                    contactApplicant(applicant)
+                }
+                .create()
+
+            dialog.show()
+        } else {
+            Toast.makeText(requireContext(), "No se pudo cargar el perfil", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun buildApplicantDetails(applicant: Applicant): String {
+        return """
+        Profesión: ${applicant.profession}
+        Experiencia: ${applicant.experience}
+        Email: ${applicant.email}
+        Teléfono: ${applicant.phone}
+        Habilidades: ${applicant.skills.joinToString(", ")}
+        Fecha de aplicación: ${applicant.applicationDate}
+        Estado: ${applicant.status.name}
+        """.trimIndent()
+    }
+
+    private fun contactApplicant(applicant: Applicant) {
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:${applicant.email}")
+            putExtra(Intent.EXTRA_SUBJECT, "Respuesta a tu aplicación - ${jobTitle ?: "Trabajo"}")
+            putExtra(Intent.EXTRA_TEXT, "Hola ${applicant.name},\n\n")
+        }
+
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "No se pudo abrir el email", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.hirelink_2025.MainActivity
+import com.example.hirelink_2025.ui.activities.MainActivity
 import com.example.hirelink_2025.R
 
 

@@ -85,4 +85,40 @@
 
     <!-- Info Colors -->
     <color name="on_info">#FFFFFF</color>            <!-- White -->
+
+    <color name="blue_contact">#2196F3</color>
+    <!-- Colores existentes -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Nuevos colores para aplicantes -->
+    <color name="green_accept">#4CAF50</color>
+    <color name="red_reject">#F44336</color>
+    <color name="orange_pending">#FF9800</color>
+
+    <color name="light_gray">#F5F5F5</color>
+    <color name="border_gray">#E0E0E0</color>
+    <color name="primary_text">#333333</color>
+
+
+    <color name="secondary_text">#757575</color>
+    <color name="gray">#E0E0E0</color>
+
+
+
+
+
+
+    <!-- Colores del ícono -->
+    <color name="hirelink_teal">#1ABC9C</color>
+    <color name="hirelink_blue">#3498DB</color>
+    <color name="hirelink_dark_blue">#2980B9</color>
+    <color name="hirelink_light_teal">#48C9B0</color>
+
+    <!-- Gradientes del ícono -->
+    <color name="icon_gradient_start">#1ABC9C</color>
+    <color name="icon_gradient_end">#3498DB</color>
+
+    <!-- Para adaptive icon -->
+    <color name="ic_launcher_background">#1ABC9C</color>
 </resources>

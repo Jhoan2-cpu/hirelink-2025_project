@@ -1,19 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+
+    <!-- Sombra sutil de fondo -->
+    <path android:pathData="M32,65c0,0 6,-10 12,-12c6,-2 24,-1 24,-1l36,36L104,108l-30,-1L32,65z">
         <aapt:attr name="android:fillColor">
             <gradient
-                android:endX="85.84757"
-                android:endY="92.4963"
-                android:startX="42.9492"
-                android:startY="49.59793"
+                android:endX="85"
+                android:endY="90"
+                android:startX="45"
+                android:startY="52"
                 android:type="linear">
                 <item
-                    android:color="#44000000"
+                    android:color="#22000000"
                     android:offset="0.0" />
                 <item
                     android:color="#00000000"
@@ -21,10 +24,103 @@
             </gradient>
         </aapt:attr>
     </path>
-    <path
+
+    <!-- LUPA PRINCIPAL -->
+
+    <!-- Círculo exterior de la lupa (borde blanco) -->
+    <path android:pathData="M54,26 C65.05,26 74,34.95 74,46 C74,57.05 65.05,66 54,66 C42.95,66 34,57.05 34,46 C34,34.95 42.95,26 54,26 Z
+                           M54,30 C60.63,30 66,35.37 66,42 C66,48.63 60.63,54 54,54 C47.37,54 42,48.63 42,42 C42,35.37 47.37,30 54,30 Z"
         android:fillColor="#FFFFFF"
-        android:fillType="nonZero"
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000" />
+        android:fillType="evenOdd"/>
+
+    <!-- Círculo interior de la lupa (fondo) -->
+    <path android:pathData="M54,30 C60.63,30 66,35.37 66,42 C66,48.63 60.63,54 54,54 C47.37,54 42,48.63 42,42 C42,35.37 47.37,30 54,30 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.95"/>
+
+    <!-- MALETÍN DENTRO DE LA LUPA -->
+
+    <!-- Cuerpo principal del maletín -->
+    <path android:pathData="M48,40 L60,40 C61.1,40 62,40.9 62,42 L62,48 C62,49.1 61.1,50 60,50 L48,50 C46.9,50 46,49.1 46,48 L46,42 C46,40.9 46.9,40 48,40 Z"
+        android:fillColor="#3498DB"/>
+
+    <!-- Asa del maletín -->
+    <path android:pathData="M50,40 L50,38 C50,37.45 50.45,37 51,37 L57,37 C57.55,37 58,37.45 58,38 L58,40"
+        android:strokeColor="#3498DB"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <!-- Cerradura del maletín -->
+    <path android:pathData="M53,44 L55,44 L55,46 L53,46 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.8"/>
+
+    <!-- Línea decorativa del maletín -->
+    <path android:pathData="M47,47 L61,47"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.5"
+        android:fillAlpha="0.4"/>
+
+    <!-- PIN DE UBICACIÓN -->
+
+    <!-- Cuerpo del pin (círculo) -->
+    <path android:pathData="M62,38 C65.31,38 68,40.69 68,44 C68,47.31 65.31,50 62,50 C58.69,50 56,47.31 56,44 C56,40.69 58.69,38 62,38 Z"
+        android:fillColor="#1ABC9C"/>
+
+    <!-- Punta del pin -->
+    <path android:pathData="M62,50 L64,53 L60,53 Z"
+        android:fillColor="#1ABC9C"/>
+
+    <!-- Punto central del pin -->
+    <path android:pathData="M62,42 C63.1,42 64,42.9 64,44 C64,45.1 63.1,46 62,46 C60.9,46 60,45.1 60,44 C60,42.9 60.9,42 62,42 Z"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- MANGO DE LA LUPA -->
+    <path android:pathData="M68,60 L78,70"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+
+    <!-- Extremo del mango -->
+    <path android:pathData="M78,70 C80.76,70 83,72.24 83,75 C83,77.76 80.76,80 78,80 C75.24,80 73,77.76 73,75 C73,72.24 75.24,70 78,70 Z"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- Detalle del extremo -->
+    <path android:pathData="M78,73 C79.1,73 80,73.9 80,75 C80,76.1 79.1,77 78,77 C76.9,77 76,76.1 76,75 C76,73.9 76.9,73 78,73 Z"
+        android:fillColor="#E8E8E8"/>
+
+    <!-- ELEMENTOS DECORATIVOS -->
+
+    <!-- Documento/CV (esquina superior izquierda) -->
+    <path android:pathData="M29,34 L32,34 L32,38 L29,38 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.6"/>
+    <path android:pathData="M29.5,35 L31.5,35"
+        android:strokeColor="#1ABC9C"
+        android:strokeWidth="0.3"
+        android:fillAlpha="0.7"/>
+    <path android:pathData="M29.5,36 L31,36"
+        android:strokeColor="#3498DB"
+        android:strokeWidth="0.3"
+        android:fillAlpha="0.7"/>
+
+    <!-- Estrella (esquina superior derecha) -->
+    <path android:pathData="M76,32 L76.6,33.4 L78,34 L76.6,34.6 L76,36 L75.4,34.6 L74,34 L75.4,33.4 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.5"/>
+
+    <!-- Engranaje (esquina inferior izquierda) -->
+    <path android:pathData="M32,72 C34.21,72 36,73.79 36,76 C36,78.21 34.21,80 32,80 C29.79,80 28,78.21 28,76 C28,73.79 29.79,72 32,72 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.4"/>
+    <path android:pathData="M32,74 C33.1,74 34,74.9 34,76 C34,77.1 33.1,78 32,78 C30.9,78 30,77.1 30,76 C30,74.9 30.9,74 32,74 Z"
+        android:strokeColor="#3498DB"
+        android:strokeWidth="0.5"
+        android:fillAlpha="0.6"/>
+
+    <!-- EFECTOS DE BRILLO -->
+    <path android:pathData="M46,28 Q49,31 52,28 Q49,25 46,28 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.3"/>
+
 </vector>

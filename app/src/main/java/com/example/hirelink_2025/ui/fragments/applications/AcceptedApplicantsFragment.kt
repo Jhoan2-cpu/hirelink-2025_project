@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -12,15 +13,24 @@ import com.example.hirelink_2025.databinding.FragmentAcceptedApplicantsBinding
 import com.example.hirelink_2025.models.Applicant
 import com.example.hirelink_2025.ui.adapters.ApplicantAdapter
 import com.example.hirelink_2025.ui.fragments.ads.MyAdsApplicantsFragment
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
 import com.example.hirelink_2025.viewmodels.ads.MyAdsApplicantsViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Fragment que muestra aplicantes aceptados
+ * MVVM: Solo maneja UI, delega lógica al ViewModel
+ */
 class AcceptedApplicantsFragment : Fragment() {
 
     private var _binding: FragmentAcceptedApplicantsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MyAdsApplicantsViewModel by activityViewModels()
+    // ViewModel compartido con el Fragment padre (MVVM)
+    private val viewModel: MyAdsApplicantsViewModel by activityViewModels {
+        ViewModelFactory()
+    }
+
     private lateinit var applicantAdapter: ApplicantAdapter
     private var jobId: String? = null
 
@@ -55,15 +65,23 @@ class AcceptedApplicantsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Inicializar ViewModel con jobId
+        jobId?.let { id ->
+            viewModel.initializeWithJob(id)
+        }
+
         setupRecyclerView()
         setupObservers()
     }
 
+    /**
+     * Configurar RecyclerView (UI)
+     */
     private fun setupRecyclerView() {
         applicantAdapter = ApplicantAdapter(
-            onViewProfileClick = { applicant -> navigateToProfile(applicant) },
-            onAcceptClick = null,
-            onRejectClick = null
+            onViewProfileClick = ::onViewProfileClick,
+            onAcceptClick = null, // No mostrar botón aceptar para ya aceptados
+            onRejectClick = ::onRejectClick // Permitir rechazar aceptados
         )
 
         binding.acceptedApplicantsRecyclerView.apply {
@@ -72,28 +90,72 @@ class AcceptedApplicantsFragment : Fragment() {
         }
     }
 
+    /**
+     * Configurar observadores (MVVM)
+     */
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
+            // Observar aplicantes aceptados
             viewModel.acceptedApplicants.collect { applicants ->
                 updateApplicantsList(applicants)
                 updateEmptyState(applicants.isEmpty())
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Observar estado de la UI
+            viewModel.uiState.collect { uiState ->
+                updateLoadingState(uiState.isLoading)
+                uiState.error?.let { error ->
+                    showError(error)
+                    viewModel.clearError()
+                }
+            }
+        }
     }
 
+    /**
+     * Actualizar lista (UI)
+     */
     private fun updateApplicantsList(applicants: List<Applicant>) {
         applicantAdapter.submitList(applicants)
     }
 
+    /**
+     * Actualizar estado vacío (UI)
+     */
     private fun updateEmptyState(isEmpty: Boolean) {
-        if (isEmpty) {
-            binding.acceptedApplicantsRecyclerView.visibility = View.GONE
-        } else {
-            binding.acceptedApplicantsRecyclerView.visibility = View.VISIBLE
+        binding.acceptedApplicantsRecyclerView.visibility =
+            if (isEmpty) View.GONE else View.VISIBLE
+
+        // Mostrar mensaje de estado vacío si no hay aplicantes aceptados
+        binding.emptyStateText.apply {
+            visibility = if (isEmpty) View.VISIBLE else View.GONE
+            text = "No hay aplicantes aceptados aún"
         }
     }
 
-    private fun navigateToProfile(applicant: Applicant) {
+    /**
+     * Actualizar estado de carga (UI)
+     */
+    private fun updateLoadingState(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    /**
+     * Mostrar errores (UI)
+     */
+    private fun showError(error: String) {
+        Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+    }
+
+    // Acciones delegadas al ViewModel (MVVM)
+    private fun onRejectClick(applicant: Applicant) {
+        viewModel.rejectApplicant(applicant.id)
+    }
+
+    private fun onViewProfileClick(applicant: Applicant) {
+        // Navegación delegada al Fragment padre
         var parentFrag = parentFragment
         while (parentFrag != null && parentFrag !is MyAdsApplicantsFragment) {
             parentFrag = parentFrag.parentFragment

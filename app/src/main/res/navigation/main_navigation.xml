@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_navigation"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/searchFragment">
 
-    <!-- Search Flow -->
+<!-- Search Flow -->
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.hirelink_2025.ui.fragments.search.SearchFragment"
@@ -92,6 +93,10 @@
         <action
             android:id="@+id/action_myAdsFragment_to_myAdsApplicantsFragment"
             app:destination="@id/myAdsApplicantsFragment" />
+        <action
+            android:id="@+id/action_myAdsFragment_to_myAdDetailFragment"
+            app:destination="@id/myAdDetailFragment" />
+
     </fragment>
 
     <fragment
@@ -113,6 +118,22 @@
     </fragment>
 
     <fragment
+        android:id="@+id/myAdDetailFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.ads.MyAdDetailFragment"
+        android:label="Detalles del Anuncio"
+        tools:layout="@layout/fragment_my_ad_detail">
+
+        <action
+            android:id="@+id/action_myAdDetailFragment_to_myAdsEditFragment"
+            app:destination="@id/myAdsEditFragment" />
+
+        <action
+            android:id="@+id/action_myAdDetailFragment_to_myAdsApplicantsFragment"
+            app:destination="@id/myAdsApplicantsFragment" />
+
+    </fragment>
+
+    <fragment
         android:id="@+id/editLocationFragment"
         android:name="com.example.hirelink_2025.ui.fragments.ads.EditLocationFragment"
         android:label="@string/location" />
@@ -120,21 +141,66 @@
     <fragment
         android:id="@+id/myAdsApplicantsFragment"
         android:name="com.example.hirelink_2025.ui.fragments.ads.MyAdsApplicantsFragment"
-        android:label="@string/applicants">
+        android:label="Aplicantes"
+        tools:layout="@layout/fragment_my_ads_applicants">
+
         <action
             android:id="@+id/action_myAdsApplicantsFragment_to_profileFragment"
             app:destination="@id/profileViewFragment" />
         <action
             android:id="@+id/action_myAdsApplicantsFragment_to_applicantProfileFragment"
             app:destination="@id/applicantProfileFragment" />
+
+        <!-- En nav_graph.xml, dentro del fragment myAdsApplicantsFragment -->
     </fragment>
 
     <!-- Agregar este nuevo fragment al final del archivo, antes de </navigation> -->
+    <!-- AGREGAR ESTE DESTINO -->
     <fragment
         android:id="@+id/applicantProfileFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.profile.ApplicantProfileFragment"
-        android:label="Perfil del Postulante" />
+        android:name="com.example.hirelink_2025.ui.fragments.applications.ApplicantProfileFragment"
+        android:label="Perfil del Aplicante"
+        tools:layout="@layout/fragment_applicant_profile">
 
+        <argument
+            android:name="applicant_id"
+            app:argType="string" />
+        <argument
+            android:name="applicant_name"
+            app:argType="string" />
+        <argument
+            android:name="applicant_email"
+            app:argType="string" />
+        <argument
+            android:name="applicant_phone"
+            app:argType="string" />
+        <argument
+            android:name="applicant_profession"
+            app:argType="string" />
+        <argument
+            android:name="applicant_experience"
+            app:argType="string" />
+        <argument
+            android:name="applicant_skills"
+            app:argType="string[]" />
+        <argument
+            android:name="application_date"
+            app:argType="string" />
+        <argument
+            android:name="application_status"
+            app:argType="string" />
+        <argument
+            android:name="profile_image"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="job_id"
+            app:argType="string" />
+        <argument
+            android:name="cover_letter"
+            app:argType="string" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/profileViewFragment"
@@ -165,6 +231,28 @@
         android:name="com.example.hirelink_2025.ui.fragments.profile.ProfileEditExperienceAddFragment"
         android:label="@string/add_experience" />
 
+    <!-- Fragment de empleos existente -->
+    <fragment
+        android:id="@+id/jobsFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.JobsFragment"
+        android:label="Empleos"
+        tools:layout="@layout/fragment_jobs">
 
+        <action
+            android:id="@+id/action_jobsFragment_to_jobDetailFragment"
+            app:destination="@id/jobDetailFragment" />
+    </fragment>
+
+    <!-- NUEVO: Fragment de detalles del empleo -->
+    <fragment
+        android:id="@+id/jobDetailFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.JobDetailFragment"
+        android:label="Detalles del Empleo"
+        tools:layout="@layout/fragment_job_detail">
+
+        <argument
+            android:name="jobId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

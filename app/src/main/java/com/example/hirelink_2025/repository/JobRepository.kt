@@ -13,58 +13,73 @@ import kotlinx.coroutines.flow.flow
  */
 class JobRepository {
 
-    // Simulación de datos falsos
+    // Simulación de datos falsos - ACTUALIZADO con propiedades correctas
     private val fakeJobs = mutableListOf<JobAd>(
         JobAd(
             id = "1",
             titulo = "Desarrollador Android Senior",
-            descripcion = "Buscamos desarrollador Android con experiencia en Kotlin y MVVM",
             empresa = "TechCorp SA",
-            habilidades = listOf("Kotlin", "Android", "MVVM", "Coroutines"),
-            fecha = "2025-01-15",
-            tipoEmpleo = "Tiempo Completo",
-            cargo = "Senior Developer",
-            modalidad = "Remoto",
-            estado = "Activo",
-            telefono = "+57 300 123 4567",
-            email = "rh@techcorp.com",
-            cantidadVacantes = "2",
+            ubicacion = "Bogotá, Colombia",
             salario = "$2,500,000 - $3,500,000",
-            ubicacion = "Bogotá, Colombia"
+            descripcion = "Buscamos desarrollador Android con experiencia en Kotlin y MVVM. Trabajo en equipo dinámico con oportunidades de crecimiento.",
+            habilidades = listOf("Kotlin", "Android", "MVVM", "Coroutines", "Room", "Retrofit"),
+            modalidad = "Remoto",
+            fechaPublicacion = "2025-01-15"
         ),
         JobAd(
             id = "2",
             titulo = "Diseñador UX/UI",
-            descripcion = "Diseñador creativo para aplicaciones móviles y web",
             empresa = "DesignStudio",
-            habilidades = listOf("Figma", "Adobe XD", "Prototyping", "User Research"),
-            fecha = "2025-01-14",
-            tipoEmpleo = "Medio Tiempo",
-            cargo = "UX Designer",
-            modalidad = "Híbrido",
-            estado = "Activo",
-            telefono = "+57 310 987 6543",
-            email = "jobs@designstudio.co",
-            cantidadVacantes = "1",
+            ubicacion = "Medellín, Colombia",
             salario = "$1,800,000 - $2,200,000",
-            ubicacion = "Medellín, Colombia"
+            descripcion = "Diseñador creativo para aplicaciones móviles y web. Experiencia en investigación de usuarios y prototipado.",
+            habilidades = listOf("Figma", "Adobe XD", "Prototyping", "User Research", "Design Systems"),
+            modalidad = "Híbrido",
+            fechaPublicacion = "2025-01-14"
         ),
         JobAd(
             id = "3",
             titulo = "Data Scientist",
-            descripcion = "Analista de datos con experiencia en Machine Learning",
             empresa = "DataLab Inc",
-            habilidades = listOf("Python", "SQL", "Machine Learning", "TensorFlow"),
-            fecha = "2025-01-13",
-            tipoEmpleo = "Tiempo Completo",
-            cargo = "Data Scientist",
-            modalidad = "Presencial",
-            estado = "Pausado",
-            telefono = "+57 320 456 7890",
-            email = "hiring@datalab.com",
-            cantidadVacantes = "3",
+            ubicacion = "Cali, Colombia",
             salario = "$3,000,000 - $4,000,000",
-            ubicacion = "Cali, Colombia"
+            descripcion = "Analista de datos con experiencia en Machine Learning. Desarrollo de modelos predictivos y análisis avanzado.",
+            habilidades = listOf("Python", "SQL", "Machine Learning", "TensorFlow", "Pandas", "Jupyter"),
+            modalidad = "Presencial",
+            fechaPublicacion = "2025-01-13"
+        ),
+        JobAd(
+            id = "4",
+            titulo = "Desarrollador Frontend React",
+            empresa = "WebSolutions",
+            ubicacion = "Bogotá, Colombia",
+            salario = "$2,200,000 - $2,800,000",
+            descripcion = "Desarrollador frontend especializado en React y TypeScript. Experiencia en desarrollo de SPAs modernas.",
+            habilidades = listOf("React", "TypeScript", "JavaScript", "CSS3", "HTML5", "Redux"),
+            modalidad = "Remoto",
+            fechaPublicacion = "2025-01-12"
+        ),
+        JobAd(
+            id = "5",
+            titulo = "DevOps Engineer",
+            empresa = "CloudTech",
+            ubicacion = "Medellín, Colombia",
+            salario = "$3,200,000 - $4,200,000",
+            descripcion = "Ingeniero DevOps para automatización de infraestructura y despliegues. Experiencia con AWS y Docker.",
+            habilidades = listOf("AWS", "Docker", "Kubernetes", "Jenkins", "Terraform", "Linux"),
+            modalidad = "Híbrido",
+            fechaPublicacion = "2025-01-11"
+        ),
+        JobAd(
+            id = "6",
+            titulo = "Product Manager",
+            empresa = "StartupTech",
+            ubicacion = "Cali, Colombia",
+            salario = "$2,800,000 - $3,800,000",
+            descripcion = "Product Manager para liderar desarrollo de productos digitales. Experiencia en metodologías ágiles.",
+            habilidades = listOf("Scrum", "Product Strategy", "Analytics", "Roadmapping", "User Stories"),
+            modalidad = "Presencial",
+            fechaPublicacion = "2025-01-10"
         )
     )
 
@@ -104,6 +119,18 @@ class JobRepository {
             status = ApplicationStatus.PENDING,
             email = "carlos.rodriguez@email.com",
             phone = "+57 303 456 7890"
+        ),
+        Applicant(
+            id = "app4",
+            jobId = "3",
+            name = "Ana Martínez",
+            profession = "Data Scientist",
+            experience = "4 años de experiencia",
+            skills = listOf("Python", "Machine Learning", "SQL", "TensorFlow"),
+            applicationDate = "2025-01-13",
+            status = ApplicationStatus.PENDING,
+            email = "ana.martinez@email.com",
+            phone = "+57 304 567 8901"
         )
     )
 
@@ -121,6 +148,31 @@ class JobRepository {
     suspend fun getJobById(jobId: String): JobAd? {
         delay(300)
         return fakeJobs.find { it.id == jobId }
+    }
+
+    /**
+     * Buscar trabajos por término
+     */
+    suspend fun searchJobs(query: String): List<JobAd> {
+        delay(400)
+        return if (query.isBlank()) {
+            fakeJobs
+        } else {
+            fakeJobs.filter {
+                it.titulo.contains(query, ignoreCase = true) ||
+                        it.empresa.contains(query, ignoreCase = true) ||
+                        it.ubicacion.contains(query, ignoreCase = true) ||
+                        it.habilidades.any { skill -> skill.contains(query, ignoreCase = true) }
+            }
+        }
+    }
+
+    /**
+     * Filtrar trabajos por modalidad
+     */
+    suspend fun getJobsByModality(modalidad: String): List<JobAd> {
+        delay(300)
+        return fakeJobs.filter { it.modalidad.equals(modalidad, ignoreCase = true) }
     }
 
     /**

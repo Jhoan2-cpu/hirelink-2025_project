@@ -159,23 +159,24 @@ class MyAdsFragment : Fragment() {
      * Maneja el click en un anuncio para ver detalles
      */
     private fun handleJobClick(job: Job) {
-        val fragment = AdDetailFragment.newInstance(
-            titulo = job.title,
-            descripcion = job.description,
-            habilidades = job.requirements.joinToString(", "),
-            fecha = job.postedDate,
-            tipoEmpleo = job.employmentType,
-            cargo = job.title,
-            modalidad = job.modality,
-            estado = job.status.name,
-            telefono = "123456789", // Placeholder
-            email = "contact@company.com" // Placeholder
-        )
+        // ✅ USAR NAVIGATION COMPONENT
+        val bundle = Bundle().apply {
+            putString("job_id", job.id)
+            putString("job_title", job.title)
+            putString("job_description", job.description)
+            putString("job_requirements", job.requirements.joinToString(", "))
+            putString("job_posted_date", job.postedDate)
+            putString("job_employment_type", job.employmentType)
+            putString("job_modality", job.modality)
+            putString("job_status", job.status.name)
+            putString("job_phone", "123456789") // Placeholder
+            putString("job_email", "contact@company.com") // Placeholder
+        }
 
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main, fragment)
-            .addToBackStack(null)
-            .commit()
+        findNavController().navigate(
+            R.id.action_myAdsFragment_to_myAdDetailFragment,
+            bundle
+        )
     }
 
     /**
