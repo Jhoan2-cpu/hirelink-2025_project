@@ -1,60 +1,105 @@
 package com.example.hirelink_2025.ui.fragments.ads
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.hirelink_2025.R
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hirelink_2025.databinding.FragmentMyAdsPendingApplicantsBinding
+import com.example.hirelink_2025.models.ApplicationStatus
+import com.example.hirelink_2025.ui.adapters.ApplicantsAdapter
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MyAdsPendingApplicantsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MyAdsPendingApplicantsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private var _binding: FragmentMyAdsPendingApplicantsBinding? = null
+    private val binding get() = _binding!!
+
+    private var applicantsAdapter: ApplicantsAdapter? = null
+    private var jobId: String? = null
+
+    companion object {
+        const val ARG_JOB_ID = "job_id"
+
+        fun newInstance(jobId: String): MyAdsPendingApplicantsFragment {
+            return MyAdsPendingApplicantsFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_JOB_ID, jobId)
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            jobId = it.getString(ARG_JOB_ID)
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_ads_pending_applicants, container, false)
+    ): View {
+        _binding = FragmentMyAdsPendingApplicantsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MyAdsPendingApplicantsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyAdsPendingApplicantsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
+        binding.pendingApplicantsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        applicantsAdapter?.let { adapter ->
+            // Crear un nuevo adapter filtrado para este fragment
+            val filteredAdapter = ApplicantsAdapter(
+                onItemClicked = { applicant ->
+                    // Propagar el click al adapter padre
+                    (parentFragment as? MyAdsApplicantsFragment)?.let { parent ->
+                        parent.navigateToApplicantProfile(applicant)
+                    }
+                },
+                onAcceptClicked = { applicant ->
+                    (parentFragment as? MyAdsApplicantsFragment)?.handleAcceptApplicant(applicant)
+                },
+                onRejectClicked = { applicant ->
+                    (parentFragment as? MyAdsApplicantsFragment)?.handleRejectApplicant(applicant)
                 }
+            )
+
+            binding.pendingApplicantsRecyclerView.adapter = filteredAdapter
+
+            // Filtrar solo aplicantes pendientes
+            val pendingApplicants = adapter.currentList.filter {
+                it.status == ApplicationStatus.PENDING
             }
+            filteredAdapter.submitList(pendingApplicants)
+        }
+    }
+
+    /**
+     * Método llamado desde el fragment PADRE para pasar el adapter
+     */
+    fun setApplicantsAdapter(adapter: ApplicantsAdapter) {
+        this.applicantsAdapter = adapter
+        if (_binding != null) {
+            setupRecyclerView()
+        }
+    }
+
+    /**
+     * Actualizar lista filtrada
+     */
+    fun updateFilteredList() {
+        setupRecyclerView()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

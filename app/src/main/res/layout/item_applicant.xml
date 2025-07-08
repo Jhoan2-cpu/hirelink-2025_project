@@ -147,7 +147,7 @@
                 android:layout_width="0dp"
                 android:layout_height="36dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/red_reject"
+                android:backgroundTint="#040404"
                 android:text="Rechazar"
                 android:textColor="@android:color/white"
                 android:textSize="12sp" />

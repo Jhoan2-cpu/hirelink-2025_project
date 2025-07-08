@@ -96,9 +96,12 @@ class MyAdsApplicantsFragment : Fragment() {
     private fun setupRecyclerView() {
         applicantsAdapter = createApplicantsAdapter()
 
-        // El adapter se usa en los fragments internos del ViewPager
-        // No hay RecyclerView directo en este fragment principal
-        Log.d("MyAdsApplicants", "Adapter creado para ViewPager fragments")
+        // Pasar el adapter a los fragments del ViewPager
+        if (::pagerAdapter.isInitialized) {
+            pagerAdapter.setApplicantsAdapter(applicantsAdapter)
+        }
+
+        Log.d("MyAdsApplicants", "ApplicantsAdapter creado con callbacks para botones de acción")
     }
 
     private fun setupTabLayout() {
@@ -125,37 +128,62 @@ class MyAdsApplicantsFragment : Fragment() {
     }
 
     private fun createApplicantsAdapter(): ApplicantsAdapter {
-        return ApplicantsAdapter { applicant ->
-            Log.d("MyAdsApplicants", "Navegando a perfil de: ${applicant.name}")
-
-            try {
-                val bundle = Bundle().apply {
-                    putString("applicant_id", applicant.id)
-                    putString("applicant_name", applicant.name)
-                    putString("applicant_email", applicant.email)
-                    putString("applicant_phone", applicant.phone)
-                    putString("applicant_profession", applicant.profession)
-                    putString("applicant_experience", applicant.experience)
-                    putStringArrayList("applicant_skills", ArrayList(applicant.skills))
-                    putString("application_date", applicant.applicationDate)
-                    putString("application_status", applicant.status.name)
-                    putString("profile_image", applicant.profileImage)
-                    putString("job_id", applicant.jobId)
-                    putString("cover_letter", applicant.coverLetter)
-                }
-
-                findNavController().navigate(
-                    R.id.action_myAdsApplicantsFragment_to_applicantProfileFragment,
-                    bundle
-                )
-
-            } catch (e: Exception) {
-                Log.e("MyAdsApplicants", "Error en navegación: ${e.message}")
-                // Fallback: mostrar detalles en diálogo
-                showApplicantDetailsDialog(applicant)
+        return ApplicantsAdapter(
+            onItemClicked = { applicant ->
+                // Click en toda la tarjeta → Ver perfil
+                navigateToApplicantProfile(applicant)
+            },
+            onAcceptClicked = { applicant ->
+                // Click en botón Aceptar
+                handleAcceptApplicant(applicant)
+            },
+            onRejectClicked = { applicant ->
+                // Click en botón Rechazar
+                handleRejectApplicant(applicant)
             }
-        }
+        )
     }
+    /**
+     * Acepta a un postulante
+     */
+    internal fun handleAcceptApplicant(applicant: Applicant) {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Aceptar postulante")
+            .setMessage("¿Quieres aceptar a ${applicant.name} para este trabajo?")
+            .setPositiveButton("Sí, aceptar") { _, _ ->
+                // Actualizar estado a ACCEPTED
+                viewModel.updateApplicantStatus(applicant.id, ApplicationStatus.ACCEPTED)
+
+                // Mostrar confirmación
+                Snackbar.make(binding.root, "${applicant.name} ha sido aceptado", Snackbar.LENGTH_LONG)
+                    .setAction("Contactar") {
+                        contactApplicant(applicant)
+                    }
+                    .show()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    /**
+     * Rechaza a un postulante
+     */
+    internal fun handleRejectApplicant(applicant: Applicant) {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Rechazar postulante")
+            .setMessage("¿Quieres rechazar a ${applicant.name}?")
+            .setPositiveButton("Sí, rechazar") { _, _ ->
+                // Actualizar estado a REJECTED
+                viewModel.updateApplicantStatus(applicant.id, ApplicationStatus.REJECTED)
+
+                // Mostrar confirmación
+                Snackbar.make(binding.root, "${applicant.name} ha sido rechazado", Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
 
     private fun loadTestData() {
         // Datos de prueba
@@ -204,7 +232,11 @@ class MyAdsApplicantsFragment : Fragment() {
             )
         )
 
+        // Actualizar adapter principal
         applicantsAdapter.submitList(mockApplicants)
+
+        // Notificar al ViewModel para que actualice los observables
+        viewModel.updateApplicantsList(mockApplicants)
     }
 
     private fun setupObservers() {
@@ -264,19 +296,33 @@ class MyAdsApplicantsFragment : Fragment() {
             .show()
     }
 
-    fun navigateToApplicantProfile(applicantId: String) {
-        val args = Bundle().apply {
-            putString("applicant_id", applicantId)
-            putString("job_id", jobId)
-        }
+    internal fun navigateToApplicantProfile(applicant: Applicant) {
+        Log.d("MyAdsApplicants", "Navegando a perfil de: ${applicant.name}")
 
         try {
+            val bundle = Bundle().apply {
+                putString("applicant_id", applicant.id)
+                putString("applicant_name", applicant.name)
+                putString("applicant_email", applicant.email)
+                putString("applicant_phone", applicant.phone)
+                putString("applicant_profession", applicant.profession)
+                putString("applicant_experience", applicant.experience)
+                putStringArrayList("applicant_skills", ArrayList(applicant.skills))
+                putString("application_date", applicant.applicationDate)
+                putString("application_status", applicant.status.name)
+                putString("profile_image", applicant.profileImage)
+                putString("job_id", applicant.jobId)
+                putString("cover_letter", applicant.coverLetter)
+            }
+
             findNavController().navigate(
                 R.id.action_myAdsApplicantsFragment_to_applicantProfileFragment,
-                args
+                bundle
             )
+
         } catch (e: Exception) {
-            showApplicantDetailsDialog(applicantId)
+            Log.e("MyAdsApplicants", "Error en navegación: ${e.message}")
+            showApplicantDetailsDialog(applicant)
         }
     }
 

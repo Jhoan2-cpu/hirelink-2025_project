@@ -164,7 +164,7 @@ class PendingApplicantsFragment : Fragment() {
         while (parentFrag != null && parentFrag !is MyAdsApplicantsFragment) {
             parentFrag = parentFrag.parentFragment
         }
-        (parentFrag as? MyAdsApplicantsFragment)?.navigateToApplicantProfile(applicant.id)
+        (parentFrag as? MyAdsApplicantsFragment)?.navigateToApplicantProfile(applicant)
     }
 
     override fun onDestroyView() {

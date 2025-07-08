@@ -2,6 +2,7 @@ package com.example.hirelink_2025.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,8 +12,10 @@ import com.example.hirelink_2025.models.Applicant
 import com.example.hirelink_2025.models.ApplicationStatus
 
 class ApplicantsAdapter(
-    private val onApplicantClick: (Applicant) -> Unit
-) : ListAdapter<Applicant, ApplicantsAdapter.ApplicantViewHolder>(DiffCallback) {
+    private val onItemClicked: (Applicant) -> Unit,
+    private val onAcceptClicked: (Applicant) -> Unit,
+    private val onRejectClicked: (Applicant) -> Unit
+) : ListAdapter<Applicant, ApplicantsAdapter.ApplicantViewHolder>(ApplicantDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicantViewHolder {
         val binding = ItemApplicantBinding.inflate(
@@ -24,13 +27,7 @@ class ApplicantsAdapter(
     }
 
     override fun onBindViewHolder(holder: ApplicantViewHolder, position: Int) {
-        val applicant = getItem(position)
-        holder.bind(applicant)
-
-        // Click en toda la tarjeta para ver perfil
-        holder.itemView.setOnClickListener {
-            onApplicantClick(applicant)
-        }
+        holder.bind(getItem(position))
     }
 
     inner class ApplicantViewHolder(
@@ -39,29 +36,83 @@ class ApplicantsAdapter(
 
         fun bind(applicant: Applicant) {
             binding.apply {
-                // Información básica del aplicante
+                // Información básica
                 applicantName.text = applicant.name
                 applicantProfession.text = applicant.profession
+                applicantExperience.text = applicant.experience
+                applicantSkills.text = applicant.skills.joinToString(", ")
                 applicantEmail.text = applicant.email
+                applicantPhone.text = applicant.phone
+                applicationDate.text = "Aplicó el ${applicant.applicationDate}"
 
-                // Fecha de aplicación
-                applicationDate.text = "Aplicó: ${applicant.applicationDate}"
-
-                // Estado con colores (usando textView genérico para el estado)
-                val statusText = when (applicant.status) {
+                // Estado del aplicante
+                statusIndicator.text = when (applicant.status) {
                     ApplicationStatus.PENDING -> "Pendiente"
                     ApplicationStatus.ACCEPTED -> "Aceptado"
                     ApplicationStatus.REJECTED -> "Rechazado"
                 }
 
-                // Asumiendo que hay un TextView para mostrar el estado
-                // Si no existe, puedes agregar el estado al final del nombre o profesión
-                applicantProfession.text = "${applicant.profession} • $statusText"
+                // Color del estado
+                val (backgroundColor, textColor) = when (applicant.status) {
+                    ApplicationStatus.PENDING -> Pair(R.color.orange_pending, R.color.white)
+                    ApplicationStatus.ACCEPTED -> Pair(R.color.green_accept, R.color.white)
+                    ApplicationStatus.REJECTED -> Pair(R.color.red_reject, R.color.white)
+                }
+
+                statusIndicator.setBackgroundColor(
+                    ContextCompat.getColor(binding.root.context, backgroundColor)
+                )
+                statusIndicator.setTextColor(
+                    ContextCompat.getColor(binding.root.context, textColor)
+                )
+
+                // Visibilidad de botones según estado
+                when (applicant.status) {
+                    ApplicationStatus.PENDING -> {
+                        acceptButton.visibility = android.view.View.VISIBLE
+                        rejectButton.visibility = android.view.View.VISIBLE
+                        acceptButton.isEnabled = true
+                        rejectButton.isEnabled = true
+                    }
+                    ApplicationStatus.ACCEPTED -> {
+                        acceptButton.visibility = android.view.View.VISIBLE
+                        rejectButton.visibility = android.view.View.VISIBLE
+                        acceptButton.isEnabled = false
+                        rejectButton.isEnabled = true
+                        acceptButton.alpha = 0.5f
+                        rejectButton.alpha = 1.0f
+                    }
+                    ApplicationStatus.REJECTED -> {
+                        acceptButton.visibility = android.view.View.VISIBLE
+                        rejectButton.visibility = android.view.View.VISIBLE
+                        acceptButton.isEnabled = true
+                        rejectButton.isEnabled = false
+                        acceptButton.alpha = 1.0f
+                        rejectButton.alpha = 0.5f
+                    }
+                }
+
+                // Click listeners
+                root.setOnClickListener {
+                    onItemClicked(applicant)
+                }
+
+                acceptButton.setOnClickListener {
+                    if (applicant.status != ApplicationStatus.ACCEPTED) {
+                        onAcceptClicked(applicant)
+                    }
+                }
+
+                rejectButton.setOnClickListener {
+                    if (applicant.status != ApplicationStatus.REJECTED) {
+                        onRejectClicked(applicant)
+                    }
+                }
             }
         }
     }
 
-    companion object DiffCallback : DiffUtil.ItemCallback<Applicant>() {
+    class ApplicantDiffCallback : DiffUtil.ItemCallback<Applicant>() {
         override fun areItemsTheSame(oldItem: Applicant, newItem: Applicant): Boolean {
             return oldItem.id == newItem.id
         }

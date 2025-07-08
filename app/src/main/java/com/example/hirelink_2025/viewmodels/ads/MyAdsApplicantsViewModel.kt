@@ -24,7 +24,9 @@ class MyAdsApplicantsViewModel(
     private val _uiState = MutableStateFlow(ApplicantsUiState())
     val uiState: StateFlow<ApplicantsUiState> = _uiState.asStateFlow()
 
+    // ✅ CORREGIDO: Variable principal para todos los aplicantes
     private val _allApplicants = MutableStateFlow<List<Applicant>>(emptyList())
+    val allApplicants: StateFlow<List<Applicant>> = _allApplicants.asStateFlow()
 
     // Estados públicos derivados para los fragments
     val pendingApplicants: StateFlow<List<Applicant>> = _allApplicants
@@ -43,6 +45,14 @@ class MyAdsApplicantsViewModel(
             initialValue = emptyList()
         )
 
+    val rejectedApplicants: StateFlow<List<Applicant>> = _allApplicants
+        .map { applicants -> applicants.filter { it.status == ApplicationStatus.REJECTED } }
+        .stateIn(
+            scope = viewModelScope,
+            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     private var currentJobId: String? = null
 
     /**
@@ -53,6 +63,53 @@ class MyAdsApplicantsViewModel(
             currentJobId = jobId
             loadApplicants(jobId)
         }
+    }
+
+    /**
+     * ✅ CORREGIDO: Actualizar estado de aplicante
+     */
+    fun updateApplicantStatus(applicantId: String, newStatus: ApplicationStatus) {
+        viewModelScope.launch {
+            try {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+
+                // Actualizar lista local inmediatamente para UI responsiva
+                val updatedList = _allApplicants.value.map { applicant ->
+                    if (applicant.id == applicantId) {
+                        applicant.copy(status = newStatus)
+                    } else {
+                        applicant
+                    }
+                }
+
+                _allApplicants.value = updatedList
+
+                // Actualizar en repository/API (si está disponible)
+                currentJobId?.let { jobId ->
+                    repository.updateApplicantStatus(applicantId, newStatus)
+                        .onFailure { error ->
+                            // Revertir cambios si falla
+                            loadApplicants(jobId)
+                            throw error
+                        }
+                }
+
+                _uiState.value = _uiState.value.copy(isLoading = false)
+
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Error al actualizar estado: ${e.message}"
+                )
+            }
+        }
+    }
+
+    /**
+     * ✅ CORREGIDO: Actualizar lista completa de aplicantes
+     */
+    fun updateApplicantsList(applicants: List<Applicant>) {
+        _allApplicants.value = applicants
     }
 
     /**
@@ -83,48 +140,20 @@ class MyAdsApplicantsViewModel(
      * Aceptar aplicante
      */
     fun acceptApplicant(applicantId: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-
-            repository.updateApplicantStatus(applicantId, ApplicationStatus.ACCEPTED)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(isLoading = false)
-                    // Los datos se actualizarán automáticamente por el Flow
-                }
-                .onFailure { error ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = error.message ?: "Error al aceptar aplicante"
-                    )
-                }
-        }
+        updateApplicantStatus(applicantId, ApplicationStatus.ACCEPTED)
     }
 
     /**
      * Rechazar aplicante
      */
     fun rejectApplicant(applicantId: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-
-            repository.updateApplicantStatus(applicantId, ApplicationStatus.REJECTED)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(isLoading = false)
-                }
-                .onFailure { error ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = error.message ?: "Error al rechazar aplicante"
-                    )
-                }
-        }
+        updateApplicantStatus(applicantId, ApplicationStatus.REJECTED)
     }
 
     /**
-     * Obtener aplicante por ID - CORREGIDO
+     * ✅ CORREGIDO: Obtener aplicante por ID
      */
     fun getApplicantById(applicantId: String): Applicant? {
-        // Usar _allApplicants en lugar de las propiedades inexistentes
         return _allApplicants.value.find { it.id == applicantId }
     }
 
@@ -134,6 +163,19 @@ class MyAdsApplicantsViewModel(
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
+
+    /**
+     * Obtener estadísticas
+     */
+    fun getApplicantsStats(): ApplicantsStats {
+        val all = _allApplicants.value
+        return ApplicantsStats(
+            total = all.size,
+            pending = all.count { it.status == ApplicationStatus.PENDING },
+            accepted = all.count { it.status == ApplicationStatus.ACCEPTED },
+            rejected = all.count { it.status == ApplicationStatus.REJECTED }
+        )
+    }
 }
 
 /**
@@ -142,4 +184,14 @@ class MyAdsApplicantsViewModel(
 data class ApplicantsUiState(
     val isLoading: Boolean = false,
     val error: String? = null
+)
+
+/**
+ * Estadísticas de aplicantes
+ */
+data class ApplicantsStats(
+    val total: Int,
+    val pending: Int,
+    val accepted: Int,
+    val rejected: Int
 )
