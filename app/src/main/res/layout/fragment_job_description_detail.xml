@@ -817,10 +817,10 @@
             android:layout_marginStart="@dimen/margin_small"
             android:layout_weight="1"
             android:text="Aplicar Ahora"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             app:backgroundTint="@color/primary"
             app:icon="@drawable/ic_send"
-            app:iconTint="@android:color/white" />
+            app:iconTint="@color/white" />
 
     </LinearLayout>
 

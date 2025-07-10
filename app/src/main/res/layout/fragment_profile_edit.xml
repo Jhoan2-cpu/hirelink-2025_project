@@ -11,7 +11,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@color/transparent"
         app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -45,10 +45,10 @@
                     android:layout_weight="1"
                     android:layout_marginEnd="@dimen/margin_small"
                     android:text="Guardar"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/white"
                     app:backgroundTint="@color/success"
                     app:icon="@drawable/ic_save"
-                    app:iconTint="@android:color/white" />
+                    app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/cancelButton"
@@ -58,10 +58,10 @@
                     android:layout_weight="1"
                     android:layout_marginStart="@dimen/margin_small"
                     android:text="Cancelar"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/white"
                     app:backgroundTint="@color/error"
                     app:icon="@drawable/ic_close"
-                    app:iconTint="@android:color/white" />
+                    app:iconTint="@color/white" />
 
             </LinearLayout>
 

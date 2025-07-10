@@ -44,7 +44,7 @@
                         android:id="@+id/applicantName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/text_primary"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         tools:text="Juan Carlos Pérez" />
@@ -53,7 +53,7 @@
                         android:id="@+id/applicantProfession"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/darker_gray"
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp"
                         tools:text="Desarrollador Android Senior" />
 
@@ -65,7 +65,7 @@
                         android:background="@drawable/status_background"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="4dp"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/white"
                         android:textSize="12sp"
                         tools:text="Pendiente" />
 
@@ -212,7 +212,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/green_accept"
                 android:text="Aceptar"
-                android:textColor="@android:color/white" />
+                android:textColor="@color/white" />
 
             <Button
                 android:id="@+id/rejectButton"
@@ -222,7 +222,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/red_reject"
                 android:text="Rechazar"
-                android:textColor="@android:color/white" />
+                android:textColor="@color/white" />
 
         </LinearLayout>
 
@@ -233,7 +233,7 @@
             android:layout_marginTop="8dp"
             android:backgroundTint="@color/blue_contact"
             android:text="Contactar por Email"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/white" />
 
     </LinearLayout>
 

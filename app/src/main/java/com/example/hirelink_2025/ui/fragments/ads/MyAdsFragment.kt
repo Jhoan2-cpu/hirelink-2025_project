@@ -81,6 +81,10 @@ class MyAdsFragment : Fragment() {
             findNavController().navigate(R.id.action_myAdsFragment_to_myAdsRegisterFragment)
         }
 
+        binding.companyButton.setOnClickListener {
+            findNavController().navigate(R.id.action_myAdsFragment_to_companyFragment)
+        }
+
         // Botones de filtro (si existen en el layout)
         binding.apply {
             // Asumiendo que hay botones de filtro en el layout

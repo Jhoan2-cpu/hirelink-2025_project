@@ -121,4 +121,7 @@
 
     <!-- Para adaptive icon -->
     <color name="ic_launcher_background">#1ABC9C</color>
+    
+    <!-- Transparent -->
+    <color name="transparent">#00000000</color>
 </resources>

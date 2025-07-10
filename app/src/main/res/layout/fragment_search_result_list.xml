@@ -217,14 +217,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:text="Mostrar 0 resultados"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:backgroundTint="@color/primary"
                 app:cornerRadius="8dp"
                 app:icon="@drawable/ic_check"
                 app:iconGravity="start"
-                app:iconTint="@android:color/white"
+                app:iconTint="@color/white"
                 app:strokeWidth="0dp" />
 
 

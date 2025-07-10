@@ -136,7 +136,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="@dimen/margin_small"
             android:text="Guardar"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             app:backgroundTint="@color/success" />
 
         <com.google.android.material.button.MaterialButton
@@ -147,7 +147,7 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/margin_small"
             android:text="Cancelar"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             app:backgroundTint="@color/error" />
 
     </LinearLayout>

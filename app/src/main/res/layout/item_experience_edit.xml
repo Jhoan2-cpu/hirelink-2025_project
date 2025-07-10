@@ -117,7 +117,7 @@
         android:paddingHorizontal="@dimen/margin_small"
         android:paddingVertical="@dimen/margin_tiny"
         android:text="Experiencia: 2 Años"
-        android:textColor="@android:color/white"
+        android:textColor="@color/white"
         android:textSize="12sp" />
 
 </LinearLayout>

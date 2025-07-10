@@ -30,7 +30,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:text="No hay aplicantes pendientes"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:visibility="gone" />
 

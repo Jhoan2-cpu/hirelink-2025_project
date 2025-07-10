@@ -107,8 +107,29 @@
         <action
             android:id="@+id/action_myAdsFragment_to_myAdDetailFragment"
             app:destination="@id/myAdDetailFragment" />
+        <action
+            android:id="@+id/action_myAdsFragment_to_companyFragment"
+            app:destination="@+id/companyFragment"/>
 
     </fragment>
+
+    <fragment
+        android:id="@+id/companyFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.ads.CompanyFragment"
+        android:label="Mis Compañías">
+        <action
+            android:id="@+id/action_companyFragment_to_companyRegisterFragment"
+            app:destination="@id/companyRegisterFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/companyRegisterFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.ads.CompanyRegisterFragment"
+        android:label="Registrar Compañía" />
 
     <fragment
         android:id="@+id/myAdsRegisterFragment"

@@ -45,10 +45,10 @@
             android:layout_weight="1"
             android:layout_marginEnd="@dimen/margin_small"
             android:text="Guardar"
-            android:textColor="@android:color/white"
+            android:textColor="@color/on_success"
             app:backgroundTint="@color/success"
             app:icon="@drawable/ic_save"
-            app:iconTint="@android:color/white" />
+            app:iconTint="@color/on_success" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancelSkillButton"
@@ -58,10 +58,10 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/margin_small"
             android:text="Cancelar"
-            android:textColor="@android:color/white"
+            android:textColor="@color/on_error"
             app:backgroundTint="@color/error"
             app:icon="@drawable/ic_close"
-            app:iconTint="@android:color/white" />
+            app:iconTint="@color/on_error" />
 
     </LinearLayout>
 

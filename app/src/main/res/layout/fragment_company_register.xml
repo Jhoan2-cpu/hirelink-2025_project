@@ -30,7 +30,7 @@
             android:elevation="0dp"
             app:navigationIcon="@drawable/ic_close"
             app:navigationIconTint="@color/white"
-            app:title="@string/new_ad"
+            app:title="Registrar Compañía"
             app:titleTextColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,14 +57,14 @@
                 android:orientation="vertical"
                 android:padding="@dimen/margin_large">
 
-                <!-- Job Information Section -->
+                <!-- Company Information Section -->
                 <TextView
                     style="@style/TextAppearance.HireLink.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/job_information"
+                    android:text="Información de la Compañía"
                     android:textColor="@color/primary"
-                    android:drawableStart="@drawable/ic_work"
+                    android:drawableStart="@drawable/ic_group"
                     android:drawableTint="@color/primary"
                     android:drawablePadding="@dimen/margin_small"
                     android:gravity="center_vertical" />
@@ -76,77 +76,59 @@
                     android:layout_marginBottom="@dimen/margin_medium"
                     android:background="@color/divider" />
 
-                <!-- Title Input -->
+                <!-- Company Name Input -->
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/titleInputLayout"
+                    android:id="@+id/companyNameInputLayout"
                     style="@style/Widget.HireLink.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Puesto"
-                    app:startIconDrawable="@drawable/ic_title"
+                    android:hint="Nombre de la compañía"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_group"
                     app:startIconTint="@color/secondary">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/titleEditText"
+                        android:id="@+id/companyNameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="text"
-                        android:maxLines="2" />
+                        android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!--CAMPOS NO CONFIGURADOS-->
+                <!-- Company Type/Industry Input -->
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/nameCompanyLayout"
-                    style="@style/Widget.HireLink.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nombre de la empresa"
-                    app:startIconDrawable="@drawable/ic_vacation"
-                    app:startIconTint="@color/secondary">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/nameCompany"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:maxLines="2" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- About Company Input -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/aboutCompanyInputLayout"
+                    android:id="@+id/companyTypeInputLayout"
                     style="@style/Widget.HireLink.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
-                    android:hint="Descripción"
-                    app:startIconDrawable="@drawable/ic_info"
+                    android:hint="Tipo de industria"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_work"
                     app:startIconTint="@color/secondary">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/aboutCompanyEditText"
+                        android:id="@+id/companyTypeEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="top"
-                        android:inputType="textMultiLine"
-                        android:minLines="3"
-                        android:maxLines="5" />
-
+                        android:inputType="text"
+                        android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- About Job Input -->
+                <!-- Company Description Input -->
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/aboutJobInputLayout"
+                    android:id="@+id/companyDescriptionInputLayout"
                     style="@style/Widget.HireLink.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
-                    android:hint="Acerca del empleo"
+                    android:hint="Descripción de la compañía"
+                    app:errorEnabled="true"
                     app:startIconDrawable="@drawable/ic_description"
                     app:startIconTint="@color/secondary">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/aboutJobEditText"
+                        android:id="@+id/companyDescriptionEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="top"
@@ -156,174 +138,57 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Required Skills Input -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/skillsInputLayout"
-                    style="@style/Widget.HireLink.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_medium"
-                    android:hint="Requisitos"
-                    app:startIconDrawable="@drawable/ic_skill"
-                    app:startIconTint="@color/secondary">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/skillsEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="top"
-                        android:inputType="textMultiLine"
-                        android:minLines="3"
-                        android:maxLines="5" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Job Details Section -->
-                <TextView
-                    style="@style/TextAppearance.HireLink.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_extra_large"
-                    android:text="@string/job_detail"
-                    android:textColor="@color/primary"
-                    android:drawableStart="@drawable/ic_info"
-                    android:drawableTint="@color/primary"
-                    android:drawablePadding="@dimen/margin_small"
-                    android:gravity="center_vertical" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:layout_marginBottom="@dimen/margin_medium"
-                    android:background="@color/divider" />
-
-                <!-- Vacancies and Employment Type Row -->
+                <!-- Company Size and Founded Year Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
                     android:orientation="horizontal"
                     android:baselineAligned="false">
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/vacanciesInputLayout"
+                        android:id="@+id/companySizeInputLayout"
                         style="@style/Widget.HireLink.TextInputLayout"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="@dimen/margin_small"
-                        android:hint="@string/vacancies"
+                        android:hint="Tamaño de la empresa"
+                        app:errorEnabled="true"
                         app:startIconDrawable="@drawable/ic_people"
                         app:startIconTint="@color/secondary">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/vacanciesEditText"
+                            android:id="@+id/companySizeEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/foundedYearInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:hint="Año de fundación"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_calendar"
+                        app:startIconTint="@color/secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/foundedYearEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/employmentTypeInputLayout"
-                        style="@style/Widget.HireLink.TextInputLayout"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:hint="Horario Laboral"
-                        app:startIconDrawable="@drawable/ic_work_small"
-                        app:startIconTint="@color/secondary">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/employmentTypeEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
                 </LinearLayout>
 
-                <!-- Modality Dropdown -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/modalityInputLayout"
-                    style="@style/Widget.HireLink.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_medium"
-                    android:hint="@string/modality"
-                    app:startIconDrawable="@drawable/ic_modality"
-                    app:startIconTint="@color/secondary"
-                    app:endIconMode="dropdown_menu">
-
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/modalityDropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="48dp"
-                        android:paddingVertical="8dp"
-                        android:importantForAccessibility="yes"
-                        android:contentDescription="@string/select_modality"
-                        android:inputType="none"
-                        android:focusable="false"
-                        android:clickable="true" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Date and Position Row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_medium"
-                    android:orientation="horizontal"
-                    android:baselineAligned="false">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/dateInputLayout"
-                        style="@style/Widget.HireLink.TextInputLayout"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:hint="Fecha Límite"
-                        app:startIconDrawable="@drawable/ic_schedule"
-                        app:startIconTint="@color/secondary"
-                        app:endIconMode="custom"
-                        app:endIconDrawable="@drawable/ic_calendar"
-                        app:endIconTint="@color/text_hint">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/dateEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:clickable="true" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/ofertInputLayout"
-                        style="@style/Widget.HireLink.TextInputLayout"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:hint="Oferta"
-                        app:startIconDrawable="@drawable/ic_money"
-                        app:startIconTint="@color/secondary">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/positionEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
-
-                <!-- Media & Location Section -->
+                <!-- Location Section -->
                 <TextView
                     style="@style/TextAppearance.HireLink.Title"
                     android:layout_width="wrap_content"
@@ -343,30 +208,74 @@
                     android:layout_marginBottom="@dimen/margin_medium"
                     android:background="@color/divider" />
 
-                <!-- Image Upload Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/uploadImageButton"
-                    style="@style/Widget.HireLink.Button.OutlinedButton"
+                <!-- Address Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/addressInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/select_image"
-                    android:textColor="@color/secondary"
-                    app:icon="@drawable/ic_image"
-                    app:iconTint="@color/secondary"
-                    app:strokeColor="@color/secondary" />
+                    android:hint="Dirección"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_location_on"
+                    app:startIconTint="@color/secondary">
 
-                <!-- Location Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/selectLocationButton"
-                    style="@style/Widget.HireLink.Button.OutlinedButton"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/addressEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- City and Country Row -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:text="@string/select_location"
-                    android:textColor="@color/secondary"
-                    app:icon="@drawable/ic_location_on"
-                    app:iconTint="@color/secondary"
-                    app:strokeColor="@color/secondary" />
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/cityInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:hint="Ciudad"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_location_small"
+                        app:startIconTint="@color/secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/cityEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/countryInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:hint="País"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_location"
+                        app:startIconTint="@color/secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/countryEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
 
                 <!-- Contact Info Section -->
                 <TextView
@@ -374,7 +283,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_extra_large"
-                    android:text="@string/contact"
+                    android:text="Información de Contacto"
                     android:textColor="@color/primary"
                     android:drawableStart="@drawable/ic_phone"
                     android:drawableTint="@color/primary"
@@ -394,7 +303,8 @@
                     style="@style/Widget.HireLink.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/phone"
+                    android:hint="Teléfono"
+                    app:errorEnabled="true"
                     app:prefixText="+51"
                     app:startIconDrawable="@drawable/ic_phone"
                     app:startIconTint="@color/secondary">
@@ -415,7 +325,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
-                    android:hint="@string/email"
+                    android:hint="Email"
+                    app:errorEnabled="true"
                     app:startIconDrawable="@drawable/ic_email"
                     app:startIconTint="@color/secondary">
 
@@ -434,7 +345,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
-                    android:hint="@string/website"
+                    android:hint="Sitio web"
+                    app:errorEnabled="true"
                     app:startIconDrawable="@drawable/ic_web"
                     app:startIconTint="@color/secondary">
 
@@ -446,11 +358,24 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Logo Upload Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/uploadLogoButton"
+                    style="@style/Widget.HireLink.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:text="Seleccionar logo de la compañía"
+                    android:textColor="@color/secondary"
+                    app:icon="@drawable/ic_image"
+                    app:iconTint="@color/secondary"
+                    app:strokeColor="@color/secondary" />
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Publish Button Card -->
+        <!-- Register Button Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -466,15 +391,15 @@
             app:layout_constraintTop_toBottomOf="@id/mainContentCard">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/publishButton"
+                android:id="@+id/registerCompanyButton"
                 style="@style/Widget.HireLink.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_medium"
                 android:minHeight="@dimen/button_height"
-                android:text="@string/publish_ad"
+                android:text="Registrar Compañía"
                 android:textSize="@dimen/text_size_medium"
-                app:icon="@drawable/ic_publish"
+                app:icon="@drawable/ic_save"
                 app:iconGravity="textStart"
                 app:backgroundTint="@color/primary"
                 app:cornerRadius="@dimen/radius_large" />

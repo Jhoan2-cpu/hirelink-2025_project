@@ -33,7 +33,7 @@
                     android:id="@+id/applicantName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="Juan Carlos Pérez" />
@@ -42,7 +42,7 @@
                     android:id="@+id/applicantProfession"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/darker_gray"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp"
                     tools:text="Desarrollador Android" />
 
@@ -56,7 +56,7 @@
                 android:background="@drawable/status_background"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 tools:text="Pendiente" />
@@ -69,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="@android:color/black"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             tools:text="5 años de experiencia" />
 
@@ -79,7 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp"
             tools:text="Kotlin, Java, Android SDK, MVVM" />
 
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:drawablePadding="4dp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 app:drawableStartCompat="@drawable/ic_email"
                 tools:text="juan.perez@email.com" />
@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:drawablePadding="4dp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 app:drawableStartCompat="@drawable/ic_phone"
                 tools:text="+57 301 234 5678" />
@@ -120,7 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/text_secondary"
             android:textSize="11sp"
             tools:text="Aplicó el 16/01/2025" />
 
@@ -139,7 +139,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/green_accept"
                 android:text="Aceptar"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textSize="12sp" />
 
             <Button
@@ -149,7 +149,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="#040404"
                 android:text="Rechazar"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textSize="12sp" />
 
         </LinearLayout>
