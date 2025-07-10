@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(rg:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(./gradlew:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }

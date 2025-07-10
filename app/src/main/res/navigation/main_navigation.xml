@@ -124,12 +124,51 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_companyFragment_to_companyEditFragment"
+            app:destination="@id/companyEditFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_companyFragment_to_companyDetailFragment"
+            app:destination="@id/companyDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
         android:id="@+id/companyRegisterFragment"
         android:name="com.example.hirelink_2025.ui.fragments.ads.CompanyRegisterFragment"
         android:label="Registrar Compañía" />
+
+    <fragment
+        android:id="@+id/companyEditFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.ads.CompanyEditFragment"
+        android:label="Editar Compañía">
+        <argument
+            android:name="companyId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/companyDetailFragment"
+        android:name="com.example.hirelink_2025.ui.fragments.ads.CompanyDetailFragment"
+        android:label="Detalles de la Compañía">
+        <argument
+            android:name="companyId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_companyDetailFragment_to_companyEditFragment"
+            app:destination="@id/companyEditFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <fragment
         android:id="@+id/myAdsRegisterFragment"

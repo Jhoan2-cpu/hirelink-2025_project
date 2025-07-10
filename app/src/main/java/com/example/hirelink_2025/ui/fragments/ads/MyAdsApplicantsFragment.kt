@@ -303,25 +303,29 @@ class MyAdsApplicantsFragment : Fragment() {
             val bundle = Bundle().apply {
                 putString("applicant_id", applicant.id)
                 putString("applicant_name", applicant.name)
-                putString("applicant_email", applicant.email)
-                putString("applicant_phone", applicant.phone)
+                putString("applicant_email", applicant.email ?: "")
+                putString("applicant_phone", applicant.phone ?: "")
                 putString("applicant_profession", applicant.profession)
                 putString("applicant_experience", applicant.experience)
                 putStringArrayList("applicant_skills", ArrayList(applicant.skills))
                 putString("application_date", applicant.applicationDate)
                 putString("application_status", applicant.status.name)
-                putString("profile_image", applicant.profileImage)
-                putString("job_id", applicant.jobId)
-                putString("cover_letter", applicant.coverLetter)
+                putString("profile_image", applicant.profileImage ?: "")
+                putString("job_id", applicant.jobId ?: jobId ?: "")
+                putString("cover_letter", applicant.coverLetter ?: "")
             }
 
             findNavController().navigate(
                 R.id.action_myAdsApplicantsFragment_to_applicantProfileFragment,
                 bundle
             )
+            
+            Log.d("MyAdsApplicants", "Navegación exitosa al perfil de ${applicant.name}")
 
         } catch (e: Exception) {
             Log.e("MyAdsApplicants", "Error en navegación: ${e.message}")
+            Toast.makeText(requireContext(), "Error al abrir perfil: ${e.message}", Toast.LENGTH_SHORT).show()
+            // Fallback: mostrar información en un dialog
             showApplicantDetailsDialog(applicant)
         }
     }

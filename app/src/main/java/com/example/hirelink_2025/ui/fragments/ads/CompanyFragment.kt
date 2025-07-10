@@ -127,9 +127,10 @@ class CompanyFragment : Fragment() {
     }
     
     private fun editCompany(company: Company) {
-        // TODO: Navigate to edit company fragment
-        // val action = CompanyFragmentDirections.actionCompanyFragmentToCompanyEditFragment(company.id)
-        // findNavController().navigate(action)
+        val bundle = Bundle().apply {
+            putString("companyId", company.id)
+        }
+        findNavController().navigate(R.id.action_companyFragment_to_companyEditFragment, bundle)
     }
     
     private fun confirmDeleteCompany(company: Company) {
@@ -151,8 +152,9 @@ class CompanyFragment : Fragment() {
     }
     
     private fun viewCompanyDetails(company: Company) {
-        // TODO: Navigate to company detail fragment or show details
-        // val action = CompanyFragmentDirections.actionCompanyFragmentToCompanyDetailFragment(company.id)
-        // findNavController().navigate(action)
+        val bundle = Bundle().apply {
+            putString("companyId", company.id)
+        }
+        findNavController().navigate(R.id.action_companyFragment_to_companyDetailFragment, bundle)
     }
 }

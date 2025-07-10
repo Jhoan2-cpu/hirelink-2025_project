@@ -1,240 +1,471 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@color/background">
 
-    <LinearLayout
+    <!-- App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@color/surface"
+        app:elevation="4dp">
 
-        <!-- Header con foto y nombre -->
-        <androidx.cardview.widget.CardView
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/backButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconTint="@color/text_primary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/toolbarTitle"
+                style="@style/TextAppearance.HireLink.Title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Perfil del Postulante"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/shareButton"
+                app:layout_constraintStart_toEndOf="@id/backButton"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/shareButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_share"
+                app:iconTint="@color/text_primary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            android:orientation="vertical"
+            android:padding="@dimen/margin_medium">
 
-            <LinearLayout
+            <!-- Profile Header Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <ImageView
-                    android:id="@+id/applicantPhoto"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@drawable/circle_background"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/profile_random" />
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardCornerRadius="@dimen/radius_large"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/surface">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_large">
 
-                    <TextView
-                        android:id="@+id/applicantName"
+                    <!-- Profile Photo and Basic Info -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            app:cardCornerRadius="50dp"
+                            app:cardElevation="@dimen/card_elevation"
+                            app:cardBackgroundColor="@color/surface_variant">
+
+                            <ImageView
+                                android:id="@+id/applicantPhoto"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/margin_medium"
+                                android:src="@drawable/ic_person"
+                                android:scaleType="centerInside"
+                                app:tint="@color/primary" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="@dimen/margin_large"
+                            android:orientation="vertical">
+
+                            <!-- Applicant Name -->
+                            <TextView
+                                android:id="@+id/applicantName"
+                                style="@style/TextAppearance.HireLink.Title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_primary"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                tools:text="Juan Carlos Pérez" />
+
+                            <!-- Applicant Profession -->
+                            <TextView
+                                android:id="@+id/applicantProfession"
+                                style="@style/TextAppearance.HireLink.Body"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_tiny"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="16sp"
+                                tools:text="Desarrollador Android Senior" />
+
+                            <!-- Experience Years -->
+                            <TextView
+                                android:id="@+id/experienceYears"
+                                style="@style/TextAppearance.HireLink.Caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:textColor="@color/text_hint"
+                                android:drawableStart="@drawable/ic_work_small"
+                                android:drawableTint="@color/text_hint"
+                                android:drawablePadding="@dimen/margin_tiny"
+                                android:gravity="center_vertical"
+                                tools:text="5 años de experiencia" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Status Chip -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/statusChip"
+                        style="@style/Widget.Material3.Chip.Assist"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_primary"
-                        android:textSize="20sp"
+                        android:layout_marginTop="@dimen/margin_medium"
+                        android:textSize="14sp"
                         android:textStyle="bold"
-                        tools:text="Juan Carlos Pérez" />
-
-                    <TextView
-                        android:id="@+id/applicantProfession"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="16sp"
-                        tools:text="Desarrollador Android Senior" />
-
-                    <TextView
-                        android:id="@+id/applicantStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/status_background"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp"
-                        android:textColor="@color/white"
-                        android:textSize="12sp"
+                        app:chipIcon="@drawable/ic_pending"
+                        app:chipIconSize="16dp"
                         tools:text="Pendiente" />
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-        </androidx.cardview.widget.CardView>
-
-        <!-- Información de contacto -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp">
-
-            <LinearLayout
+            <!-- Contact Information Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardCornerRadius="@dimen/radius_large"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/surface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Contacto"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_large">
 
-                <TextView
-                    android:id="@+id/applicantEmail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:drawablePadding="8dp"
-                    app:drawableStartCompat="@drawable/ic_email"
-                    tools:text="juan.perez@email.com" />
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Información de Contacto"
+                        android:textColor="@color/primary"
+                        android:drawableStart="@drawable/ic_phone"
+                        android:drawableTint="@color/primary"
+                        android:drawablePadding="@dimen/margin_small"
+                        android:gravity="center_vertical" />
 
-                <TextView
-                    android:id="@+id/applicantPhone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:drawablePadding="8dp"
-                    app:drawableStartCompat="@drawable/ic_phone"
-                    tools:text="+57 301 234 5678" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:background="@color/divider" />
 
-            </LinearLayout>
+                    <!-- Email -->
+                    <LinearLayout
+                        android:id="@+id/emailLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="@dimen/margin_small">
 
-        </androidx.cardview.widget.CardView>
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginEnd="@dimen/margin_small"
+                            android:src="@drawable/ic_email"
+                            app:tint="@color/secondary" />
 
-        <!-- Experiencia y habilidades -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp">
+                        <TextView
+                            android:id="@+id/applicantEmail"
+                            style="@style/TextAppearance.HireLink.Body"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/blue_contact"
+                            tools:text="juan.perez@email.com" />
 
-            <LinearLayout
+                    </LinearLayout>
+
+                    <!-- Phone -->
+                    <LinearLayout
+                        android:id="@+id/phoneLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="@dimen/margin_small">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginEnd="@dimen/margin_small"
+                            android:src="@drawable/ic_phone"
+                            app:tint="@color/secondary" />
+
+                        <TextView
+                            android:id="@+id/applicantPhone"
+                            style="@style/TextAppearance.HireLink.Body"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/blue_contact"
+                            tools:text="+51 987654321" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Experience and Skills Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardCornerRadius="@dimen/radius_large"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/surface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Experiencia"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_large">
 
-                <TextView
-                    android:id="@+id/applicantExperience"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    tools:text="5 años de experiencia en desarrollo móvil" />
+                    <!-- Experience Section -->
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Experiencia Profesional"
+                        android:textColor="@color/primary"
+                        android:drawableStart="@drawable/ic_work"
+                        android:drawableTint="@color/primary"
+                        android:drawablePadding="@dimen/margin_small"
+                        android:gravity="center_vertical" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Habilidades"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:background="@color/divider" />
 
-                <TextView
-                    android:id="@+id/applicantSkills"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    tools:text="Kotlin, Java, Android SDK, MVVM, Clean Architecture" />
+                    <TextView
+                        android:id="@+id/applicantExperience"
+                        style="@style/TextAppearance.HireLink.Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_large"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@color/text_primary"
+                        tools:text="5 años de experiencia en desarrollo móvil con especialización en Android. He trabajado en equipos ágiles desarrollando aplicaciones nativas." />
 
-            </LinearLayout>
+                    <!-- Skills Section -->
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Habilidades Técnicas"
+                        android:textColor="@color/primary"
+                        android:drawableStart="@drawable/ic_skill"
+                        android:drawableTint="@color/primary"
+                        android:drawablePadding="@dimen/margin_small"
+                        android:gravity="center_vertical" />
 
-        </androidx.cardview.widget.CardView>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:background="@color/divider" />
 
-        <!-- Carta de presentación -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/coverLetterCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp">
+                    <!-- Skills Chip Group -->
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/skillsChipGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:chipSpacingHorizontal="@dimen/margin_small">
 
-            <LinearLayout
+                        <!-- Skills will be added programmatically -->
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Cover Letter Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/coverLetterCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="@dimen/margin_extra_large"
+                app:cardCornerRadius="@dimen/radius_large"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/surface">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Carta de Presentación"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_large">
 
-                <TextView
-                    android:id="@+id/coverLetter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    tools:text="Estimado equipo, me interesa mucho esta posición porque..." />
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Carta de Presentación"
+                        android:textColor="@color/primary"
+                        android:drawableStart="@drawable/ic_description"
+                        android:drawableTint="@color/primary"
+                        android:drawablePadding="@dimen/margin_small"
+                        android:gravity="center_vertical" />
 
-            </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:background="@color/divider" />
 
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:id="@+id/coverLetter"
+                        style="@style/TextAppearance.HireLink.Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@color/text_primary"
+                        tools:text="Estimado equipo de reclutamiento, me dirijo a ustedes con gran interés en la posición de Desarrollador Android. Mi experiencia de 5 años y mi pasión por el desarrollo móvil me convierten en un candidato ideal para este rol." />
 
-        <!-- Botones de acción -->
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/surface"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_medium">
+
+        <!-- Primary Actions -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/acceptButton"
+                style="@style/Widget.HireLink.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/green_accept"
+                android:layout_marginEnd="@dimen/margin_small"
                 android:text="Aceptar"
-                android:textColor="@color/white" />
+                android:textSize="@dimen/text_size_medium"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="textStart"
+                app:backgroundTint="@color/success"
+                app:cornerRadius="@dimen/radius_large" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/rejectButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/red_reject"
+                android:layout_marginStart="@dimen/margin_small"
                 android:text="Rechazar"
-                android:textColor="@color/white" />
+                android:textSize="@dimen/text_size_medium"
+                android:textColor="@color/error"
+                app:icon="@drawable/ic_close"
+                app:iconGravity="textStart"
+                app:iconTint="@color/error"
+                app:strokeColor="@color/error"
+                app:cornerRadius="@dimen/radius_large" />
 
         </LinearLayout>
 
-        <Button
+        <!-- Contact Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/contactButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/blue_contact"
+            android:layout_marginTop="@dimen/margin_small"
             android:text="Contactar por Email"
-            android:textColor="@color/white" />
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/secondary"
+            app:icon="@drawable/ic_email"
+            app:iconGravity="textStart"
+            app:iconTint="@color/secondary"
+            app:strokeColor="@color/secondary"
+            app:cornerRadius="@dimen/radius_large" />
 
     </LinearLayout>
 
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

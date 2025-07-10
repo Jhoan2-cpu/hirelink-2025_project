@@ -3,14 +3,19 @@ package com.example.hirelink_2025.ui.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hirelink_2025.R
-import com.example.hirelink_2025.databinding.ItemApplicantBinding
 import com.example.hirelink_2025.models.Applicant
 import com.example.hirelink_2025.models.ApplicationStatus
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 
 /**
  * Adapter para mostrar lista de aplicantes
@@ -23,12 +28,9 @@ class ApplicantAdapter(
 ) : ListAdapter<Applicant, ApplicantAdapter.ApplicantViewHolder>(ApplicantDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicantViewHolder {
-        val binding = ItemApplicantBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return ApplicantViewHolder(binding)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_applicant, parent, false)
+        return ApplicantViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ApplicantViewHolder, position: Int) {
@@ -36,61 +38,100 @@ class ApplicantAdapter(
     }
 
     inner class ApplicantViewHolder(
-        private val binding: ItemApplicantBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
+        itemView: View
+    ) : RecyclerView.ViewHolder(itemView) {
+        
+        private val applicantCard: MaterialCardView = itemView.findViewById(R.id.applicantCard)
+        private val applicantAvatar: ImageView = itemView.findViewById(R.id.applicantAvatar)
+        private val applicantName: TextView = itemView.findViewById(R.id.applicantName)
+        private val applicantProfession: TextView = itemView.findViewById(R.id.applicantProfession)
+        private val experienceYears: TextView = itemView.findViewById(R.id.experienceYears)
+        private val statusChip: Chip = itemView.findViewById(R.id.statusChip)
+        private val skillsChipGroup: ChipGroup = itemView.findViewById(R.id.skillsChipGroup)
+        private val applicantEmail: TextView = itemView.findViewById(R.id.applicantEmail)
+        private val applicantPhone: TextView = itemView.findViewById(R.id.applicantPhone)
+        private val applicationDate: TextView = itemView.findViewById(R.id.applicationDate)
+        private val acceptButton: MaterialButton = itemView.findViewById(R.id.acceptButton)
+        private val rejectButton: MaterialButton = itemView.findViewById(R.id.rejectButton)
 
         fun bind(applicant: Applicant) {
-            // Datos básicos
-            binding.applicantName.text = applicant.name
-            binding.applicantProfession.text = applicant.profession
-            binding.applicantExperience.text = applicant.experience
-            binding.applicantEmail.text = applicant.email
-            binding.applicantPhone.text = applicant.phone
-            binding.applicationDate.text = "Aplicó el ${applicant.applicationDate}"
+            // Basic data
+            applicantName.text = applicant.name
+            applicantProfession.text = applicant.profession
+            experienceYears.text = applicant.experience
+            applicantEmail.text = applicant.email
+            applicantPhone.text = applicant.phone
+            applicationDate.text = "Aplicó el ${applicant.applicationDate}"
 
-            // Habilidades
-            binding.applicantSkills.text = applicant.skills.joinToString(", ")
-
-            // Estado visual según status
+            // Status chip
             updateStatusAppearance(applicant.status)
+            
+            // Skills chips
+            setupSkillsChips(applicant.skills)
 
-            // Configurar botones según callbacks disponibles
+            // Configure action buttons
             setupActionButtons(applicant)
 
-            // Click en perfil
-            binding.root.setOnClickListener {
+            // Profile click
+            applicantCard.setOnClickListener {
                 onViewProfileClick(applicant)
             }
         }
-
-        /**
-         * Actualizar apariencia según estado
-         */
-        private fun updateStatusAppearance(status: ApplicationStatus) {
-            binding.statusIndicator.apply {
-                when (status) {
-                    ApplicationStatus.PENDING -> {
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.orange_pending))
-                        text = "Pendiente"
-                    }
-                    ApplicationStatus.ACCEPTED -> {
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.green_accept))
-                        text = "Aceptado"
-                    }
-                    ApplicationStatus.REJECTED -> {
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.red_reject))
-                        text = "Rechazado"
-                    }
-                }
+        
+        private fun setupSkillsChips(skills: List<String>) {
+            skillsChipGroup.removeAllViews()
+            
+            // Limit to first 3 skills to avoid overcrowding
+            val displaySkills = skills.take(3)
+            
+            displaySkills.forEach { skill ->
+                val chip = Chip(itemView.context)
+                chip.text = skill
+                chip.isClickable = false
+                chip.setChipBackgroundColorResource(R.color.surface_variant)
+                chip.setTextColor(ContextCompat.getColor(itemView.context, R.color.text_secondary))
+                chip.textSize = 12f
+                skillsChipGroup.addView(chip)
+            }
+            
+            // Add "+X more" chip if there are more skills
+            if (skills.size > 3) {
+                val moreChip = Chip(itemView.context)
+                moreChip.text = "+${skills.size - 3} más"
+                moreChip.isClickable = false
+                moreChip.setChipBackgroundColorResource(R.color.primary)
+                moreChip.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
+                moreChip.textSize = 12f
+                skillsChipGroup.addView(moreChip)
             }
         }
 
-        /**
-         * Configurar botones de acción
-         */
+        private fun updateStatusAppearance(status: ApplicationStatus) {
+            statusChip.apply {
+                when (status) {
+                    ApplicationStatus.PENDING -> {
+                        text = "Pendiente"
+                        setChipBackgroundColorResource(R.color.secondary)
+                        setChipIconResource(R.drawable.ic_pending)
+                    }
+                    ApplicationStatus.ACCEPTED -> {
+                        text = "Aceptado"
+                        setChipBackgroundColorResource(R.color.success)
+                        setChipIconResource(R.drawable.ic_check_circle)
+                    }
+                    ApplicationStatus.REJECTED -> {
+                        text = "Rechazado"
+                        setChipBackgroundColorResource(R.color.error)
+                        setChipIconResource(R.drawable.ic_rejected)
+                    }
+                }
+                setTextColor(ContextCompat.getColor(context, R.color.white))
+            }
+        }
+
         private fun setupActionButtons(applicant: Applicant) {
-            // Botón aceptar
-            binding.acceptButton.apply {
+            // Accept button
+            acceptButton.apply {
                 if (onAcceptClick != null && applicant.status == ApplicationStatus.PENDING) {
                     visibility = View.VISIBLE
                     setOnClickListener { onAcceptClick.invoke(applicant) }
@@ -99,8 +140,8 @@ class ApplicantAdapter(
                 }
             }
 
-            // Botón rechazar
-            binding.rejectButton.apply {
+            // Reject button
+            rejectButton.apply {
                 if (onRejectClick != null && applicant.status != ApplicationStatus.REJECTED) {
                     visibility = View.VISIBLE
                     setOnClickListener { onRejectClick.invoke(applicant) }

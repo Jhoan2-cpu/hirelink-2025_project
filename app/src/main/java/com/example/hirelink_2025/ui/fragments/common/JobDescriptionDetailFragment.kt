@@ -1,6 +1,7 @@
 package com.example.hirelink_2025.ui.fragments.common
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,227 +10,262 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
-import com.example.hirelink_2025.databinding.FragmentJobDescriptionDetailBinding
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.chip.Chip
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 
 class JobDescriptionDetailFragment : Fragment() {
 
-    private lateinit var binding: FragmentJobDescriptionDetailBinding
-    private var isJobSaved = false
+    // UI Components
+    private lateinit var backButton: MaterialButton
+    private lateinit var shareButton: MaterialButton
+    private lateinit var toolbarTitle: TextView
+    
+    // Job Header Components
+    private lateinit var companyLogo: ImageView
+    private lateinit var jobTitle: TextView
+    private lateinit var companyName: TextView
+    private lateinit var locationAndDate: TextView
+    
+    // Chips
+    private lateinit var modalityChip: Chip
+    private lateinit var vacanciesChip: Chip
+    private lateinit var employmentTypeChip: Chip
+    private lateinit var salaryChip: Chip
+    
+    // Content sections
+    private lateinit var aboutCompany: TextView
+    private lateinit var aboutJob: TextView
+    private lateinit var jobRequirements: TextView
+    
+    // Contact information
+    private lateinit var phoneLayout: LinearLayout
+    private lateinit var emailLayout: LinearLayout
+    private lateinit var websiteLayout: LinearLayout
+    private lateinit var companyPhone: TextView
+    private lateinit var companyEmail: TextView
+    private lateinit var companyWebsite: TextView
+    
+    // Apply button
+    private lateinit var applyJobButton: MaterialButton
 
-    // Datos del trabajo
-    private var jobId: Int = 0
-    private var jobTitle: String = ""
-    private var jobCompany: String = ""
-    private var jobLocation: String = ""
-    private var jobSalary: String = ""
-    private var jobType: String = ""
-    private var jobDescription: String = ""
-    private var jobPublishedDate: String = ""
+    // Job data
+    private var jobData: JobData? = null
+    
+    data class JobData(
+        val id: Int = 0,
+        val title: String = "",
+        val company: String = "",
+        val location: String = "",
+        val salary: String = "",
+        val modality: String = "",
+        val vacancies: String = "",
+        val employmentType: String = "",
+        val companyDescription: String = "",
+        val jobDescription: String = "",
+        val requirements: String = "",
+        val phone: String = "",
+        val email: String = "",
+        val website: String = "",
+        val publishedDate: String = ""
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentJobDescriptionDetailBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        return inflater.inflate(R.layout.fragment_job_description_detail, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Obtener argumentos
-        getArgumentsData()
-
-        // Configurar UI
-        setupUI()
+        
+        initViews(view)
+        getJobDataFromArguments()
         setupClickListeners()
-
-        // Mostrar datos del trabajo
         displayJobData()
-
-        // Actualizar título después de cargar los datos
-        updateToolbarTitle()
     }
 
-    private fun getArgumentsData() {
+    private fun initViews(view: View) {
+        // Toolbar
+        backButton = view.findViewById(R.id.backButton)
+        shareButton = view.findViewById(R.id.shareButton)
+        toolbarTitle = view.findViewById(R.id.toolbarTitle)
+        
+        // Job Header
+        companyLogo = view.findViewById(R.id.companyLogo)
+        jobTitle = view.findViewById(R.id.jobTitle)
+        companyName = view.findViewById(R.id.companyName)
+        locationAndDate = view.findViewById(R.id.locationAndDate)
+        
+        // Chips
+        modalityChip = view.findViewById(R.id.modalityChip)
+        vacanciesChip = view.findViewById(R.id.vacanciesChip)
+        employmentTypeChip = view.findViewById(R.id.employmentTypeChip)
+        salaryChip = view.findViewById(R.id.salaryChip)
+        
+        // Content sections
+        aboutCompany = view.findViewById(R.id.aboutCompany)
+        aboutJob = view.findViewById(R.id.aboutJob)
+        jobRequirements = view.findViewById(R.id.jobRequirements)
+        
+        // Contact information
+        phoneLayout = view.findViewById(R.id.phoneLayout)
+        emailLayout = view.findViewById(R.id.emailLayout)
+        websiteLayout = view.findViewById(R.id.websiteLayout)
+        companyPhone = view.findViewById(R.id.companyPhone)
+        companyEmail = view.findViewById(R.id.companyEmail)
+        companyWebsite = view.findViewById(R.id.companyWebsite)
+        
+        // Apply button
+        applyJobButton = view.findViewById(R.id.applyJobButton)
+    }
+    
+    private fun getJobDataFromArguments() {
         arguments?.let { bundle ->
-            jobId = bundle.getInt("job_id", 0)
-            jobTitle = bundle.getString("job_title", "")
-            jobCompany = bundle.getString("job_company", "")
-            jobLocation = bundle.getString("job_location", "")
-            jobSalary = bundle.getString("job_salary", "")
-            jobType = bundle.getString("job_type", "")
-            jobDescription = bundle.getString("job_description", "")
-            jobPublishedDate = bundle.getString("job_published_date", "")
+            jobData = JobData(
+                id = bundle.getInt("job_id", 0),
+                title = bundle.getString("job_title", ""),
+                company = bundle.getString("job_company", ""),
+                location = bundle.getString("job_location", ""),
+                salary = bundle.getString("job_salary", ""),
+                modality = bundle.getString("job_modality", ""),
+                vacancies = bundle.getString("job_vacancies", ""),
+                employmentType = bundle.getString("job_employment_type", ""),
+                companyDescription = bundle.getString("company_description", ""),
+                jobDescription = bundle.getString("job_description", ""),
+                requirements = bundle.getString("job_requirements", ""),
+                phone = bundle.getString("company_phone", ""),
+                email = bundle.getString("company_email", ""),
+                website = bundle.getString("company_website", ""),
+                publishedDate = bundle.getString("job_published_date", "")
+            )
         }
     }
 
-    private fun setupUI() {
-        // Configuración inicial de la UI
-        // El título se actualiza después de cargar los datos
-    }
-
-    private fun updateToolbarTitle() {
-        val title = if (jobTitle.isNotEmpty()) {
-            "$jobTitle - ${parseJobType()}"
-        } else {
-            "Título - Tipo de Trabajo"
-        }
-        binding.toolbarTitle.text = title
-    }
-
-    private fun parseJobType(): String {
-        return if (jobType.isNotEmpty()) {
-            val parts = jobType.split(" - ")
-            if (parts.isNotEmpty()) parts[0] else "Trabajo"
-        } else {
-            "Trabajo"
-        }
-    }
 
     private fun setupClickListeners() {
-        // Botón back
-        binding.backButton.setOnClickListener {
-            findNavController().popBackStack()
+        backButton.setOnClickListener {
+            findNavController().navigateUp()
         }
-
-        // Botón compartir
-        binding.shareButton.setOnClickListener {
+        
+        shareButton.setOnClickListener {
             shareJob()
         }
-
-        // Botón bookmark en el header
-        binding.bookmarkButton.setOnClickListener {
-            toggleBookmark()
+        
+        // Contact click listeners
+        phoneLayout.setOnClickListener {
+            dialPhone(jobData?.phone ?: "")
         }
-
-        // Botón guardar trabajo
-        binding.saveJobButton.setOnClickListener {
-            toggleSaveJob()
+        
+        emailLayout.setOnClickListener {
+            sendEmail(jobData?.email ?: "")
         }
-
-        // Botón aplicar
-        binding.applyJobButton.setOnClickListener {
+        
+        websiteLayout.setOnClickListener {
+            openWebsite(jobData?.website ?: "")
+        }
+        
+        applyJobButton.setOnClickListener {
             applyToJob()
         }
     }
 
     private fun displayJobData() {
-        with(binding) {
-            // Información básica
-            jobTitle.text = this@JobDescriptionDetailFragment.jobTitle.ifEmpty { "Desarrollador Frontend" }
-            companyName.text = this@JobDescriptionDetailFragment.jobCompany.ifEmpty { "Google Inc." }
-            jobLocation.text = this@JobDescriptionDetailFragment.jobLocation.ifEmpty { "Lima, Perú" }
-            publishedDate.text = this@JobDescriptionDetailFragment.jobPublishedDate.ifEmpty { "Publicado hace 2 días" }
-
-            // Chips
-            salaryChip.text = this@JobDescriptionDetailFragment.jobSalary.ifEmpty { "S/. 3,000 - 5,000" }
-
-            // Parsear el tipo de trabajo para modalidad y tipo de empleo
-            val typeparts = this@JobDescriptionDetailFragment.jobType.split(" - ")
-            if (typeparts.size >= 2) {
-                employmentTypeChip.text = typeparts[0]
-                modalityChip.text = typeparts[1]
-            } else {
-                employmentTypeChip.text = "Tiempo completo"
-                modalityChip.text = "Remoto"
-            }
-
-            experienceChip.text = "Intermedio" // Por defecto
-
-            // Información detallada del trabajo
-            vacanciesCount.text = "1" // Por defecto
-            jobDate.text = getCurrentDate()
-            employmentTypeDetail.text = if (typeparts.isNotEmpty()) typeparts[0] else "Tiempo completo"
-            jobPosition.text = extractJobPosition()
-            jobModalityDetail.text = if (typeparts.size >= 2) typeparts[1] else "Remoto"
-            jobStatus.text = "Disponible"
-
-            // Acerca de la empresa
-            aboutCompany.text = getCompanyDescription()
-
-            // Descripción del trabajo
-            jobDescription.text = this@JobDescriptionDetailFragment.jobDescription.ifEmpty {
-                getDefaultJobDescription()
-            }
-
-            // Información de contacto
-            contactPhone.text = "+51 956842976"
-            contactEmail.text = "usuario@gmail.com"
-            contactWebsite.text = "sitio web"
-
-            // Configurar click listeners para contacto
-            setupContactClickListeners()
+        val data = jobData ?: return
+        
+        // Job header
+        jobTitle.text = data.title.ifEmpty { "Desarrollador Android Senior" }
+        companyName.text = data.company.ifEmpty { "TechSolutions S.A.C." }
+        locationAndDate.text = formatLocationAndDate(data.location, data.publishedDate)
+        
+        // Job detail chips
+        modalityChip.text = data.modality.ifEmpty { "Remoto" }
+        vacanciesChip.text = if (data.vacancies.isNotEmpty()) "${data.vacancies} vacantes" else "5 vacantes"
+        employmentTypeChip.text = data.employmentType.ifEmpty { "Tiempo completo" }
+        salaryChip.text = data.salary.ifEmpty { "S/. 5000 - 7000" }
+        
+        // Content sections
+        aboutCompany.text = data.companyDescription.ifEmpty {
+            "Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras para el mercado peruano y latinoamericano."
         }
+        
+        aboutJob.text = data.jobDescription.ifEmpty {
+            "Buscamos un desarrollador Android con experiencia en Kotlin, arquitectura MVVM y desarrollo de aplicaciones nativas."
+        }
+        
+        jobRequirements.text = data.requirements.ifEmpty {
+            "• 3+ años de experiencia en desarrollo Android\n• Conocimiento en Kotlin y Java\n• Experiencia con MVVM y LiveData\n• Conocimiento de APIs REST y bases de datos"
+        }
+        
+        // Contact information - Always show default data
+        companyPhone.text = data.phone.ifEmpty { "+51 987654321" }
+        companyEmail.text = data.email.ifEmpty { "rrhh@techsolutions.com" }
+        companyWebsite.text = data.website.ifEmpty { "www.techsolutions.com" }
+        
+        // Always show contact sections with default data
+        phoneLayout.visibility = View.VISIBLE
+        emailLayout.visibility = View.VISIBLE
+        websiteLayout.visibility = View.VISIBLE
+    }
+    
+    private fun formatLocationAndDate(location: String, publishedDate: String): String {
+        val loc = location.ifEmpty { "Lima, Perú" }
+        val date = publishedDate.ifEmpty { "Hace 2 días" }
+        return "$loc • $date"
     }
 
-    private fun getCurrentDate(): String {
-        val calendar = java.util.Calendar.getInstance()
-        val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
-        val month = calendar.get(java.util.Calendar.MONTH) + 1
-        val year = calendar.get(java.util.Calendar.YEAR)
-        return String.format("%02d/%02d/%d", day, month, year)
-    }
-
-    private fun extractJobPosition(): String {
-        // Extraer el tipo de cargo desde el título del trabajo
-        return when {
-            jobTitle.contains("Desarrollador", ignoreCase = true) -> "Desarrollador"
-            jobTitle.contains("Diseñador", ignoreCase = true) -> "Diseñador"
-            jobTitle.contains("Gerente", ignoreCase = true) -> "Gerente"
-            jobTitle.contains("Analista", ignoreCase = true) -> "Analista"
-            jobTitle.contains("Marketing", ignoreCase = true) -> "Marketing"
-            jobTitle.contains("Ventas", ignoreCase = true) -> "Ventas"
-            else -> "Profesional"
-        }
-    }
-
-    private fun setupContactClickListeners() {
-        // Click en teléfono
-        binding.contactPhone.setOnClickListener {
-            dialPhoneNumber(binding.contactPhone.text.toString())
-        }
-
-        // Click en email
-        binding.contactEmail.setOnClickListener {
-            sendEmail(binding.contactEmail.text.toString())
-        }
-
-        // Click en website
-        binding.contactWebsite.setOnClickListener {
-            openWebsite("https://www.google.com") // URL por defecto
-        }
-    }
-
-    private fun dialPhoneNumber(phoneNumber: String) {
+    private fun dialPhone(phone: String) {
+        val phoneToUse = phone.ifEmpty { "+51 987654321" }
+        
+        val formattedPhone = if (phoneToUse.startsWith("+")) phoneToUse else "+51$phoneToUse"
         val intent = Intent(Intent.ACTION_DIAL).apply {
-            data = android.net.Uri.parse("tel:$phoneNumber")
+            data = Uri.parse("tel:$formattedPhone")
         }
+        
         try {
             startActivity(intent)
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "No se pudo abrir el marcador", Toast.LENGTH_SHORT).show()
         }
     }
-
+    
     private fun sendEmail(email: String) {
+        val emailToUse = email.ifEmpty { "rrhh@techsolutions.com" }
+        
+        val jobTitle = jobData?.title ?: "empleo"
+        val companyName = jobData?.company ?: "empresa"
+        
         val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = android.net.Uri.parse("mailto:$email")
+            data = Uri.parse("mailto:$emailToUse")
             putExtra(Intent.EXTRA_SUBJECT, "Consulta sobre: $jobTitle")
-            putExtra(Intent.EXTRA_TEXT, "Hola, me interesa la oferta laboral para $jobTitle en $jobCompany.")
+            putExtra(Intent.EXTRA_TEXT, "Hola, me interesa la oferta laboral para $jobTitle en $companyName.")
         }
+        
         try {
             startActivity(intent)
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "No se pudo abrir el cliente de email", Toast.LENGTH_SHORT).show()
         }
     }
-
-    private fun openWebsite(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = android.net.Uri.parse(url)
+    
+    private fun openWebsite(website: String) {
+        val websiteToUse = website.ifEmpty { "www.techsolutions.com" }
+        
+        val url = if (websiteToUse.startsWith("http://") || websiteToUse.startsWith("https://")) {
+            websiteToUse
+        } else {
+            "https://$websiteToUse"
         }
+        
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(url)
+        }
+        
         try {
             startActivity(intent)
         } catch (e: Exception) {
@@ -237,31 +273,18 @@ class JobDescriptionDetailFragment : Fragment() {
         }
     }
 
-    private fun getCompanyDescription(): String {
-        return when (jobCompany.lowercase()) {
-            "google", "google inc.", "google inc" ->
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-            "microsoft" ->
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
-            "amazon" ->
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
-            else ->
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-        }
-    }
-
-    private fun getDefaultJobDescription(): String {
-        return "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-    }
 
     private fun shareJob() {
+        val data = jobData ?: return
+        
         val shareText = """
             ¡Mira esta oportunidad laboral!
             
-            Puesto: $jobTitle
-            Empresa: $jobCompany
-            Ubicación: $jobLocation
-            Salario: $jobSalary
+            Puesto: ${data.title}
+            Empresa: ${data.company}
+            Ubicación: ${data.location}
+            Salario: ${data.salary}
+            Modalidad: ${data.modality}
             
             Enviado desde HireLink
         """.trimIndent()
@@ -270,7 +293,7 @@ class JobDescriptionDetailFragment : Fragment() {
             action = Intent.ACTION_SEND
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, shareText)
-            putExtra(Intent.EXTRA_SUBJECT, "Oportunidad laboral: $jobTitle")
+            putExtra(Intent.EXTRA_SUBJECT, "Oportunidad laboral: ${data.title}")
         }
 
         try {
@@ -280,68 +303,16 @@ class JobDescriptionDetailFragment : Fragment() {
         }
     }
 
-    private fun toggleBookmark() {
-        isJobSaved = !isJobSaved
-        updateBookmarkIcon()
 
-        val message = if (isJobSaved) {
-            "Trabajo guardado en favoritos"
-        } else {
-            "Trabajo removido de favoritos"
-        }
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun toggleSaveJob() {
-        isJobSaved = !isJobSaved
-        updateSaveButtonState()
-
-        val message = if (isJobSaved) {
-            "Trabajo guardado"
-        } else {
-            "Trabajo removido de guardados"
-        }
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun updateBookmarkIcon() {
-        val iconRes = if (isJobSaved) {
-            R.drawable.ic_bookmark_filled
-        } else {
-            R.drawable.ic_bookmark_border
-        }
-        binding.bookmarkButton.setIconResource(iconRes)
-    }
-
-    private fun updateSaveButtonState() {
-        val iconRes = if (isJobSaved) {
-            R.drawable.ic_bookmark_filled
-        } else {
-            R.drawable.ic_bookmark_border
-        }
-
-        val text = if (isJobSaved) {
-            "Guardado"
-        } else {
-            "Guardar"
-        }
-
-        binding.saveJobButton.setIconResource(iconRes)
-        binding.saveJobButton.text = text
-    }
 
     private fun applyToJob() {
-        // Mostrar diálogo de confirmación o navegar a formulario de aplicación
-        showApplyDialog()
-    }
-
-    private fun showApplyDialog() {
+        val data = jobData ?: return
+        
         val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
         builder.setTitle("Aplicar a este trabajo")
-        builder.setMessage("¿Estás seguro de que quieres aplicar a este puesto en $jobCompany?")
+        builder.setMessage("¿Estás seguro de que quieres aplicar a este puesto en ${data.company}?")
 
         builder.setPositiveButton("Aplicar") { _, _ ->
-            // Aquí implementarías la lógica de aplicación
             processJobApplication()
         }
 
@@ -353,18 +324,13 @@ class JobDescriptionDetailFragment : Fragment() {
     }
 
     private fun processJobApplication() {
-        // Simular proceso de aplicación
         Toast.makeText(requireContext(), "¡Aplicación enviada exitosamente!", Toast.LENGTH_LONG).show()
 
-        // Cambiar el estado del botón
-        binding.applyJobButton.apply {
+        applyJobButton.apply {
             text = "Aplicado ✓"
             isEnabled = false
             alpha = 0.6f
         }
-
-        // Opcional: navegar de vuelta o mostrar pantalla de confirmación
-        // findNavController().popBackStack()
     }
 
     companion object {
@@ -375,8 +341,15 @@ class JobDescriptionDetailFragment : Fragment() {
             jobCompany: String,
             jobLocation: String,
             jobSalary: String,
-            jobType: String,
+            jobModality: String,
+            jobVacancies: String,
+            jobEmploymentType: String,
+            companyDescription: String,
             jobDescription: String,
+            jobRequirements: String,
+            companyPhone: String,
+            companyEmail: String,
+            companyWebsite: String,
             jobPublishedDate: String
         ) = JobDescriptionDetailFragment().apply {
             arguments = Bundle().apply {
@@ -385,8 +358,15 @@ class JobDescriptionDetailFragment : Fragment() {
                 putString("job_company", jobCompany)
                 putString("job_location", jobLocation)
                 putString("job_salary", jobSalary)
-                putString("job_type", jobType)
+                putString("job_modality", jobModality)
+                putString("job_vacancies", jobVacancies)
+                putString("job_employment_type", jobEmploymentType)
+                putString("company_description", companyDescription)
                 putString("job_description", jobDescription)
+                putString("job_requirements", jobRequirements)
+                putString("company_phone", companyPhone)
+                putString("company_email", companyEmail)
+                putString("company_website", companyWebsite)
                 putString("job_published_date", jobPublishedDate)
             }
         }

@@ -144,6 +144,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
                     android:orientation="horizontal">
 
                     <TextView
@@ -162,6 +163,188 @@
                         android:layout_weight="1"
                         android:textColor="@color/primary"
                         tools:text="+51 987654321" />
+
+                </LinearLayout>
+
+                <!-- Education -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Educación:"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/aboutEducation"
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_primary"
+                        tools:text="Ingeniería de Sistemas - Universidad Nacional del Santa" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Location Card -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.HireLink.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_medium"
+            app:cardElevation="@dimen/elevation_small">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/margin_medium">
+
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:text="Ubicación"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold" />
+
+                <!-- Address -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Dirección:"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/aboutAddress"
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_primary"
+                        tools:text="Av. Universitaria 123, Urb. Los Jardines" />
+
+                </LinearLayout>
+
+                <!-- District -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Distrito:"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/aboutDistrict"
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_primary"
+                        tools:text="Chimbote" />
+
+                </LinearLayout>
+
+                <!-- Province -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Provincia:"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/aboutProvince"
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_primary"
+                        tools:text="Santa" />
+
+                </LinearLayout>
+
+                <!-- Department -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Departamento:"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/aboutDepartment"
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_primary"
+                        tools:text="Áncash" />
+
+                </LinearLayout>
+
+                <!-- Country -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="País:"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/aboutCountry"
+                        style="@style/TextAppearance.HireLink.Caption"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_primary"
+                        tools:text="Perú" />
 
                 </LinearLayout>
 

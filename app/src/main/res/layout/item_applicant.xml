@@ -1,159 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/applicantCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginHorizontal="@dimen/margin_medium"
+    android:layout_marginVertical="@dimen/margin_small"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="@dimen/radius_large"
+    app:cardElevation="@dimen/card_elevation"
+    app:cardBackgroundColor="@color/surface"
+    app:strokeWidth="0dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/margin_large">
 
-        <!-- Header con nombre y estado -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Profile Avatar -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/avatarCard"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface_variant"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/applicantAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/margin_small"
+                android:src="@drawable/ic_person"
+                android:scaleType="centerInside"
+                app:tint="@color/primary" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Applicant Name -->
+        <TextView
+            android:id="@+id/applicantName"
+            style="@style/TextAppearance.HireLink.Title"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginStart="@dimen/margin_medium"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintEnd_toStartOf="@id/statusChip"
+            app:layout_constraintStart_toEndOf="@id/avatarCard"
+            app:layout_constraintTop_toTopOf="@id/avatarCard"
+            tools:text="Juan Carlos Pérez" />
 
+        <!-- Applicant Profession -->
+        <TextView
+            android:id="@+id/applicantProfession"
+            style="@style/TextAppearance.HireLink.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:textColor="@color/text_secondary"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintEnd_toStartOf="@id/statusChip"
+            app:layout_constraintStart_toStartOf="@id/applicantName"
+            app:layout_constraintTop_toBottomOf="@id/applicantName"
+            tools:text="Desarrollador Android Senior" />
+
+        <!-- Experience Years -->
+        <TextView
+            android:id="@+id/experienceYears"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:textColor="@color/text_hint"
+            android:drawableStart="@drawable/ic_work_small"
+            android:drawableTint="@color/text_hint"
+            android:drawablePadding="@dimen/margin_tiny"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toStartOf="@id/statusChip"
+            app:layout_constraintStart_toStartOf="@id/applicantName"
+            app:layout_constraintTop_toBottomOf="@id/applicantProfession"
+            tools:text="5 años de experiencia" />
+
+        <!-- Status Chip -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/statusChip"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:chipIcon="@drawable/ic_pending"
+            app:chipIconSize="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Pendiente" />
+
+        <!-- Skills Chip Group -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/skillsChipGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            app:chipSpacingHorizontal="@dimen/margin_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/avatarCard">
+
+            <!-- Skills will be added programmatically -->
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Contact Information -->
+        <LinearLayout
+            android:id="@+id/contactLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/skillsChipGroup">
+
+            <!-- Email -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="@dimen/margin_tiny"
+                    android:src="@drawable/ic_email"
+                    app:tint="@color/secondary" />
 
                 <TextView
-                    android:id="@+id/applicantName"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/applicantEmail"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="Juan Carlos Pérez" />
-
-                <TextView
-                    android:id="@+id/applicantProfession"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textColor="@color/text_secondary"
-                    android:textSize="14sp"
-                    tools:text="Desarrollador Android" />
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="juan.perez@email.com" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/statusIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/status_background"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="4dp"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                tools:text="Pendiente" />
-
-        </LinearLayout>
-
-        <!-- Experiencia -->
-        <TextView
-            android:id="@+id/applicantExperience"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            tools:text="5 años de experiencia" />
-
-        <!-- Habilidades -->
-        <TextView
-            android:id="@+id/applicantSkills"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            tools:text="Kotlin, Java, Android SDK, MVVM" />
-
-        <!-- Contacto -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/applicantEmail"
+            <!-- Phone -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawablePadding="4dp"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                app:drawableStartCompat="@drawable/ic_email"
-                tools:text="juan.perez@email.com" />
+                android:layout_marginStart="@dimen/margin_small"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/applicantPhone"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawablePadding="4dp"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                app:drawableStartCompat="@drawable/ic_phone"
-                tools:text="+57 301 234 5678" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="@dimen/margin_tiny"
+                    android:src="@drawable/ic_phone"
+                    app:tint="@color/secondary" />
+
+                <TextView
+                    android:id="@+id/applicantPhone"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/text_secondary"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="+51 987654321" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Fecha de aplicación -->
+        <!-- Application Date -->
         <TextView
             android:id="@+id/applicationDate"
+            style="@style/TextAppearance.HireLink.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/text_secondary"
-            android:textSize="11sp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/text_hint"
+            android:drawableStart="@drawable/ic_calendar"
+            android:drawableTint="@color/text_hint"
+            android:drawablePadding="@dimen/margin_tiny"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/contactLayout"
             tools:text="Aplicó el 16/01/2025" />
 
-        <!-- Botones de acción -->
+        <!-- Action Buttons -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/actionButtonsLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
+            android:layout_marginTop="@dimen/margin_large"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/applicationDate">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/acceptButton"
+                style="@style/Widget.HireLink.Button"
                 android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="8dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="@color/green_accept"
+                android:layout_marginEnd="@dimen/margin_small"
                 android:text="Aceptar"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="@dimen/text_size_small"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="textStart"
+                app:iconSize="16dp"
+                app:backgroundTint="@color/success"
+                app:cornerRadius="@dimen/radius_medium" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/rejectButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#040404"
+                android:layout_marginStart="@dimen/margin_small"
                 android:text="Rechazar"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/error"
+                app:icon="@drawable/ic_close"
+                app:iconGravity="textStart"
+                app:iconSize="16dp"
+                app:iconTint="@color/error"
+                app:strokeColor="@color/error"
+                app:cornerRadius="@dimen/radius_medium" />
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
