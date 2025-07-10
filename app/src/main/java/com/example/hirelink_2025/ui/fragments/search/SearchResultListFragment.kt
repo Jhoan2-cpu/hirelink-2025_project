@@ -190,16 +190,8 @@ class SearchResultListFragment : Fragment() {
 
     private fun setupFilterMenuButtons() {
         // Configurar cada botón de filtro
-        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterStatusButton)?.setOnClickListener {
-            showStatusPopupMenu(it)
-        }
-
         binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterDateButton)?.setOnClickListener {
             showDatePopupMenu(it)
-        }
-
-        binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterExperienceButton)?.setOnClickListener {
-            showExperiencePopupMenu(it)
         }
 
         binding.filterMenuCard.findViewById<MaterialButton>(R.id.filterPositionButton)?.setOnClickListener {
@@ -222,47 +214,6 @@ class SearchResultListFragment : Fragment() {
         binding.filterMenuCard.findViewById<MaterialButton>(R.id.showResultsButton)?.setOnClickListener {
             applyFiltersAndShowResults()
         }
-    }
-
-    private fun showStatusPopupMenu(view: View) {
-        val popupMenu = PopupMenu(requireContext(), view)
-        popupMenu.menuInflater.inflate(R.menu.filter_status_menu, popupMenu.menu)
-
-        popupMenu.setOnMenuItemClickListener { item ->
-            selectedStatus = when (item.itemId) {
-                R.id.status_active -> "Activo"
-                R.id.status_finished -> "Finalizado"
-                R.id.status_paused -> "Pausado"
-                R.id.status_all -> "Todos"
-                else -> "Todos"
-            }
-            updateChipsText()
-            applyFilters()
-            true
-        }
-
-        popupMenu.show()
-    }
-
-    private fun showExperiencePopupMenu(view: View) {
-        val popupMenu = PopupMenu(requireContext(), view)
-        popupMenu.menuInflater.inflate(R.menu.filter_experience_menu, popupMenu.menu)
-
-        popupMenu.setOnMenuItemClickListener { item ->
-            selectedExperience = when (item.itemId) {
-                R.id.exp_beginner -> "Principiante"
-                R.id.exp_intermediate -> "Intermedio"
-                R.id.exp_advanced -> "Avanzado"
-                R.id.exp_senior -> "Senior"
-                R.id.exp_all -> "Todos"
-                else -> "Todos"
-            }
-            updateChipsText()
-            applyFilters()
-            true
-        }
-
-        popupMenu.show()
     }
 
     private fun showDatePopupMenu(view: View) {

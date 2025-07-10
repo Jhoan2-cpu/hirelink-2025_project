@@ -1,54 +1,67 @@
 package com.example.hirelink_2025.ui.activities
 
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
-import com.example.hirelink_2025.R
-import com.example.hirelink_2025.databinding.ActivityMainBinding
+import android.content.Intent //Usado para cambiar de Activity
+import android.os.Bundle //Representa datos pasados entre activities o guardados en estado.
+import androidx.appcompat.app.AppCompatActivity //Permite usar componentes modernos (compatibilidad).
+import androidx.navigation.NavController //Objeto que controla la navegación entre fragmentos.
+import androidx.navigation.fragment.NavHostFragment //Es el contenedor (que muestra el fragmento actual en el gráfico de navegación).
+import androidx.navigation.ui.AppBarConfiguration// Define qué fragmentos son principales (top level) para el comportamiento del botón "back" y título.
+import androidx.navigation.ui.setupWithNavController//importa extensión para vincular vistas como BottomNavigationView
+import com.example.hirelink_2025.R//Referencia a recursos como id, layout, drawable, etc.
+import com.example.hirelink_2025.databinding.ActivityMainBinding //Clase ViewBinding del activity_main.xml
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {// La pantalla principal de la App extienede de AppCompatActivity()
+    //Esto permite usar compatibilidad con funciones modernas de UI (Solo aspectos visuales).
 
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var navController: NavController
+    private lateinit var binding: ActivityMainBinding //Vincula el layout activity_main.xml con código Kotlin a través del ViewBinding.
+    private lateinit var navController: NavController //Controla la navegación entre fragmentos definidos en el nav graph.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!isUserLoggedIn()) {
-            navigateToAuth()
-            return
+        if (!isUserLoggedIn()) {//si el usuario no ha iniciado sesión...
+            navigateToAuth() //-> lo mandamos a la pantalla de login
+            return//Y Terminamos aquí mismo, evitando que los demás códigos se ejecuten.
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = ActivityMainBinding.inflate(layoutInflater) //inicializamos el binding inflando el layout activity_main.xml
+        //NOTA: Para usar el binding, primero debemos inflarlo, para eso usamos el método .inflate() y le pasamos el inflador, layoutInflater.
+        setContentView(binding.root)//Establecemos el layout inflado como la vista principal
+        //...Muestra la interfaz en pantalla
 
         setupBottomNavigation()
     }
 
     private fun isUserLoggedIn(): Boolean {
-        val sharedPrefs = getSharedPreferences("auth", MODE_PRIVATE)
-        return sharedPrefs.getBoolean("is_logged_in", false)
+        //getSharedPreferences: Método que obtiene (o crea si no existe) un archivo de preferencias con nombre "auth".
+        val sharedPrefs = getSharedPreferences("auth", MODE_PRIVATE) //El mode private hace que la app sea el único con acceso a este archivo.
+        return sharedPrefs.getBoolean("is_logged_in", false)//Aquí busca un valor booleano asociado a la clave is_logged_in, si no existe -> devuelve false (por defecto).
     }
 
     private fun navigateToAuth() {
-        val intent = Intent(this, AuthActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
+        //Primero cambiamos de activity:
+        val intent = Intent(this, AuthActivity::class.java) //almacenamos el intent hacia el AuthActivity (De esta actividad a AuthActivity)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK //Definimos el flags
+        //NOTA: FLAG_ACTIVITY_NEW_TASK inicializa una nueva tarea en el stack de actividades.
+        //FLAG_ACTIVITY_CLEAR_TASK elimina todas las actividades existentes en la tarea actual.
+        //... BORRA CUALQUIER OTRA PANTALLA QUE SE HAYA ABIERTO ANTES.
+        //EN resumen: Intent.flags = intent..... garantiza que AuthActivity se convierta en la única pantalla activa, y que el usuario no pueda volver a MainActivity tocando el botón atrás.
+
+        startActivity(intent) //Lanza el nuevo intent
+        finish() //Finaliza el main activity actual.. libera memoria
     }
 
-    private fun setupBottomNavigation() {
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.mainNavHostFragment) as NavHostFragment
-        navController = navHostFragment.navController
+    //Esta función se encarga de conectar la barra de navegación inferior(BottomNavigationView) con el sistema de navegación por fragmentos (Navigation Component), usando NavController
+    //Además define los top leve destination, estas no muestran el botón "back" en l AppBar, porque son la raíz del flujo de navegación.
+    private fun setupBottomNavigation() {//Configura la barra de navegación inferior.
+        val navHostFragment = supportFragmentManager//Permite acceder a los fragmentos alojados en esta actividad (MainActivity).
+            .findFragmentById(R.id.mainNavHostFragment) as NavHostFragment //el findFragmentById() busca un fragmento en nuestro layout por su ID
+                                                                                //... En este caso estamos buscando al contenedor de fragmentos (el NavHostFragment)
+        navController = navHostFragment.navController//inicializamos navController con el controlador de navegación del NavHostFragment.
 
         // CONFIGURAR TOP-LEVEL DESTINATIONS
-        val appBarConfiguration = AppBarConfiguration(
+        val appBarConfiguration = AppBarConfiguration(//Configuramos el AppBar en función del destino actual. Fragmentos top level:
             setOf(
                 R.id.searchFragment,     // Top level
                 R.id.profileFragment,    // Top level
@@ -61,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         // Configurar con AppBarConfiguration
         binding.bottomNavigation.setupWithNavController(navController)
 
-        // Listener personalizado para mantener botones activos
+        // Listener personalizado para mantener botones activos.
         navController.addOnDestinationChangedListener { _, destination, _ ->
             updateBottomNavigationSelection(destination.id)
         }

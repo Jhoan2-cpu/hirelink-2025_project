@@ -23,8 +23,10 @@ class LoginViewModel : ViewModel() {
 
     private val authRepository = AuthRepository()
 
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(LoginUiState())//Es un MutableStateFlow que almacena el estado inicial del login(LoginUiState)., y este estado
+    //... puede cambiar a lo largo del tiempo.
+
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()//Definimos una propiedad pública llamada uiState.
 
     fun login(email: String, password: String) {
         if (!validateInputs(email, password)) {
@@ -32,9 +34,9 @@ class LoginViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)//Cambiamos el estado de _uiState
 
-            try {
+            try {//Hacemos un intento de login con Try.
                 val user = authRepository.login(LoginRequest(email, password))
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

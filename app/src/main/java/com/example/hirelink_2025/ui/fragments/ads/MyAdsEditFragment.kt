@@ -65,9 +65,21 @@ class MyAdsEditFragment : Fragment() {
      * Configura la UI inicial
      */
     private fun setupUI() {
+        setupToolbar()
         setupFormFields()
         setupClickListeners()
         setupDropdowns()
+    }
+
+    /**
+     * Configura el toolbar
+     */
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            // Por ahora, simplemente navegar hacia atrás
+            // TODO: Implementar hasUnsavedChanges() en ViewModel si no existe
+            findNavController().navigateUp()
+        }
     }
 
     /**
@@ -75,22 +87,75 @@ class MyAdsEditFragment : Fragment() {
      */
     private fun setupFormFields() {
         // Configurar listeners para validación en tiempo real
+        
+        // Job Information Fields - Solo usar campos existentes en ViewModel por ahora
         binding.titleEditText.doOnTextChanged { text, _, _, _ ->
             viewModel.updateTitle(text.toString())
         }
 
-        binding.descriptionEditText.doOnTextChanged { text, _, _, _ ->
+        // Por ahora, mapear aboutJobEditText a description del ViewModel existente
+        binding.aboutJobEditText.doOnTextChanged { text, _, _, _ ->
             viewModel.updateDescription(text.toString())
-        }
-
-        binding.locationEditText.doOnTextChanged { text, _, _, _ ->
-            viewModel.updateLocation(text.toString())
         }
 
         // Configurar dropdown de modalidad
         binding.modalityDropdown.setOnItemClickListener { _, _, position, _ ->
             val selectedModality = modalityAdapter.getItem(position) ?: ""
             viewModel.updateModality(selectedModality)
+        }
+
+        // Configurar click listeners para campos de fecha y selección
+        binding.dateEditText.setOnClickListener {
+            showDatePicker()
+        }
+
+        binding.uploadImageButton.setOnClickListener {
+            showImagePicker()
+        }
+
+        binding.selectLocationButton.setOnClickListener {
+            showLocationPicker()
+        }
+
+        // Listeners para campos que serán implementados después
+        setupPlaceholderListeners()
+    }
+
+    /**
+     * Configura listeners placeholder para campos nuevos
+     */
+    private fun setupPlaceholderListeners() {
+        // Estos campos mostrarán mensajes placeholder hasta que se implementen en el ViewModel
+        binding.aboutCompanyEditText.doOnTextChanged { _, _, _, _ ->
+            // TODO: Implementar en ViewModel
+        }
+
+        binding.skillsEditText.doOnTextChanged { _, _, _, _ ->
+            // TODO: Implementar en ViewModel
+        }
+
+        binding.vacanciesEditText.doOnTextChanged { _, _, _, _ ->
+            // TODO: Implementar en ViewModel
+        }
+
+        binding.employmentTypeEditText.doOnTextChanged { _, _, _, _ ->
+            // TODO: Implementar en ViewModel
+        }
+
+        binding.positionEditText.doOnTextChanged { _, _, _, _ ->
+            // TODO: Implementar en ViewModel
+        }
+
+        binding.phoneEditText.doOnTextChanged { _, _, _, _ ->
+            // TODO: Implementar en ViewModel
+        }
+
+        binding.emailEditText.doOnTextChanged { _, _, _, _ ->
+            // TODO: Implementar en ViewModel
+        }
+
+        binding.websiteEditText.doOnTextChanged { _, _, _, _ ->
+            // TODO: Implementar en ViewModel
         }
     }
 
@@ -104,22 +169,20 @@ class MyAdsEditFragment : Fragment() {
         }
 
         // Botón publicar (si está en estado DRAFT)
-        binding.publishButton?.setOnClickListener {
+        binding.publishButton.setOnClickListener {
             showPublishConfirmationDialog()
         }
 
         // Botón cambiar estado
-        binding.statusButton?.setOnClickListener {
+        binding.statusButton.setOnClickListener {
             showStatusChangeDialog()
         }
 
         // Botón descartar cambios
-        binding.discardButton?.setOnClickListener {
-            if (viewModel.hasUnsavedChanges()) {
-                showDiscardChangesDialog()
-            } else {
-                viewModel.discardChanges()
-            }
+        binding.discardButton.setOnClickListener {
+            // Por ahora, mostrar diálogo directamente
+            // TODO: Verificar hasUnsavedChanges() cuando esté implementado
+            showDiscardChangesDialog()
         }
     }
 
@@ -147,7 +210,7 @@ class MyAdsEditFragment : Fragment() {
             }
         }
 
-        // Observar campos del formulario
+        // Observar campos del formulario - Solo campos existentes en ViewModel
         viewModel.title.observe(viewLifecycleOwner) { title ->
             if (binding.titleEditText.text.toString() != title) {
                 binding.titleEditText.setText(title)
@@ -155,8 +218,8 @@ class MyAdsEditFragment : Fragment() {
         }
 
         viewModel.description.observe(viewLifecycleOwner) { description ->
-            if (binding.descriptionEditText.text.toString() != description) {
-                binding.descriptionEditText.setText(description)
+            if (binding.aboutJobEditText.text.toString() != description) {
+                binding.aboutJobEditText.setText(description)
             }
         }
 
@@ -166,33 +229,23 @@ class MyAdsEditFragment : Fragment() {
             }
         }
 
-        viewModel.location.observe(viewLifecycleOwner) { location ->
-            if (binding.locationEditText.text.toString() != location) {
-                binding.locationEditText.setText(location)
-            }
-        }
-
-        // Observar errores de validación
+        // Observar errores de validación - Solo campos existentes
         viewModel.titleError.observe(viewLifecycleOwner) { error ->
             binding.titleInputLayout.error = error
         }
 
         viewModel.descriptionError.observe(viewLifecycleOwner) { error ->
-            binding.descriptionInputLayout.error = error
+            binding.aboutJobInputLayout.error = error
         }
 
         viewModel.modalityError.observe(viewLifecycleOwner) { error ->
             binding.modalityInputLayout.error = error
         }
 
-        viewModel.locationError.observe(viewLifecycleOwner) { error ->
-            binding.locationInputLayout.error = error
-        }
-
         // Observar validez del formulario
         viewModel.isFormValid.observe(viewLifecycleOwner) { isValid ->
             binding.saveAdButton.isEnabled = isValid && (viewModel.isLoading.value != true)
-            binding.publishButton?.isEnabled = isValid && viewModel.canPublishJob()
+            binding.publishButton.isEnabled = isValid
         }
 
         // Observar estado de carga
@@ -248,11 +301,11 @@ class MyAdsEditFragment : Fragment() {
      * Actualiza la información del job en la UI
      */
     private fun updateJobInfo(job: com.example.hirelink_2025.models.Job) {
-        // Actualizar título del fragmento
-        binding.editAdTitle.text = "Editar: ${job.title}"
+        // Actualizar toolbar title
+        binding.toolbar.title = "Editar: ${job.title}"
 
         // Mostrar estado actual
-        binding.currentStatusText?.text = "Estado: ${job.status.getDisplayText()}"
+        binding.currentStatusText.text = "Estado: ${job.status.getDisplayText()}"
 
         // Configurar botones según el estado
         setupButtonsForStatus(job.status)
@@ -262,12 +315,13 @@ class MyAdsEditFragment : Fragment() {
      * Configura los botones según el estado del job
      */
     private fun setupButtonsForStatus(status: JobStatus) {
-        binding.publishButton?.apply {
+        binding.publishButton.apply {
             visibility = if (status == JobStatus.DRAFT) View.VISIBLE else View.GONE
         }
 
-        binding.statusButton?.apply {
-            visibility = if (viewModel.getValidStatusTransitions().isNotEmpty()) View.VISIBLE else View.GONE
+        binding.statusButton.apply {
+            // Por ahora, ocultar hasta que se implemente getValidStatusTransitions()
+            visibility = View.GONE
         }
     }
 
@@ -276,18 +330,32 @@ class MyAdsEditFragment : Fragment() {
      */
     private fun updateLoadingState(isLoading: Boolean) {
         binding.apply {
-            // Deshabilitar campos durante carga
+            // Deshabilitar campos principales durante carga
             titleEditText.isEnabled = !isLoading
-            descriptionEditText.isEnabled = !isLoading
+            aboutJobEditText.isEnabled = !isLoading
             modalityDropdown.isEnabled = !isLoading
-            locationEditText.isEnabled = !isLoading
+            
+            // Campos adicionales (funcionarán independientemente del ViewModel por ahora)
+            aboutCompanyEditText.isEnabled = !isLoading
+            skillsEditText.isEnabled = !isLoading
+            vacanciesEditText.isEnabled = !isLoading
+            employmentTypeEditText.isEnabled = !isLoading
+            dateEditText.isEnabled = !isLoading
+            positionEditText.isEnabled = !isLoading
+            phoneEditText.isEnabled = !isLoading
+            emailEditText.isEnabled = !isLoading
+            websiteEditText.isEnabled = !isLoading
+            
+            // Media & Location
+            uploadImageButton.isEnabled = !isLoading
+            selectLocationButton.isEnabled = !isLoading
 
             // Mostrar/ocultar indicador de carga
-            loadingProgressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
+            loadingProgressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
 
             // Deshabilitar botones durante carga
             saveAdButton.isEnabled = !isLoading && (viewModel.isFormValid.value == true)
-            publishButton?.isEnabled = !isLoading && viewModel.canPublishJob()
+            publishButton.isEnabled = !isLoading
         }
     }
 
@@ -309,22 +377,8 @@ class MyAdsEditFragment : Fragment() {
      * Muestra diálogo para cambiar estado
      */
     private fun showStatusChangeDialog() {
-        val validTransitions = viewModel.getValidStatusTransitions()
-        if (validTransitions.isEmpty()) {
-            showErrorSnackbar("No hay cambios de estado disponibles")
-            return
-        }
-
-        val statusNames = validTransitions.map { it.getDisplayText() }.toTypedArray()
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Cambiar estado")
-            .setItems(statusNames) { _, which ->
-                val selectedStatus = validTransitions[which]
-                viewModel.changeJobStatus(selectedStatus)
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        // TODO: Implementar cuando getValidStatusTransitions() y changeJobStatus() estén disponibles
+        showErrorSnackbar("Función de cambio de estado - Por implementar")
     }
 
     /**
@@ -333,12 +387,40 @@ class MyAdsEditFragment : Fragment() {
     private fun showDiscardChangesDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Descartar cambios")
-            .setMessage("Tienes cambios sin guardar. ¿Estás seguro de que deseas salir sin guardar?")
+            .setMessage("¿Estás seguro de que deseas salir sin guardar?")
             .setPositiveButton("Descartar") { _, _ ->
-                viewModel.discardChanges()
+                // Por ahora, simplemente navegar hacia atrás
+                findNavController().navigateUp()
             }
             .setNegativeButton("Cancelar", null)
             .show()
+    }
+
+    /**
+     * Muestra selector de fecha
+     */
+    private fun showDatePicker() {
+        // TODO: Implementar DatePickerDialog
+        // Por ahora, mostrar un placeholder
+        showErrorSnackbar("Selector de fecha - Por implementar")
+    }
+
+    /**
+     * Muestra selector de imagen
+     */
+    private fun showImagePicker() {
+        // TODO: Implementar selector de imagen desde galería/cámara
+        // Por ahora, mostrar un placeholder
+        showErrorSnackbar("Selector de imagen - Por implementar")
+    }
+
+    /**
+     * Muestra selector de ubicación
+     */
+    private fun showLocationPicker() {
+        // TODO: Implementar selector de ubicación (mapa/lista)
+        // Por ahora, mostrar un placeholder
+        showErrorSnackbar("Selector de ubicación - Por implementar")
     }
 
     /**

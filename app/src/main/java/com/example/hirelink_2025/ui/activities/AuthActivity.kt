@@ -19,14 +19,14 @@ class AuthActivity : AppCompatActivity() {
         Log.d("AuthActivity", "onCreate called")
 
         binding = ActivityAuthBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(binding.root)//Muestra la interfaz en pantalla
 
-        setupNavigation()
+        setupNavigation()//Prepara la navegación
     }
 
     private fun setupNavigation() {
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.auth_nav_host_fragment) as NavHostFragment
+        val navHostFragment = supportFragmentManager//
+            .findFragmentById(R.id.auth_nav_host_fragment) as NavHostFragment //Encontramos el navHostFragment definido en el activity_auth.xml
         navController = navHostFragment.navController
         Log.d("AuthActivity", "Navigation setup complete")
     }

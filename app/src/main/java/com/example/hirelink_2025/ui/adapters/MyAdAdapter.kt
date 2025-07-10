@@ -53,7 +53,7 @@ class MyAdAdapter(
             statusText.setBackgroundResource(getStatusBackground(job.status))
 
             // Estadísticas
-            viewsCount.text = "${job.vacancies * 40} vistas"
+            //viewsCount.text = "${job.vacancies * 40} vistas"
             applicantsCount.text = "${job.vacancies * 2} postulantes"
 
             // Configurar visibilidad de botones basada en el estado
@@ -63,9 +63,6 @@ class MyAdAdapter(
             adCard.setOnClickListener { onJobClick(job) }
             editButton.setOnClickListener { onEditClick(job) }
             applicantsButton.setOnClickListener { onApplicantsClick(job) }
-            moreButton.setOnClickListener { view ->
-                showPopupMenu(view, job)
-            }
         }
 
         private fun getStatusText(status: JobStatus): String {
@@ -125,60 +122,6 @@ class MyAdAdapter(
             }
         }
 
-        private fun showPopupMenu(view: android.view.View, job: Job) {
-            val popup = PopupMenu(view.context, view)
-            popup.menuInflater.inflate(R.menu.menu_ad_options, popup.menu)
-
-            // Configurar visibilidad de opciones según el estado
-            val deleteItem = popup.menu.findItem(R.id.action_delete)
-            val publishItem = popup.menu.findItem(R.id.action_publish)
-            val closeItem = popup.menu.findItem(R.id.action_close)
-
-            when (job.status) {
-                JobStatus.DRAFT -> {
-                    publishItem?.isVisible = true
-                    closeItem?.isVisible = false
-                    deleteItem?.isVisible = true
-                }
-                JobStatus.ACTIVE -> {
-                    publishItem?.isVisible = false
-                    closeItem?.isVisible = true
-                    deleteItem?.isVisible = false
-                }
-                JobStatus.CLOSED -> {
-                    publishItem?.isVisible = false
-                    closeItem?.isVisible = false
-                    deleteItem?.isVisible = true
-                }
-                else -> {
-                    publishItem?.isVisible = false
-                    closeItem?.isVisible = false
-                    deleteItem?.isVisible = false
-                }
-            }
-
-            popup.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.action_delete -> {
-                        onDeleteClick(job)
-                        true
-                    }
-                    R.id.action_publish -> {
-                        // Cambiar estado a ACTIVE
-                        // Esto se manejará en el ViewModel
-                        true
-                    }
-                    R.id.action_close -> {
-                        // Cambiar estado a CLOSED
-                        // Esto se manejará en el ViewModel
-                        true
-                    }
-                    else -> false
-                }
-            }
-
-            popup.show()
-        }
     }
 }
 

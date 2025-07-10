@@ -52,14 +52,16 @@ class MyAdDetailFragment : Fragment() {
         arguments?.let { args ->
             binding.apply {
                 jobTitleText.text = args.getString("job_title", "")
-                jobDescriptionText.text = args.getString("job_description", "")
-                jobRequirementsText.text = args.getString("job_requirements", "")
-                jobPostedDateText.text = args.getString("job_posted_date", "")
-                jobEmploymentTypeText.text = args.getString("job_employment_type", "")
-                jobModalityText.text = args.getString("job_modality", "")
+                jobTitleDisplayText.text = args.getString("job_description", "")
+                aboutCompanyText.text = "Lorem Impsum y más información de la empresa, necesidad de trabajadores en."
+                aboutJobText.text = "Somos un equipo con amplia experiencia en trabajos..."
+                skillsText.text = args.getString("job_requirements", "")
+                dateText.text = args.getString("job_posted_date", "")
+                employmentTypeText.text = args.getString("job_employment_type", "")
+                modalityText.text = args.getString("job_modality", "")
                 jobStatusText.text = args.getString("job_status", "")
-                jobPhoneText.text = args.getString("job_phone", "")
-                jobEmailText.text = args.getString("job_email", "")
+                phoneText.text = args.getString("job_phone", "")
+                emailText.text = args.getString("job_email", "")
             }
         }
     }

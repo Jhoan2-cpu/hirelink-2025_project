@@ -121,7 +121,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginTop="8dp"
-        android:visibility="gone"
+        android:visibility="visible"
         android:alpha="1"
         app:cardCornerRadius="@dimen/radius_medium"
         app:cardElevation="8dp"
@@ -145,35 +145,12 @@
 
             <!-- Opciones de filtro con iconos mejorados -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/filterStatusButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start|center_vertical"
-                android:text="Estado"
-                android:textAlignment="textStart"
-                app:icon="@drawable/ic_circle_bullet"
-                app:iconGravity="start"
-                app:iconTint="@color/text_secondary" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/filterDateButton"
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start|center_vertical"
                 android:text="Fecha de Publicación"
-                android:textAlignment="textStart"
-                app:icon="@drawable/ic_circle_bullet"
-                app:iconGravity="start"
-                app:iconTint="@color/text_secondary" />
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/filterExperienceButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start|center_vertical"
-                android:text="Nivel de Experiencia"
                 android:textAlignment="textStart"
                 app:icon="@drawable/ic_circle_bullet"
                 app:iconGravity="start"

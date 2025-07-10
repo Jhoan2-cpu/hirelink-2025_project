@@ -117,7 +117,7 @@
             android:layout_marginTop="12dp"
             android:orientation="horizontal">
 
-            <TextView
+ <!--           <TextView
                 android:id="@+id/viewsCount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 tools:text="120 vistas" />
-
+-->
             <TextView
                 android:id="@+id/applicantsCount"
                 android:layout_width="wrap_content"
@@ -173,12 +173,12 @@
                 app:iconSize="18dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/moreButton"
+                android:id="@+id/deleteButton"
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Más"
-                app:icon="@drawable/ic_more_vert"
+                android:text="Eliminar"
+                app:icon="@drawable/ic_delete"
                 app:iconSize="18dp" />
 
         </LinearLayout>
