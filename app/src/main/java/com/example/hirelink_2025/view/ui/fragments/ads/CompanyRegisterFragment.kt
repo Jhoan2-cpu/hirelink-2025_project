@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
@@ -28,6 +29,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -57,6 +59,7 @@ class CompanyRegisterFragment : Fragment() {
     private lateinit var websiteInputLayout: TextInputLayout
     private lateinit var websiteEditText: TextInputEditText
     private lateinit var uploadLogoButton: MaterialButton
+    private lateinit var logoPreviewImageView: ImageView
     private lateinit var registerCompanyButton: MaterialButton
     private lateinit var progressIndicator: CircularProgressIndicator
     
@@ -121,6 +124,7 @@ class CompanyRegisterFragment : Fragment() {
         websiteInputLayout = view.findViewById(R.id.websiteInputLayout)
         websiteEditText = view.findViewById(R.id.websiteEditText)
         uploadLogoButton = view.findViewById(R.id.uploadLogoButton)
+        logoPreviewImageView = view.findViewById(R.id.logoPreviewImageView)
         registerCompanyButton = view.findViewById(R.id.registerCompanyButton)
         
         // Buscar progress indicator, crear uno si no existe en el XML  
@@ -257,9 +261,19 @@ class CompanyRegisterFragment : Fragment() {
         if (selectedLogoUri != null) {
             uploadLogoButton.text = "Logo seleccionado"
             uploadLogoButton.setIconResource(R.drawable.ic_check)
+            
+            // Mostrar vista previa del logo
+            logoPreviewImageView.visibility = View.VISIBLE
+            Glide.with(this)
+                .load(selectedLogoUri)
+                .fitCenter()
+                .placeholder(R.drawable.ic_group)
+                .error(R.drawable.ic_group)
+                .into(logoPreviewImageView)
         } else {
             uploadLogoButton.text = "Seleccionar logo de la compañía"
             uploadLogoButton.setIconResource(R.drawable.ic_image)
+            logoPreviewImageView.visibility = View.GONE
         }
     }
     
@@ -348,6 +362,7 @@ class CompanyRegisterFragment : Fragment() {
                 email = email,
                 phone = phone,
                 website = website,
+                logoUri = selectedLogoUri,
                 ownerId = ownerId
             )
         } ?: run {

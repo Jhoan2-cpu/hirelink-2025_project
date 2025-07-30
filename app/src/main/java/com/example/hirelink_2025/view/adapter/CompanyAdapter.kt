@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.models.Company
+import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
@@ -72,12 +73,26 @@ class CompanyAdapter(
                 // TODO: Show popup menu with additional options
             }
             
-            // TODO: Load company logo if available
-            // If logoUrl is not empty, load the image using Glide or similar
+            // Cargar logo de la compañía
+            loadCompanyLogo(company.logoUrl, holder.companyLogo)
         }
     }
 
     override fun getItemCount(): Int = companies.size
+
+    private fun loadCompanyLogo(logoUrl: String, imageView: ImageView) {
+        if (logoUrl.isNotEmpty()) {
+            Glide.with(imageView.context)
+                .load(logoUrl)
+                .fitCenter()
+                .placeholder(R.drawable.ic_group)
+                .error(R.drawable.ic_group)
+                .into(imageView)
+        } else {
+            // Usar imagen por defecto sin transformaciones
+            imageView.setImageResource(R.drawable.ic_group)
+        }
+    }
 
     fun updateCompanies(newCompanies: List<Company>) {
         companies.clear()

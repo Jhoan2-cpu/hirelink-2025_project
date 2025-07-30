@@ -371,6 +371,18 @@
                     app:iconTint="@color/secondary"
                     app:strokeColor="@color/secondary" />
 
+                <!-- Logo Preview -->
+                <ImageView
+                    android:id="@+id/logoPreviewImageView"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/circle_background"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    android:contentDescription="Vista previa del logo seleccionado" />
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

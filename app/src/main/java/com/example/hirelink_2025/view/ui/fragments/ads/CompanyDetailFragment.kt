@@ -3,6 +3,7 @@ package com.example.hirelink_2025.view.ui.fragments.ads
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,13 +12,23 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.models.Company
+import com.example.hirelink_2025.viewmodels.CompanyViewModel
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.firebase.auth.FirebaseAuth
+import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
 
 class CompanyDetailFragment : Fragment() {
     
@@ -39,8 +50,13 @@ class CompanyDetailFragment : Fragment() {
     private lateinit var websiteLayout: LinearLayout
     private lateinit var editCompanyButton: MaterialButton
     private lateinit var deleteCompanyButton: MaterialButton
+    private lateinit var progressIndicator: CircularProgressIndicator
+    
+    // ViewModel
+    private val viewModel: CompanyViewModel by viewModels { ViewModelFactory() }
     
     private var currentCompany: Company? = null
+    private var currentUserId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,9 +68,12 @@ class CompanyDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        Log.d("CompanyDetailFragment", "Fragment created")
+        
         initViews(view)
         setupClickListeners()
-        loadCompanyData()
+        observeViewModel()
+        getCurrentUserAndLoadCompany()
     }
     
     private fun initViews(view: View) {
@@ -76,6 +95,7 @@ class CompanyDetailFragment : Fragment() {
         websiteLayout = view.findViewById(R.id.websiteLayout)
         editCompanyButton = view.findViewById(R.id.editCompanyButton)
         deleteCompanyButton = view.findViewById(R.id.deleteCompanyButton)
+        progressIndicator = view.findViewById(R.id.progressIndicator)
     }
     
     private fun setupClickListeners() {
@@ -120,132 +140,100 @@ class CompanyDetailFragment : Fragment() {
         }
     }
     
-    private fun loadCompanyData() {
-        // Get company ID from navigation arguments
-        val companyId = arguments?.getString("companyId") ?: ""
-        
-        // TODO: Load company from repository using companyId
-        // For now, get sample company data based on ID
-        currentCompany = getSampleCompany(companyId)
-        
-        populateViews()
-    }
-    
-    private fun getSampleCompany(companyId: String): Company {
-        // Sample company data (replace with actual repository call)
-        return when (companyId) {
-            "1" -> Company(
-                id = "1",
-                name = "TechSolutions S.A.C.",
-                type = "Tecnología",
-                description = "Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras para el mercado peruano y latinoamericano. Nos especializamos en crear aplicaciones móviles, sistemas web y soluciones de inteligencia artificial que transforman la manera en que las empresas hacen negocios.",
-                size = "50-100",
-                foundedYear = 2020,
-                address = "Av. Javier Prado Este 123, San Isidro",
-                city = "Lima",
-                country = "Perú",
-                phone = "987654321",
-                email = "info@techsolutions.com",
-                website = "www.techsolutions.com",
-                logoUrl = "",
-                employeeCount = 75,
-                activeJobsCount = 3,
-                ownerId = "user1"
-            )
-            "2" -> Company(
-                id = "2",
-                name = "Innovate Corp",
-                type = "Consultoría",
-                description = "Consultoría especializada en transformación digital y gestión empresarial. Ayudamos a las empresas a modernizar sus procesos, implementar nuevas tecnologías y optimizar su rendimiento operativo para alcanzar el éxito en la era digital.",
-                size = "10-50",
-                foundedYear = 2018,
-                address = "Calle Los Incas 456, Cercado",
-                city = "Arequipa",
-                country = "Perú",
-                phone = "123456789",
-                email = "contact@innovate.com",
-                website = "www.innovate.com",
-                logoUrl = "",
-                employeeCount = 25,
-                activeJobsCount = 1,
-                ownerId = "user1"
-            )
-            "3" -> Company(
-                id = "3",
-                name = "DigitalWorks",
-                type = "Marketing Digital",
-                description = "Agencia de marketing digital especializada en estrategias de crecimiento online, gestión de redes sociales, publicidad digital y desarrollo de marca. Creamos campañas efectivas que generan resultados medibles para nuestros clientes.",
-                size = "1-10",
-                foundedYear = 2022,
-                address = "Jr. Junín 789, Centro Histórico",
-                city = "Cusco",
-                country = "Perú",
-                phone = "555666777",
-                email = "hello@digitalworks.pe",
-                website = "www.digitalworks.pe",
-                logoUrl = "",
-                employeeCount = 8,
-                activeJobsCount = 2,
-                ownerId = "user1"
-            )
-            else -> Company(
-                id = companyId,
-                name = "Compañía de Ejemplo",
-                type = "General",
-                description = "Descripción de ejemplo para la compañía.",
-                size = "1-10",
-                foundedYear = 2023,
-                address = "Dirección de ejemplo",
-                city = "Lima",
-                country = "Perú",
-                phone = "",
-                email = "",
-                website = "",
-                logoUrl = "",
-                employeeCount = 0,
-                activeJobsCount = 0,
-                ownerId = "user1"
-            )
-        }
-    }
-    
-    private fun populateViews() {
-        currentCompany?.let { company ->
-            // Basic info
-            companyName.text = company.name
-            companyType.text = "${company.type} • ${company.city}, ${company.country}"
-            companyDescription.text = company.description.ifEmpty { "Sin descripción disponible" }
-            
-            // Location
-            val fullAddress = if (company.address.isNotEmpty()) {
-                "${company.address}, ${company.city}, ${company.country}"
-            } else {
-                "${company.city}, ${company.country}"
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                
+                // Observar estado de carga
+                launch {
+                    viewModel.isLoading.collect { isLoading ->
+                        Log.d("CompanyDetailFragment", "Loading state: $isLoading")
+                        updateLoadingState(isLoading)
+                    }
+                }
+                
+                // Observar errores
+                launch {
+                    viewModel.error.collect { error ->
+                        error?.let {
+                            Log.e("CompanyDetailFragment", "Error: $it")
+                            showError(it)
+                            viewModel.clearError()
+                        }
+                    }
+                }
+                
+                // Observar resultados de operaciones
+                launch {
+                    viewModel.operationResult.collect { result ->
+                        result?.let {
+                            Log.d("CompanyDetailFragment", "Operation result: $it")
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                            viewModel.clearOperationResult()
+                        }
+                    }
+                }
             }
-            companyAddress.text = fullAddress
-            companyCityCountry.text = "${company.city}, ${company.country}"
-            
-            // Contact info
-            setupContactInfo(company)
-            
-            // Stats chips
-            setupStatsChips(company)
-            
-            // TODO: Load company logo if available
-            // If logoUrl is not empty, load the image using Glide or similar
         }
     }
     
-    private fun setupContactInfo(company: Company) {
-        // Phone
+    private fun getCurrentUserAndLoadCompany() {
+        currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        
+        if (currentUserId == null) {
+            Log.w("CompanyDetailFragment", "No authenticated user found")
+            showError("Usuario no autenticado")
+            findNavController().navigateUp()
+            return
+        }
+        
+        // Obtener ID de la compañía desde argumentos
+        val companyId = arguments?.getString("companyId") ?: ""
+        if (companyId.isNotEmpty()) {
+            Log.d("CompanyDetailFragment", "Loading company: $companyId")
+            loadCompanyById(companyId)
+        } else {
+            Log.e("CompanyDetailFragment", "No company ID provided")
+            showError("ID de compañía no encontrado")
+            findNavController().navigateUp()
+        }
+    }
+    
+    private fun loadCompanyById(companyId: String) {
+        viewModel.getCompanyById(companyId) { company ->
+            if (company != null) {
+                Log.d("CompanyDetailFragment", "Company loaded: ${company.name}")
+                currentCompany = company
+                displayCompanyData(company)
+            } else {
+                Log.e("CompanyDetailFragment", "Company not found")
+                showError("Compañía no encontrada")
+                findNavController().navigateUp()
+            }
+        }
+    }
+    
+    private fun displayCompanyData(company: Company) {
+        Log.d("CompanyDetailFragment", "Displaying company data for: ${company.name}")
+        
+        // Actualizar título del toolbar
+        toolbar.title = company.name
+        
+        // Llenar datos básicos
+        companyName.text = company.name
+        companyType.text = company.type
+        companyDescription.text = company.description.ifEmpty { "Sin descripción disponible" }
+        companyAddress.text = company.address.ifEmpty { "Dirección no especificada" }
+        companyCityCountry.text = "${company.city}, ${company.country}"
+        
+        // Información de contacto
         if (company.phone.isNotEmpty()) {
-            companyPhone.text = "+51 ${company.phone}"
+            companyPhone.text = company.phone
             phoneLayout.visibility = View.VISIBLE
         } else {
             phoneLayout.visibility = View.GONE
         }
         
-        // Email
         if (company.email.isNotEmpty()) {
             companyEmail.text = company.email
             emailLayout.visibility = View.VISIBLE
@@ -253,17 +241,14 @@ class CompanyDetailFragment : Fragment() {
             emailLayout.visibility = View.GONE
         }
         
-        // Website
         if (company.website.isNotEmpty()) {
             companyWebsite.text = company.website
             websiteLayout.visibility = View.VISIBLE
         } else {
             websiteLayout.visibility = View.GONE
         }
-    }
-    
-    private fun setupStatsChips(company: Company) {
-        // Employee count
+        
+        // Chips informativos
         val employeeText = when {
             company.employeeCount == 0 -> company.size.ifEmpty { "No especificado" }
             company.employeeCount == 1 -> "1 empleado"
@@ -271,7 +256,6 @@ class CompanyDetailFragment : Fragment() {
         }
         employeeCountChip.text = employeeText
         
-        // Active jobs
         val jobsText = when (company.activeJobsCount) {
             0 -> "Sin empleos activos"
             1 -> "1 empleo activo"
@@ -279,54 +263,49 @@ class CompanyDetailFragment : Fragment() {
         }
         activeJobsChip.text = jobsText
         
-        // Founded year
-        val foundedText = if (company.foundedYear > 0) {
-            "Fundada en ${company.foundedYear}"
+        if (company.foundedYear > 0) {
+            foundedYearChip.text = "Fundada en ${company.foundedYear}"
+            foundedYearChip.visibility = View.VISIBLE
         } else {
-            "Año no especificado"
+            foundedYearChip.visibility = View.GONE
         }
-        foundedYearChip.text = foundedText
+        
+        // Cargar logo de la compañía
+        loadCompanyLogo(company.logoUrl)
     }
     
-    private fun dialPhone(phone: String) {
-        try {
-            val formattedPhone = if (phone.startsWith("+")) phone else "+51$phone"
-            val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$formattedPhone")
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No se puede realizar la llamada", Toast.LENGTH_SHORT).show()
-        }
-    }
-    
-    private fun sendEmail(email: String) {
-        try {
-            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:$email")
-                putExtra(Intent.EXTRA_SUBJECT, "Consulta sobre ${currentCompany?.name}")
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No se puede enviar el email", Toast.LENGTH_SHORT).show()
+    private fun loadCompanyLogo(logoUrl: String) {
+        if (logoUrl.isNotEmpty()) {
+            Log.d("CompanyDetailFragment", "Loading company logo from: $logoUrl")
+            
+            Glide.with(this)
+                .load(logoUrl)
+                .fitCenter()
+                .placeholder(R.drawable.ic_group)
+                .error(R.drawable.ic_group)
+                .into(companyLogo)
+        } else {
+            Log.d("CompanyDetailFragment", "No logo URL provided, using default")
+            // Usar imagen por defecto sin transformaciones
+            companyLogo.setImageResource(R.drawable.ic_group)
         }
     }
     
-    private fun openWebsite(website: String) {
-        try {
-            val url = if (website.startsWith("http://") || website.startsWith("https://")) {
-                website
-            } else {
-                "https://$website"
-            }
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No se puede abrir el sitio web", Toast.LENGTH_SHORT).show()
+    private fun updateLoadingState(isLoading: Boolean) {
+        if (isLoading) {
+            progressIndicator.visibility = View.VISIBLE
+        } else {
+            progressIndicator.visibility = View.GONE
         }
+    }
+    
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
     
     private fun editCompany(company: Company) {
+        Log.d("CompanyDetailFragment", "Edit company: ${company.name}")
+        viewModel.selectCompany(company)
         val bundle = Bundle().apply {
             putString("companyId", company.id)
         }
@@ -336,7 +315,7 @@ class CompanyDetailFragment : Fragment() {
     private fun confirmDeleteCompany(company: Company) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Eliminar Compañía")
-            .setMessage("¿Estás seguro de que deseas eliminar \"${company.name}\"? Esta acción no se puede deshacer.")
+            .setMessage("¿Estás seguro de que deseas eliminar '${company.name}'? Esta acción no se puede deshacer.")
             .setPositiveButton("Eliminar") { _, _ ->
                 deleteCompany(company)
             }
@@ -345,8 +324,55 @@ class CompanyDetailFragment : Fragment() {
     }
     
     private fun deleteCompany(company: Company) {
-        // TODO: Delete company from repository/database
-        Toast.makeText(requireContext(), "Compañía eliminada", Toast.LENGTH_SHORT).show()
-        findNavController().navigateUp()
+        currentUserId?.let { ownerId ->
+            Log.d("CompanyDetailFragment", "Deleting company: ${company.name}")
+            viewModel.deleteCompany(company.id, ownerId) { success ->
+                if (success) {
+                    Log.d("CompanyDetailFragment", "Company deleted successfully")
+                    findNavController().navigateUp()
+                } else {
+                    Log.e("CompanyDetailFragment", "Failed to delete company")
+                }
+            }
+        }
+    }
+    
+    private fun dialPhone(phone: String) {
+        try {
+            val intent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:$phone")
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("CompanyDetailFragment", "Error opening dialer", e)
+            Toast.makeText(requireContext(), "No se pudo abrir el marcador", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun sendEmail(email: String) {
+        try {
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:$email")
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("CompanyDetailFragment", "Error opening email client", e)
+            Toast.makeText(requireContext(), "No se pudo abrir el cliente de email", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun openWebsite(website: String) {
+        try {
+            val url = if (!website.startsWith("http://") && !website.startsWith("https://")) {
+                "https://$website"
+            } else {
+                website
+            }
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("CompanyDetailFragment", "Error opening website", e)
+            Toast.makeText(requireContext(), "No se pudo abrir el sitio web", Toast.LENGTH_SHORT).show()
+        }
     }
 }

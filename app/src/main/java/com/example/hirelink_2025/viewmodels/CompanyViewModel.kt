@@ -4,34 +4,33 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.hirelink_2025.models.Company
 import com.example.hirelink_2025.network.Callback
 import com.example.hirelink_2025.network.FirestoreService
-import com.example.hirelink_2025.repository.CompanyRepository
+import com.example.hirelink_2025.network.VoidCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlin.collections.List
 
 /**
- * ViewModel para manejo de compañías del usuario
+ * ViewModel para manejo de compañías del usuario - Conectado directamente a FirestoreService
  */
-class CompanyViewModel(
-    private val companyRepository: CompanyRepository
-) : ViewModel() {
+class CompanyViewModel : ViewModel() {
 
-    // StateFlow del repository para la lista de compañías
-    val companies: StateFlow<List<Company>> = companyRepository.companies//NO USAR REPOSITORY
+    private val firestoreService = FirestoreService()
 
+    // Lista de compañías
     private val _listCompany = MutableLiveData<List<Company>>()
     val listCompany: LiveData<List<Company>> get() = _listCompany
 
+    // Estados de carga
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    val isLoading: StateFlow<Boolean> = companyRepository.isLoading
-    val error: StateFlow<String?> = companyRepository.error
-    private val firestoreService = FirestoreService()
+    // Errores
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
     // Estado local para compañía seleccionada
     private val _selectedCompany = MutableStateFlow<Company?>(null)
     val selectedCompany: StateFlow<Company?> = _selectedCompany.asStateFlow()
@@ -52,19 +51,22 @@ class CompanyViewModel(
      */
     fun loadUserCompanies(ownerId: String) {
         Log.d("CompanyViewModel", "Loading companies for owner: $ownerId")
-       // companyRepository.loadUserCompanies(ownerId)
-//        listCompany.value ="f"
+        _isLoading.value = true
+        _error.value = null
+        
         firestoreService.getCompaniesByOwner(ownerId, object: Callback<List<Company>>{
             override fun onSuccess(result: List<Company>) {
-                    _listCompany.value = result
+                Log.d("CompanyViewModel", "Successfully loaded ${result.size} companies")
+                _listCompany.value = result
+                _isLoading.value = false
             }
 
             override fun onError(exception: Exception) {
-                Log.e("CompanyViewModel", "Error loading companies: ${exception}")
+                Log.e("CompanyViewModel", "Error loading companies", exception)
+                _error.value = "Error al cargar las compañías: ${exception.message}"
+                _isLoading.value = false
             }
-
         })
-
     }
 
     /**
@@ -74,17 +76,21 @@ class CompanyViewModel(
         Log.d("CompanyViewModel", "Creating company: ${company.name}")
         _operationInProgress.value = true
         
-        companyRepository.createCompany(company) { success, companyId ->
-            _operationInProgress.value = false
-            if (success) {
+        firestoreService.createCompany(company, object : Callback<String> {
+            override fun onSuccess(result: String) {
+                Log.d("CompanyViewModel", "Company created with ID: $result")
                 _operationResult.value = "Compañía creada exitosamente"
-                Log.d("CompanyViewModel", "Company created with ID: $companyId")
-            } else {
-                _operationResult.value = "Error al crear la compañía"
-                Log.e("CompanyViewModel", "Failed to create company")
+                _operationInProgress.value = false
+                callback(true, result)
             }
-            callback(success, companyId)
-        }
+
+            override fun onError(exception: Exception) {
+                Log.e("CompanyViewModel", "Failed to create company", exception)
+                _operationResult.value = "Error al crear la compañía: ${exception.message}"
+                _operationInProgress.value = false
+                callback(false, null)
+            }
+        })
     }
 
     /**
@@ -94,17 +100,23 @@ class CompanyViewModel(
         Log.d("CompanyViewModel", "Updating company: ${company.name}")
         _operationInProgress.value = true
         
-        companyRepository.updateCompany(company) { success ->
-            _operationInProgress.value = false
-            if (success) {
-                _operationResult.value = "Compañía actualizada exitosamente"
+        firestoreService.updateCompany(company, object : VoidCallback {
+            override fun onSuccess() {
                 Log.d("CompanyViewModel", "Company updated successfully")
-            } else {
-                _operationResult.value = "Error al actualizar la compañía"
-                Log.e("CompanyViewModel", "Failed to update company")
+                _operationResult.value = "Compañía actualizada exitosamente"
+                _operationInProgress.value = false
+                // Recargar lista después de actualizar
+                loadUserCompanies(company.ownerId)
+                callback(true)
             }
-            callback(success)
-        }
+
+            override fun onError(exception: Exception) {
+                Log.e("CompanyViewModel", "Failed to update company", exception)
+                _operationResult.value = "Error al actualizar la compañía: ${exception.message}"
+                _operationInProgress.value = false
+                callback(false)
+            }
+        })
     }
 
     /**
@@ -114,21 +126,27 @@ class CompanyViewModel(
         Log.d("CompanyViewModel", "Deleting company: $companyId")
         _operationInProgress.value = true
         
-        companyRepository.deleteCompany(companyId, ownerId) { success ->
-            _operationInProgress.value = false
-            if (success) {
-                _operationResult.value = "Compañía eliminada exitosamente"
+        firestoreService.deleteCompany(companyId, object : VoidCallback {
+            override fun onSuccess() {
                 Log.d("CompanyViewModel", "Company deleted successfully")
+                _operationResult.value = "Compañía eliminada exitosamente"
+                _operationInProgress.value = false
                 // Limpiar selección si es la compañía eliminada
                 if (_selectedCompany.value?.id == companyId) {
                     _selectedCompany.value = null
                 }
-            } else {
-                _operationResult.value = "Error al eliminar la compañía"
-                Log.e("CompanyViewModel", "Failed to delete company")
+                // Recargar lista después de eliminar
+                loadUserCompanies(ownerId)
+                callback(true)
             }
-            callback(success)
-        }
+
+            override fun onError(exception: Exception) {
+                Log.e("CompanyViewModel", "Failed to delete company", exception)
+                _operationResult.value = "Error al eliminar la compañía: ${exception.message}"
+                _operationInProgress.value = false
+                callback(false)
+            }
+        })
     }
 
     /**
@@ -136,14 +154,25 @@ class CompanyViewModel(
      */
     fun getCompanyById(companyId: String, callback: (Company?) -> Unit) {
         Log.d("CompanyViewModel", "Getting company by ID: $companyId")
-        companyRepository.getCompanyById(companyId) { company ->
-            if (company != null) {
-                Log.d("CompanyViewModel", "Company found: ${company.name}")
-            } else {
-                Log.w("CompanyViewModel", "Company not found")
+        _isLoading.value = true
+        
+        firestoreService.getCompanyById(companyId, object : Callback<Company?> {
+            override fun onSuccess(result: Company?) {
+                if (result != null) {
+                    Log.d("CompanyViewModel", "Company found: ${result.name}")
+                } else {
+                    Log.w("CompanyViewModel", "Company not found: $companyId")
+                }
+                _isLoading.value = false
+                callback(result)
             }
-            callback(company)
-        }
+
+            override fun onError(exception: Exception) {
+                Log.e("CompanyViewModel", "Error getting company by ID", exception)
+                _isLoading.value = false
+                callback(null)
+            }
+        })
     }
 
     /**
@@ -155,35 +184,47 @@ class CompanyViewModel(
     }
 
     /**
-     * Buscar compañías por nombre
+     * Limpiar URLs de placeholder problemáticas
+     */
+    fun cleanPlaceholderUrls(ownerId: String, callback: (Boolean) -> Unit) {
+        Log.d("CompanyViewModel", "Cleaning placeholder URLs for owner: $ownerId")
+        
+        firestoreService.cleanPlaceholderUrls(ownerId, object : VoidCallback {
+            override fun onSuccess() {
+                Log.d("CompanyViewModel", "Placeholder URLs cleaned successfully")
+                callback(true)
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("CompanyViewModel", "Failed to clean placeholder URLs", exception)
+                callback(false)
+            }
+        })
+    }
+
+    /**
+     * Buscar compañías por nombre - usando FirestoreService directamente
      */
     fun searchCompanies(query: String, callback: (List<Company>) -> Unit) {
         Log.d("CompanyViewModel", "Searching companies with query: $query")
-        companyRepository.searchCompanies(query, callback)
-    }
+        _isLoading.value = true
+        
+        firestoreService.getAllCompanies(object : Callback<List<Company>> {
+            override fun onSuccess(result: List<Company>) {
+                // Filtrar por nombre localmente
+                val filteredCompanies = result.filter { 
+                    it.name.contains(query, ignoreCase = true) 
+                }
+                _isLoading.value = false
+                callback(filteredCompanies)
+            }
 
-    /**
-     * Filtrar compañías por tipo
-     */
-    fun filterByType(type: String, callback: (List<Company>) -> Unit) {
-        Log.d("CompanyViewModel", "Filtering companies by type: $type")
-        companyRepository.getCompaniesByType(type, callback)
-    }
-
-    /**
-     * Filtrar compañías por ciudad
-     */
-    fun filterByCity(city: String, callback: (List<Company>) -> Unit) {
-        Log.d("CompanyViewModel", "Filtering companies by city: $city")
-        companyRepository.getCompaniesByCity(city, callback)
-    }
-
-    /**
-     * Filtrar compañías por tamaño
-     */
-    fun filterBySize(size: String, callback: (List<Company>) -> Unit) {
-        Log.d("CompanyViewModel", "Filtering companies by size: $size")
-        companyRepository.getCompaniesBySize(size, callback)
+            override fun onError(exception: Exception) {
+                Log.e("CompanyViewModel", "Error searching companies", exception)
+                _isLoading.value = false
+                callback(emptyList())
+            }
+        })
     }
 
     /**
@@ -194,10 +235,10 @@ class CompanyViewModel(
     }
 
     /**
-     * Limpiar error del repository
+     * Limpiar error
      */
     fun clearError() {
-        companyRepository.clearError()
+        _error.value = null
     }
 
     /**

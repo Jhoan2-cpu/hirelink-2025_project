@@ -68,13 +68,7 @@ class CompanyFragment : Fragment() {
         companiesRecyclerView = view.findViewById(R.id.companiesRecyclerView)
         emptyStateLayout = view.findViewById(R.id.emptyStateLayout)
         addCompanyFab = view.findViewById(R.id.addCompanyFab)
-        
-        // Buscar progress indicator, crear uno si no existe en el XML
-        progressIndicator = view.findViewById<CircularProgressIndicator>(R.id.progressIndicator) 
-            ?: CircularProgressIndicator(requireContext()).apply {
-                visibility = View.GONE
-                // El progressIndicator no existe en el XML, usar este fallback
-            }
+        progressIndicator = view.findViewById(R.id.progressIndicator)
     }
     
     private fun setupRecyclerView() {
@@ -150,12 +144,22 @@ class CompanyFragment : Fragment() {
         }
     }
     
-    private fun getCurrentUserAndLoadCompanies() {
+   private fun getCurrentUserAndLoadCompanies() {
         currentUserId = FirebaseAuth.getInstance().currentUser?.uid
         
         if (currentUserId != null) {
             Log.d("CompanyFragment", "Loading companies for user: $currentUserId")
-            viewModel.loadUserCompanies(currentUserId!!)
+            
+            // Primero limpiar URLs de placeholder problemáticas
+            viewModel.cleanPlaceholderUrls(currentUserId!!) { success ->
+                if (success) {
+                    Log.d("CompanyFragment", "Placeholder URLs cleaned successfully")
+                } else {
+                    Log.w("CompanyFragment", "Failed to clean placeholder URLs")
+                }
+                // Cargar compañías después de la limpieza
+                viewModel.loadUserCompanies(currentUserId!!)
+            }
         } else {
             Log.w("CompanyFragment", "No authenticated user found")
             showError("Usuario no autenticado")
