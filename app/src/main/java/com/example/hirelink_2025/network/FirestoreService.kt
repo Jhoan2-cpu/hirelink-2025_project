@@ -459,9 +459,97 @@ class FirestoreService {
     fun updateJobStatus(jobId: String, status: JobStatus, callback: VoidCallback) {
         db.collection(JOBS_COLLECTION)
             .document(jobId)
-            .update("status", status.name)
+            .update(mapOf(
+                "status" to status.name,
+                "updatedAt" to System.currentTimeMillis()
+            ))
             .addOnSuccessListener { callback.onSuccess() }
             .addOnFailureListener { callback.onError(it) }
+    }
+    
+    /**
+     * Obtener trabajos por propietario
+     */
+    fun getJobsByOwner(ownerId: String, callback: Callback<List<Job>>) {
+        Log.d("FirestoreService", "Getting jobs for owner: $ownerId")
+        
+        // Usar get() sin orderBy para evitar requerir índice compuesto
+        // Ordenaremos los resultados en el cliente
+        db.collection(JOBS_COLLECTION)
+            .whereEqualTo("ownerId", ownerId)
+            .get() // Sin .orderBy() para evitar el índice compuesto
+            .addOnSuccessListener { querySnapshot ->
+                Log.d("FirestoreService", "Found ${querySnapshot.size()} jobs for owner")
+                val jobs = querySnapshot.toObjects(Job::class.java)
+                    .sortedByDescending { it.createdAt } // Ordenar en el cliente
+                callback.onSuccess(jobs)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirestoreService", "Error getting jobs for owner", exception)
+                callback.onError(exception)
+            }
+    }
+    
+    /**
+     * Obtener trabajos por propietario y estado
+     */
+    fun getJobsByOwnerAndStatus(ownerId: String, status: JobStatus, callback: Callback<List<Job>>) {
+        Log.d("FirestoreService", "Getting jobs for owner: $ownerId with status: $status")
+        
+        // Usar get() sin orderBy para evitar requerir índice compuesto
+        // Ordenaremos los resultados en el cliente
+        db.collection(JOBS_COLLECTION)
+            .whereEqualTo("ownerId", ownerId)
+            .whereEqualTo("status", status.name)
+            .get() // Sin .orderBy() para evitar el índice compuesto
+            .addOnSuccessListener { querySnapshot ->
+                Log.d("FirestoreService", "Found ${querySnapshot.size()} jobs for owner with status $status")
+                val jobs = querySnapshot.toObjects(Job::class.java)
+                    .sortedByDescending { it.createdAt } // Ordenar en el cliente
+                callback.onSuccess(jobs)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirestoreService", "Error getting jobs for owner with status", exception)
+                callback.onError(exception)
+            }
+    }
+    
+    /**
+     * Eliminar trabajo por ID y propietario (seguridad)
+     */
+    fun deleteJobByOwner(jobId: String, ownerId: String, callback: VoidCallback) {
+        Log.d("FirestoreService", "Deleting job: $jobId for owner: $ownerId")
+        
+        db.collection(JOBS_COLLECTION)
+            .document(jobId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val job = document.toObject(Job::class.java)
+                    if (job?.ownerId == ownerId) {
+                        // Eliminar el documento
+                        document.reference.delete()
+                            .addOnSuccessListener {
+                                Log.d("FirestoreService", "Job deleted successfully")
+                                callback.onSuccess()
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.e("FirestoreService", "Error deleting job", exception)
+                                callback.onError(exception)
+                            }
+                    } else {
+                        Log.w("FirestoreService", "Job owner mismatch")
+                        callback.onError(Exception("No tienes permisos para eliminar este anuncio"))
+                    }
+                } else {
+                    Log.w("FirestoreService", "Job not found")
+                    callback.onError(Exception("Anuncio no encontrado"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirestoreService", "Error getting job for deletion", exception)
+                callback.onError(exception)
+            }
     }
     
     // ================================

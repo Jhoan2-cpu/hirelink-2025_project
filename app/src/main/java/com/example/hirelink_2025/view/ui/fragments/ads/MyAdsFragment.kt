@@ -12,7 +12,6 @@ import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentMyAdsBinding
 import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.models.JobStatus
-import com.example.hirelink_2025.repository.AdsStats
 import com.example.hirelink_2025.view.adapter.MyAdAdapter
 import com.example.hirelink_2025.viewmodels.ads.MyAdsViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -28,7 +27,9 @@ class MyAdsFragment : Fragment() {
     private val binding get() = _binding!!
 
     // ViewModel usando by viewModels() delegate
-    private val viewModel: MyAdsViewModel by viewModels()
+    private val viewModel: MyAdsViewModel by viewModels { 
+        com.example.hirelink_2025.viewmodels.ViewModelFactory() 
+    }
 
     private lateinit var adapter: MyAdAdapter
 
@@ -45,6 +46,16 @@ class MyAdsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
         setupObservers()
+        
+        // Cargar datos iniciales
+        viewModel.refreshData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Recargar datos cada vez que el fragment se hace visible
+        // Esto captura nuevos anuncios registrados
+        viewModel.refreshData()
     }
 
     /**
@@ -226,18 +237,10 @@ class MyAdsFragment : Fragment() {
     /**
      * Actualiza la UI con las estadísticas
      */
-    private fun updateStatsUI(stats: AdsStats) {
+    private fun updateStatsUI(stats: Map<String, Int>) {
         binding.apply {
-            // Asumiendo que hay views para mostrar estadísticas
-            // Si no existen en el layout, se pueden omitir
-            /*
-            totalAdsText?.text = stats.totalAds.toString()
-            activeAdsText?.text = stats.activeAds.toString()
-            closedAdsText?.text = stats.closedAds.toString()
-            draftAdsText?.text = stats.draftAds.toString()
-            totalViewsText?.text = stats.totalViews.toString()
-            totalApplicantsText?.text = stats.totalApplicants.toString()
-            */
+            activeAdsCount.text = stats["active"]?.toString() ?: "0"
+            totalApplicantsCount.text = stats["totalApplications"]?.toString() ?: "0"
         }
     }
 
@@ -247,13 +250,12 @@ class MyAdsFragment : Fragment() {
     private fun updateLoadingState(isLoading: Boolean) {
         binding.apply {
             if (isLoading) {
-                // Mostrar loading - puede ser un ProgressBar
-                // progressBar?.visibility = View.VISIBLE
-                // adsRecyclerView.visibility = View.GONE
+                progressBar.visibility = View.VISIBLE
+                adsRecyclerView.visibility = View.GONE
+                emptyStateLayout.visibility = View.GONE
             } else {
-                // Ocultar loading
-                // progressBar?.visibility = View.GONE
-                // adsRecyclerView.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
+                adsRecyclerView.visibility = View.VISIBLE
             }
         }
     }
@@ -263,14 +265,14 @@ class MyAdsFragment : Fragment() {
      */
     private fun updateEmptyState(isEmpty: Boolean) {
         binding.apply {
-            if (isEmpty) {
-                // Mostrar estado vacío
-                // emptyStateLayout?.visibility = View.VISIBLE
-                // adsRecyclerView.visibility = View.GONE
+            if (isEmpty && progressBar.visibility != View.VISIBLE) {
+                emptyStateLayout.visibility = View.VISIBLE
+                adsRecyclerView.visibility = View.GONE
             } else {
-                // Ocultar estado vacío
-                // emptyStateLayout?.visibility = View.GONE
-                // adsRecyclerView.visibility = View.VISIBLE
+                emptyStateLayout.visibility = View.GONE
+                if (progressBar.visibility != View.VISIBLE) {
+                    adsRecyclerView.visibility = View.VISIBLE
+                }
             }
         }
     }

@@ -51,9 +51,8 @@ class MyAdAdapter(
             statusText.setTextColor(getStatusColor(job.status))
             statusText.setBackgroundResource(getStatusBackground(job.status))
 
-            // Estadísticas
-            //viewsCount.text = "${job.vacancies * 40} vistas"
-            applicantsCount.text = "${job.vacancies * 2} postulantes"
+            // Estadísticas usando los campos reales del modelo
+            applicantsCount.text = "${job.applicationsCount} postulantes"
 
             // Configurar visibilidad de botones basada en el estado
             setupButtonsVisibility(job)
@@ -62,6 +61,7 @@ class MyAdAdapter(
             adCard.setOnClickListener { onJobClick(job) }
             editButton.setOnClickListener { onEditClick(job) }
             applicantsButton.setOnClickListener { onApplicantsClick(job) }
+            deleteButton.setOnClickListener { onDeleteClick(job) }
         }
 
         private fun getStatusText(status: JobStatus): String {
@@ -97,26 +97,34 @@ class MyAdAdapter(
                 JobStatus.ACTIVE -> {
                     editButton.isEnabled = true
                     applicantsButton.isEnabled = true
+                    deleteButton.isEnabled = true
                     editButton.alpha = 1.0f
                     applicantsButton.alpha = 1.0f
+                    deleteButton.alpha = 1.0f
                 }
                 JobStatus.DRAFT -> {
                     editButton.isEnabled = true
                     applicantsButton.isEnabled = false
+                    deleteButton.isEnabled = true
                     editButton.alpha = 1.0f
                     applicantsButton.alpha = 0.5f
+                    deleteButton.alpha = 1.0f
                 }
                 JobStatus.CLOSED -> {
                     editButton.isEnabled = false
                     applicantsButton.isEnabled = true
+                    deleteButton.isEnabled = true
                     editButton.alpha = 0.5f
                     applicantsButton.alpha = 1.0f
+                    deleteButton.alpha = 1.0f
                 }
                 else -> {
                     editButton.isEnabled = false
                     applicantsButton.isEnabled = false
+                    deleteButton.isEnabled = true
                     editButton.alpha = 0.5f
                     applicantsButton.alpha = 0.5f
+                    deleteButton.alpha = 1.0f
                 }
             }
         }

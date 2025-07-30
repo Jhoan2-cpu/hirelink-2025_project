@@ -16,5 +16,22 @@ data class Job(
     val employmentType: String = "",
     val bookmarked: Boolean = false,
     val applied: Boolean = false,
-    val status: JobStatus = JobStatus.ACTIVE
+    val status: JobStatus = JobStatus.ACTIVE,
+    val ownerId: String = "",
+    val companyId: String = "",
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
+    val applicationsCount: Int = 0,
+    val viewsCount: Int = 0,
+    // Campos adicionales del formulario
+    val aboutCompany: String = "",
+    val aboutJob: String = "",
+    val skills: String = "",
+    val deadline: String = "",
+    val offerSalary: String = "",
+    val companyPhone: String = "",
+    val companyEmail: String = "",
+    val companyWebsite: String = "",
+    val imageUrl: String? = null,
+    val selectedLocation: String = ""
 )

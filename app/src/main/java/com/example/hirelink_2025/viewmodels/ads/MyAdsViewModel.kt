@@ -1,32 +1,33 @@
 package com.example.hirelink_2025.viewmodels.ads
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.models.JobStatus
-import com.example.hirelink_2025.repository.AdsStats
-import com.example.hirelink_2025.repository.MyAdsRepository
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.launch
+import com.example.hirelink_2025.network.Callback
+import com.example.hirelink_2025.network.FirestoreService
+import com.example.hirelink_2025.network.VoidCallback
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * ViewModel para MyAdsFragment siguiendo arquitectura MVVM
  * Maneja el estado y lógica de negocio para los anuncios laborales
- * CORREGIDO: Maneja todos los estados de JobStatus
+ * Conectado directamente a FirestoreService
  */
 class MyAdsViewModel : ViewModel() {
 
-    private val repository = MyAdsRepository()
+    private val firestoreService = FirestoreService()
+    private val auth = FirebaseAuth.getInstance()
 
     // Estado de los anuncios
     private val _myAds = MutableLiveData<List<Job>>()
     val myAds: LiveData<List<Job>> = _myAds
 
-    // Estado de las estadísticas
-    private val _adsStats = MutableLiveData<AdsStats>()
-    val adsStats: LiveData<AdsStats> = _adsStats
+    // Estado de las estadísticas (versión simplificada)
+    private val _adsStats = MutableLiveData<Map<String, Int>>()
+    val adsStats: LiveData<Map<String, Int>> = _adsStats
 
     // Estados de UI
     private val _isLoading = MutableLiveData<Boolean>()
@@ -46,107 +47,152 @@ class MyAdsViewModel : ViewModel() {
     val updateSuccess: LiveData<String> = _updateSuccess
 
     init {
-        loadMyAds()
-        loadAdsStats()
+        getCurrentUserAndLoadAds()
+    }
+
+    /**
+     * Obtiene el usuario actual y carga sus anuncios
+     */
+    private fun getCurrentUserAndLoadAds() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            Log.d("MyAdsViewModel", "Loading ads for user: ${currentUser.uid}")
+            loadMyAds(currentUser.uid)
+        } else {
+            Log.w("MyAdsViewModel", "No authenticated user found")
+            _errorMessage.value = "Usuario no autenticado"
+        }
     }
 
     /**
      * Carga todos los anuncios del usuario
      */
-    fun loadMyAds() {
+    fun loadMyAds(ownerId: String? = null) {
+        val userId = ownerId ?: auth.currentUser?.uid
+        if (userId == null) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
+
+        Log.d("MyAdsViewModel", "Loading ads for owner: $userId")
         _isLoading.value = true
         _errorMessage.value = ""
 
-        viewModelScope.launch {
-            repository.getMyAds()
-                .catch { exception ->
-                    _isLoading.value = false
-                    _errorMessage.value = "Error al cargar anuncios: ${exception.message}"
-                }
-                .collect { ads ->
-                    _myAds.value = ads
-                    _isEmpty.value = ads.isEmpty()
-                    _isLoading.value = false
-                }
-        }
+        firestoreService.getJobsByOwner(userId, object : Callback<List<Job>> {
+            override fun onSuccess(result: List<Job>) {
+                Log.d("MyAdsViewModel", "Successfully loaded ${result.size} ads")
+                _myAds.value = result
+                _isEmpty.value = result.isEmpty()
+                _isLoading.value = false
+                calculateStats(result)
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("MyAdsViewModel", "Error loading ads", exception)
+                _isLoading.value = false
+                _errorMessage.value = "Error al cargar anuncios: ${exception.message}"
+            }
+        })
     }
 
     /**
-     * Carga las estadísticas de anuncios
+     * Calcula las estadísticas de anuncios
      */
-    fun loadAdsStats() {
-        viewModelScope.launch {
-            repository.getAdsStats()
-                .catch { exception ->
-                    _errorMessage.value = "Error al cargar estadísticas: ${exception.message}"
-                }
-                .collect { stats ->
-                    _adsStats.value = stats
-                }
-        }
+    private fun calculateStats(ads: List<Job>) {
+        val stats = mutableMapOf<String, Int>()
+        stats["total"] = ads.size
+        stats["active"] = ads.count { it.status == JobStatus.ACTIVE }
+        stats["closed"] = ads.count { it.status == JobStatus.CLOSED }
+        stats["draft"] = ads.count { it.status == JobStatus.DRAFT }
+        stats["paused"] = ads.count { it.status == JobStatus.PAUSED }
+        stats["totalViews"] = ads.sumOf { it.viewsCount }
+        stats["totalApplications"] = ads.sumOf { it.applicationsCount }
+        
+        _adsStats.value = stats
     }
 
     /**
      * Filtra anuncios por estado
      */
     fun filterAdsByStatus(status: JobStatus) {
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
+
+        Log.d("MyAdsViewModel", "Filtering ads by status: $status for owner: $userId")
         _isLoading.value = true
 
-        viewModelScope.launch {
-            repository.getAdsByStatus(status)
-                .catch { exception ->
-                    _isLoading.value = false
-                    _errorMessage.value = "Error al filtrar anuncios: ${exception.message}"
-                }
-                .collect { ads ->
-                    _myAds.value = ads
-                    _isEmpty.value = ads.isEmpty()
-                    _isLoading.value = false
-                }
-        }
+        firestoreService.getJobsByOwnerAndStatus(userId, status, object : Callback<List<Job>> {
+            override fun onSuccess(result: List<Job>) {
+                Log.d("MyAdsViewModel", "Successfully loaded ${result.size} ads with status $status")
+                _myAds.value = result
+                _isEmpty.value = result.isEmpty()
+                _isLoading.value = false
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("MyAdsViewModel", "Error filtering ads by status", exception)
+                _isLoading.value = false
+                _errorMessage.value = "Error al filtrar anuncios: ${exception.message}"
+            }
+        })
     }
 
     /**
      * Elimina un anuncio
      */
     fun deleteAd(job: Job) {
-        viewModelScope.launch {
-            try {
-                val success = repository.deleteAd(job.id)
-                if (success) {
-                    _deleteSuccess.value = "Anuncio '${job.title}' eliminado correctamente"
-                    // Recargar la lista
-                    loadMyAds()
-                    loadAdsStats()
-                } else {
-                    _errorMessage.value = "Error al eliminar el anuncio"
-                }
-            } catch (e: Exception) {
-                _errorMessage.value = "Error al eliminar: ${e.message}"
-            }
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
         }
+
+        Log.d("MyAdsViewModel", "Deleting ad: ${job.title}")
+
+        firestoreService.deleteJobByOwner(job.id, userId, object : VoidCallback {
+            override fun onSuccess() {
+                Log.d("MyAdsViewModel", "Ad deleted successfully")
+                _deleteSuccess.value = "Anuncio '${job.title}' eliminado correctamente"
+                // Recargar la lista
+                loadMyAds(userId)
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("MyAdsViewModel", "Error deleting ad", exception)
+                _errorMessage.value = "Error al eliminar: ${exception.message}"
+            }
+        })
     }
 
     /**
-     * Actualiza el estado de un anuncio - CORREGIDO
+     * Actualiza el estado de un anuncio
      */
     fun updateAdStatus(job: Job, newStatus: JobStatus) {
-        viewModelScope.launch {
-            try {
-                val success = repository.updateAdStatus(job.id, newStatus)
-                if (success) {
-                    val statusText = getStatusDisplayText(newStatus)
-                    _updateSuccess.value = "Anuncio '${job.title}' $statusText"
-                    // Recargar la lista
-                    loadMyAds()
-                    loadAdsStats()
-                } else {
-                    _errorMessage.value = "Error al actualizar el estado"
-                }
-            } catch (e: Exception) {
-                _errorMessage.value = "Error al actualizar: ${e.message}"
-            }
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
         }
+
+        Log.d("MyAdsViewModel", "Updating ad status: ${job.title} to $newStatus")
+
+        firestoreService.updateJobStatus(job.id, newStatus, object : VoidCallback {
+            override fun onSuccess() {
+                val statusText = getStatusDisplayText(newStatus)
+                Log.d("MyAdsViewModel", "Ad status updated successfully")
+                _updateSuccess.value = "Anuncio '${job.title}' $statusText"
+                // Recargar la lista
+                loadMyAds(userId)
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("MyAdsViewModel", "Error updating ad status", exception)
+                _errorMessage.value = "Error al actualizar: ${exception.message}"
+            }
+        })
     }
 
     /**
@@ -250,8 +296,7 @@ class MyAdsViewModel : ViewModel() {
      * Recarga todos los datos
      */
     fun refreshData() {
-        loadMyAds()
-        loadAdsStats()
+        getCurrentUserAndLoadAds()
     }
 
     /**

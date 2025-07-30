@@ -1,248 +1,134 @@
-                                                                                                 call GlideException#logRootCauses(String) for more detail
-                                                                                                          Cause (1 of 1): class com.bumptech.glide.load.HttpException: Failed to connect or obtain data, status code: -1
-2025-07-30 13:51:05.833 10114-10114 Glide                   com.example.hirelink_2025            I  Root cause (1 of 1)
-2025-07-30 13:51:06.992 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Add company FAB clicked
-2025-07-30 13:51:07.200 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:51:07.200 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:51:07.213 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  Fragment created
-2025-07-30 13:51:07.244 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  Current user ID: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:51:07.258 10114-10114 FirestoreService        com.example.hirelink_2025            D  App verification disabled for testing
-2025-07-30 13:51:07.290 10114-10114 CompanyReg...rViewModel com.example.hirelink_2025            D  ViewModel initialized
-2025-07-30 13:51:07.291 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  UI State updated: loading=false, success=false
-2025-07-30 13:51:07.295 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:51:07.318 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:51:09.011 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:09.017 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:857ba31: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:09.025 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:09.026 10114-10114 InsetsController        com.example.hirelink_2025            D  Setting requestedVisibleTypes to -1 (was -9)
-2025-07-30 13:51:09.057 10114-10114 AssistStructure         com.example.hirelink_2025            I  Flattened final assist data: 11804 bytes, containing 1 windows, 95 views
-2025-07-30 13:51:10.994 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:10.999 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:18cebd80: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:11.001 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:11.009 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:18cebd80: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:11.030 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  commitText on inactive InputConnection
-2025-07-30 13:51:11.035 10114-10197 InteractionJankMonitor  com.example.hirelink_2025            W  Initializing without READ_DEVICE_CONFIG permission. enabled=false, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.example.hirelink_2025
-2025-07-30 13:51:11.340 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:857ba31: onShown
-2025-07-30 13:51:11.382 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:11.434 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:11.894 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:51:11.902 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:11.904 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:55a9b5e7: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:11.905 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:11.905 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:55a9b5e7: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:12.013 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:12.071 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:13.014 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:51:13.021 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:13.022 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:9a3ca938: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:13.023 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:13.023 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:9a3ca938: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:13.172 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:13.258 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:14.089 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:14.090 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:facca494: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:14.094 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:14.095 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:facca494: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:14.241 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:14.315 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:18.485 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:18.485 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:399d6ab8: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:18.485 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:18.485 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:399d6ab8: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:18.508 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:18.519 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:22.977 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:22.978 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:9fde988a: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:22.979 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:22.979 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:9fde988a: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:23.033 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:23.099 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:26.817 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:26.818 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:77abbeea: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:26.818 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:26.820 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:77abbeea: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:26.920 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:26.965 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:28.660 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:28.662 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:2d964944: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:28.662 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:28.663 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:2d964944: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:28.703 10114-10114 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
-2025-07-30 13:51:28.709 10114-10114 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
-2025-07-30 13:51:28.713 10114-10114 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
-2025-07-30 13:51:29.237 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@29c5b34
-2025-07-30 13:51:32.359 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:32.360 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:3c77009e: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:32.360 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:32.361 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:3c77009e: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:32.386 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:32.397 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:38.048 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:38.048 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:4b2198b6: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:38.049 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:38.049 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:4b2198b6: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:38.153 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:38.253 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:44.217 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:6bae23f4: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
-2025-07-30 13:51:44.948 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:45.274 10114-10205 FA                      com.example.hirelink_2025            I  Application backgrounded at: timestamp_millis: 1753901503220
-2025-07-30 13:51:46.700 10114-10114 e.hirelink_2025         com.example.hirelink_2025            I  AssetManager2(0x7f72656d5ef8) locale list changing from [] to [en-US]
-2025-07-30 13:51:46.763 10114-10114 ImeBackDispatcher       com.example.hirelink_2025            E  Ime callback not found. Ignoring unregisterReceivedCallback. callbackId: 168964432
-2025-07-30 13:51:46.794 10114-10187 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
-2025-07-30 13:51:48.521 10114-10114 ImeTracker              com.example.hirelink_2025            I  system_server:cbac166a: onShown
-2025-07-30 13:51:49.061 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  Registering company for user: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:51:49.061 10114-10114 CompanyReg...rViewModel com.example.hirelink_2025            D  Registering company: zz
-2025-07-30 13:51:49.069 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  UI State updated: loading=false, success=false
-2025-07-30 13:51:56.549 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:51:56.553 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:51:56.554 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:3cfd97b4: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:51:56.555 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:51:56.555 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:3cfd97b4: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:51:56.755 10114-10114 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-07-30 13:51:56.758 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:51:57.832 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@802ebaa
-2025-07-30 13:52:08.224 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  Registering company for user: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:08.224 10114-10114 CompanyReg...rViewModel com.example.hirelink_2025            D  Registering company: zz
-2025-07-30 13:52:08.226 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  UI State updated: loading=true, success=false
-2025-07-30 13:52:08.346 10114-10114 CompanyReg...rViewModel com.example.hirelink_2025            D  Uploading logo first
-2025-07-30 13:52:08.350 10114-10114 FirebaseStorageService  com.example.hirelink_2025            D  Uploading temporary company logo
-2025-07-30 13:52:08.446 10114-10143 StorageUtil             com.example.hirelink_2025            W  Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
-2025-07-30 13:52:08.463 10114-10114 FirebaseStorageService  com.example.hirelink_2025            D  Upload progress: 0.0%
-2025-07-30 13:52:08.463 10114-10114 FirebaseStorageService  com.example.hirelink_2025            D  Upload progress: 0.0%
-2025-07-30 13:52:09.749 10114-10143 UploadTask              com.example.hirelink_2025            D  Waiting 0 milliseconds
-2025-07-30 13:52:09.823 10114-10143 StorageUtil             com.example.hirelink_2025            W  Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
-2025-07-30 13:52:10.914 10114-10114 FirebaseStorageService  com.example.hirelink_2025            D  Upload progress: 100.0%
-2025-07-30 13:52:10.914 10114-10114 FirebaseStorageService  com.example.hirelink_2025            D  Temporary upload successful
-2025-07-30 13:52:10.931 10114-10143 StorageUtil             com.example.hirelink_2025            W  Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
-2025-07-30 13:52:11.358 10114-10114 FirebaseStorageService  com.example.hirelink_2025            D  Temporary download URL obtained: https://firebasestorage.googleapis.com/v0/b/hirelink-2025.firebasestorage.app/o/company_logos%2Ftemp_d827fb1a-6622-4c1b-8af7-8e5d21b2862d.jpg?alt=media&token=e4c99080-cca0-4f57-8d5a-98eca0c8da0f
-2025-07-30 13:52:11.358 10114-10114 CompanyReg...rViewModel com.example.hirelink_2025            D  Logo uploaded successfully: https://firebasestorage.googleapis.com/v0/b/hirelink-2025.firebasestorage.app/o/company_logos%2Ftemp_d827fb1a-6622-4c1b-8af7-8e5d21b2862d.jpg?alt=media&token=e4c99080-cca0-4f57-8d5a-98eca0c8da0f
-2025-07-30 13:52:11.358 10114-10114 CompanyReg...rViewModel com.example.hirelink_2025            D  Creating company with logo URL: https://firebasestorage.googleapis.com/v0/b/hirelink-2025.firebasestorage.app/o/company_logos%2Ftemp_d827fb1a-6622-4c1b-8af7-8e5d21b2862d.jpg?alt=media&token=e4c99080-cca0-4f57-8d5a-98eca0c8da0f
-2025-07-30 13:52:11.859 10114-10114 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
-2025-07-30 13:52:11.860 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:757cbcb0: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-07-30 13:52:11.860 10114-10114 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
-2025-07-30 13:52:11.860 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:757cbcb0: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
-2025-07-30 13:52:11.878 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:52:12.499 10114-10114 CompanyReg...rViewModel com.example.hirelink_2025            D  Company created successfully with ID: 2rCvkvpUQ4g4RK16DEHH
-2025-07-30 13:52:12.499 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  UI State updated: loading=false, success=true
-2025-07-30 13:52:12.500 10114-10114 CompanyRegisterFragment com.example.hirelink_2025            D  Company registered successfully
-2025-07-30 13:52:12.544 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Fragment created
-2025-07-30 13:52:12.545 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Loading companies for user: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:12.545 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Loading companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:12.545 10114-10114 FirestoreService        com.example.hirelink_2025            D  Getting companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:12.546 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Companies updated: 5
-2025-07-30 13:52:12.548 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Loading state: true
-2025-07-30 13:52:12.550 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@208935b
-2025-07-30 13:52:12.566 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:52:12.691 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Refreshing companies on resume
-2025-07-30 13:52:12.691 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Refreshing companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:12.691 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Loading companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:12.691 10114-10114 FirestoreService        com.example.hirelink_2025            D  Getting companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:13.082 10114-10114 Glide                   com.example.hirelink_2025            W  Load failed for [https://via.placeholder.com/150x150.png?text=Company+Logo] with dimensions [116x116]
-                                                                                                    class com.bumptech.glide.load.engine.GlideException: Failed to load resource
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                      Cause (1 of 1): class com.bumptech.glide.load.engine.GlideException: Fetching data failed, class java.io.InputStream, REMOTE
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                        Cause (1 of 1): class com.bumptech.glide.load.engine.GlideException: Fetch failed
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                          Cause (1 of 1): class com.bumptech.glide.load.HttpException: Failed to connect or obtain data, status code: -1
-2025-07-30 13:52:13.082 10114-10114 Glide                   com.example.hirelink_2025            I  Root cause (1 of 1)
-2025-07-30 13:52:13.125 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:52:13.125 10114-10114 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
-2025-07-30 13:52:13.159 10114-10114 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@79b69e0
-2025-07-30 13:52:13.166 10114-10114 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:ebdbb70c: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_CLOSE_CURRENT_SESSION fromUser false
-2025-07-30 13:52:13.169 10114-10114 InsetsController        com.example.hirelink_2025            D  hide(ime(), fromIme=false)
-2025-07-30 13:52:13.173 10114-10114 InsetsController        com.example.hirelink_2025            D  Setting requestedVisibleTypes to -9 (was -1)
-2025-07-30 13:52:13.345 10114-10120 e.hirelink_2025         com.example.hirelink_2025            I  Background concurrent mark compact GC freed 7904KB AllocSpace bytes, 17(772KB) LOS objects, 49% free, 11MB/23MB, paused 13.037ms,3.304ms total 108.604ms
-2025-07-30 13:52:13.414 10114-10114 FirestoreService        com.example.hirelink_2025            D  Found 6 companies for owner
-2025-07-30 13:52:13.423 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Successfully loaded 6 companies
-2025-07-30 13:52:13.423 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Companies updated: 6
-2025-07-30 13:52:13.425 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Loading state: false
-2025-07-30 13:52:13.426 10114-10114 FirestoreService        com.example.hirelink_2025            D  Found 6 companies for owner
-2025-07-30 13:52:13.450 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Successfully loaded 6 companies
-2025-07-30 13:52:13.458 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Companies updated: 6
-2025-07-30 13:52:13.526 10114-10114 e.hirelink_2025         com.example.hirelink_2025            I  AssetManager2(0x7f72656da098) locale list changing from [] to [en-US]
-2025-07-30 13:52:13.612 10114-10114 ImeBackDispatcher       com.example.hirelink_2025            E  Ime callback not found. Ignoring unregisterReceivedCallback. callbackId: 168964432
-2025-07-30 13:52:13.625 10114-10114 ImeTracker              com.example.hirelink_2025            I  system_server:223dd20c: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
-2025-07-30 13:52:13.626 10114-10114 Glide                   com.example.hirelink_2025            W  Load failed for [https://via.placeholder.com/150x150.png?text=Company+Logo] with dimensions [116x116]
-                                                                                                    class com.bumptech.glide.load.engine.GlideException: Failed to load resource
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                      Cause (1 of 1): class com.bumptech.glide.load.engine.GlideException: Fetching data failed, class java.io.InputStream, REMOTE
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                        Cause (1 of 1): class com.bumptech.glide.load.engine.GlideException: Fetch failed
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                          Cause (1 of 1): class com.bumptech.glide.load.HttpException: Failed to connect or obtain data, status code: -1
-2025-07-30 13:52:13.627 10114-10114 Glide                   com.example.hirelink_2025            I  Root cause (1 of 1)
-2025-07-30 13:52:14.383 10114-10256 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
-2025-07-30 13:52:23.086 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Company clicked: zz
-2025-07-30 13:52:23.086 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Company selected: zz
-2025-07-30 13:52:23.243 10114-10114 CompanyDetailFragment   com.example.hirelink_2025            D  Fragment created
-2025-07-30 13:52:23.249 10114-10114 CompanyDetailFragment   com.example.hirelink_2025            D  Loading company: 2rCvkvpUQ4g4RK16DEHH
-2025-07-30 13:52:23.250 10114-10114 FirestoreService        com.example.hirelink_2025            D  App verification disabled for testing
-2025-07-30 13:52:23.250 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  ViewModel initialized
-2025-07-30 13:52:23.251 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Getting company by ID: 2rCvkvpUQ4g4RK16DEHH
-2025-07-30 13:52:23.259 10114-10114 CompanyDetailFragment   com.example.hirelink_2025            D  Loading state: true
-2025-07-30 13:52:23.751 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Company found: zz
-2025-07-30 13:52:23.752 10114-10114 CompanyDetailFragment   com.example.hirelink_2025            D  Loading state: false
-2025-07-30 13:52:23.755 10114-10114 CompanyDetailFragment   com.example.hirelink_2025            D  Company loaded: zz
-2025-07-30 13:52:23.755 10114-10114 CompanyDetailFragment   com.example.hirelink_2025            D  Displaying company data for: zz
-2025-07-30 13:52:23.762 10114-10114 CompanyDetailFragment   com.example.hirelink_2025            D  Loading company logo from: https://firebasestorage.googleapis.com/v0/b/hirelink-2025.firebasestorage.app/o/company_logos%2Ftemp_d827fb1a-6622-4c1b-8af7-8e5d21b2862d.jpg?alt=media&token=e4c99080-cca0-4f57-8d5a-98eca0c8da0f
-2025-07-30 13:52:23.780 10114-10187 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
-2025-07-30 13:52:27.484 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Fragment created
-2025-07-30 13:52:27.489 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Loading companies for user: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:27.489 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Loading companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:27.493 10114-10114 FirestoreService        com.example.hirelink_2025            D  Getting companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:27.497 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Companies updated: 6
-2025-07-30 13:52:27.498 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Loading state: true
-2025-07-30 13:52:27.509 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Refreshing companies on resume
-2025-07-30 13:52:27.513 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Refreshing companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:27.514 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Loading companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:27.514 10114-10114 FirestoreService        com.example.hirelink_2025            D  Getting companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
-2025-07-30 13:52:27.757 10114-10114 Glide                   com.example.hirelink_2025            W  Load failed for [https://via.placeholder.com/150x150.png?text=Company+Logo] with dimensions [116x116]
-                                                                                                    class com.bumptech.glide.load.engine.GlideException: Failed to load resource
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                      Cause (1 of 1): class com.bumptech.glide.load.engine.GlideException: Fetching data failed, class java.io.InputStream, REMOTE
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                        Cause (1 of 1): class com.bumptech.glide.load.engine.GlideException: Fetch failed
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                          Cause (1 of 1): class com.bumptech.glide.load.HttpException: Failed to connect or obtain data, status code: -1
-2025-07-30 13:52:27.757 10114-10114 Glide                   com.example.hirelink_2025            I  Root cause (1 of 1)
-2025-07-30 13:52:27.942 10114-10114 FirestoreService        com.example.hirelink_2025            D  Found 6 companies for owner
-2025-07-30 13:52:27.946 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Successfully loaded 6 companies
-2025-07-30 13:52:27.946 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Companies updated: 6
-2025-07-30 13:52:27.946 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Loading state: false
-2025-07-30 13:52:27.946 10114-10114 FirestoreService        com.example.hirelink_2025            D  Found 6 companies for owner
-2025-07-30 13:52:27.949 10114-10114 CompanyViewModel        com.example.hirelink_2025            D  Successfully loaded 6 companies
-2025-07-30 13:52:27.949 10114-10114 CompanyFragment         com.example.hirelink_2025            D  Companies updated: 6
-2025-07-30 13:52:28.032 10114-10114 Glide                   com.example.hirelink_2025            W  Load failed for [https://via.placeholder.com/150x150.png?text=Company+Logo] with dimensions [116x116]
-                                                                                                    class com.bumptech.glide.load.engine.GlideException: Failed to load resource
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                      Cause (1 of 1): class com.bumptech.glide.load.engine.GlideException: Fetching data failed, class java.io.InputStream, REMOTE
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                        Cause (1 of 1): class com.bumptech.glide.load.engine.GlideException: Fetch failed
-                                                                                                    There was 1 root cause:
-                                                                                                    com.bumptech.glide.load.HttpException(Failed to connect or obtain data, status code: -1)
-                                                                                                     call GlideException#logRootCauses(String) for more detail
-                                                                                                          Cause (1 of 1): class com.bumptech.glide.load.HttpException: Failed to connect or obtain data, status code: -1
-2025-07-30 13:52:28.032 10114-10114 Glide                   com.example.hirelink_2025            I  Root cause (1 of 1)
+2025-07-30 14:43:58.517 11270-11335 HWUI                    com.example.hirelink_2025            I  Davey! duration=922ms; Flags=0, FrameTimelineVsyncId=1186933, IntendedVsync=131979246406400, Vsync=131980013073036, InputEventId=0, HandleInputStart=131980017798680, AnimationStart=131980017822580, PerformTraversalsStart=131980018384880, DrawStart=131980042802180, FrameDeadline=131980096406366, FrameStartTime=131980014846580, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=131980057430080, SyncStart=131980073466480, IssueDrawCommandsStart=131980073593880, SwapBuffers=131980097101380, FrameCompleted=131980185212880, DequeueBufferDuration=30355500, QueueBufferDuration=1199100, GpuCompleted=131980184744380, SwapBuffersCompleted=131980185212880, DisplayPresentTime=0, CommandSubmissionCompleted=131980097101380,
+2025-07-30 14:43:58.658 11270-11306 GoogleApiManager        com.example.hirelink_2025            E  Failed to get service from broker.
+                                                                                                    java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+                                                                                                    	at android.os.Parcel.createExceptionOrNull(Parcel.java:3340)
+                                                                                                    	at android.os.Parcel.createException(Parcel.java:3324)
+                                                                                                    	at android.os.Parcel.readException(Parcel.java:3307)
+                                                                                                    	at android.os.Parcel.readException(Parcel.java:3249)
+                                                                                                    	at aywi.a(:com.google.android.gms@252635038@25.26.35 (260800-783060121):36)
+                                                                                                    	at ayup.z(:com.google.android.gms@252635038@25.26.35 (260800-783060121):143)
+                                                                                                    	at aybo.run(:com.google.android.gms@252635038@25.26.35 (260800-783060121):42)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:995)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:103)
+                                                                                                    	at cirt.mw(:com.google.android.gms@252635038@25.26.35 (260800-783060121):1)
+                                                                                                    	at cirt.dispatchMessage(:com.google.android.gms@252635038@25.26.35 (260800-783060121):5)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:248)
+                                                                                                    	at android.os.Looper.loop(Looper.java:338)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:85)
+2025-07-30 14:43:59.397 11270-11270 FirestoreService        com.example.hirelink_2025            D  Found 1 jobs for owner
+2025-07-30 14:43:59.410 11270-11270 MyAdsViewModel          com.example.hirelink_2025            D  Successfully loaded 1 ads
+2025-07-30 14:44:06.153 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.156 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.159 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.162 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.167 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.168 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.193 11270-11270 FirestoreService        com.example.hirelink_2025            D  App verification disabled for testing
+2025-07-30 14:44:06.193 11270-11270 JobRegisterViewModel    com.example.hirelink_2025            D  Loading companies for user: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
+2025-07-30 14:44:06.196 11270-11270 FirestoreService        com.example.hirelink_2025            D  Getting companies for owner: S9HqPQrJZHgxCIqZe3xYtu7XeVn2
+2025-07-30 14:44:06.211 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.212 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.213 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.223 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.224 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.224 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:06.818 11270-11270 FirestoreService        com.example.hirelink_2025            D  Found 7 companies for owner
+2025-07-30 14:44:06.830 11270-11270 JobRegisterViewModel    com.example.hirelink_2025            D  Successfully loaded 7 companies
+2025-07-30 14:44:09.230 11270-11270 Choreographer           com.example.hirelink_2025            I  Skipped 56 frames!  The application may be doing too much work on its main thread.
+2025-07-30 14:44:09.356 11270-11280 HWUI                    com.example.hirelink_2025            I  Davey! duration=1005ms; Flags=1, FrameTimelineVsyncId=1187525, IntendedVsync=131989813072644, Vsync=131990029739302, InputEventId=0, HandleInputStart=131990033956080, AnimationStart=131990033984580, PerformTraversalsStart=131990034782980, DrawStart=131990772747880, FrameDeadline=131989829739310, FrameStartTime=131990032744280, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=131990774444380, SyncStart=131990923188180, IssueDrawCommandsStart=131990923388280, SwapBuffers=131990924933080, FrameCompleted=131990966840980, DequeueBufferDuration=53400, QueueBufferDuration=1779900, GpuCompleted=131990966840980, SwapBuffersCompleted=131990942286380, DisplayPresentTime=-1, CommandSubmissionCompleted=131990924933080,
+2025-07-30 14:44:09.723 11270-11280 HWUI                    com.example.hirelink_2025            I  Davey! duration=1059ms; Flags=0, FrameTimelineVsyncId=1187581, IntendedVsync=131990046405968, Vsync=131990979739264, InputEventId=0, HandleInputStart=131990994566780, AnimationStart=131990994592780, PerformTraversalsStart=131990995764880, DrawStart=131991003305280, FrameDeadline=131990996405930, FrameStartTime=131990991811280, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=131991003688280, SyncStart=131991234169180, IssueDrawCommandsStart=131991234247280, SwapBuffers=131991236546380, FrameCompleted=131991336362180, DequeueBufferDuration=22400, QueueBufferDuration=521800, GpuCompleted=131991336362180, SwapBuffersCompleted=131991257649880, DisplayPresentTime=-1, CommandSubmissionCompleted=131991236546380,
+2025-07-30 14:44:09.723 11270-11280 HWUI                    com.example.hirelink_2025            I  Davey! duration=1214ms; Flags=0, FrameTimelineVsyncId=1187581, IntendedVsync=131990046405968, Vsync=131990979739264, InputEventId=0, HandleInputStart=131990994566780, AnimationStart=131990994592780, PerformTraversalsStart=131990995764880, DrawStart=131991235284680, FrameDeadline=131991213072588, FrameStartTime=131990991811280, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=131991237032280, SyncStart=131991312816980, IssueDrawCommandsStart=131991312981080, SwapBuffers=131991313947480, FrameCompleted=131991337090080, DequeueBufferDuration=41300, QueueBufferDuration=1083600, GpuCompleted=131991336692580, SwapBuffersCompleted=131991337090080, DisplayPresentTime=0, CommandSubmissionCompleted=131991313947480,
+2025-07-30 14:44:13.161 11270-11270 JobRegisterViewModel    com.example.hirelink_2025            D  Company selected: COSO SAC
+2025-07-30 14:44:13.287 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@9535e0f
+2025-07-30 14:44:13.407 11270-11302 HWUI                    com.example.hirelink_2025            D  endAllActiveAnimators on 0x7f721579b3d0 (RippleDrawable) with handle 0x7f72e56fe6f0
+2025-07-30 14:44:13.409 11270-11302 HWUI                    com.example.hirelink_2025            D  endAllActiveAnimators on 0x7f721578df60 (DropDownListView) with handle 0x7f72e57001c0
+2025-07-30 14:44:13.678 11270-11270 AssistStructure         com.example.hirelink_2025            I  Flattened final assist data: 15032 bytes, containing 1 windows, 119 views
+2025-07-30 14:44:13.718 11270-11270 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
+2025-07-30 14:44:13.719 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:b6ca5c76: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
+2025-07-30 14:44:13.758 11270-11270 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
+2025-07-30 14:44:13.766 11270-11270 InsetsController        com.example.hirelink_2025            D  Setting requestedVisibleTypes to -1 (was -9)
+2025-07-30 14:44:13.907 11270-11270 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
+2025-07-30 14:44:13.917 11270-11270 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
+2025-07-30 14:44:13.932 11270-11270 HWUI                    com.example.hirelink_2025            W  Image decoding logging dropped!
+2025-07-30 14:44:13.960 11270-11270 Choreographer           com.example.hirelink_2025            I  Skipped 30 frames!  The application may be doing too much work on its main thread.
+2025-07-30 14:44:14.097 11270-11280 HWUI                    com.example.hirelink_2025            I  Davey! duration=876ms; Flags=0, FrameTimelineVsyncId=1188261, IntendedVsync=131994813072444, Vsync=131995196405762, InputEventId=0, HandleInputStart=131995197987680, AnimationStart=131995198010980, PerformTraversalsStart=131995198226480, DrawStart=131995211636680, FrameDeadline=131995396405754, FrameStartTime=131995197745180, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=131995263726180, SyncStart=131995350906780, IssueDrawCommandsStart=131995354291580, SwapBuffers=131995623783280, FrameCompleted=131995776892980, DequeueBufferDuration=25900, QueueBufferDuration=566000, GpuCompleted=131995776892980, SwapBuffersCompleted=131995691040480, DisplayPresentTime=0, CommandSubmissionCompleted=131995623783280,
+2025-07-30 14:44:14.550 11270-11270 Choreographer           com.example.hirelink_2025            I  Skipped 32 frames!  The application may be doing too much work on its main thread.
+2025-07-30 14:44:14.732 11270-11280 HWUI                    com.example.hirelink_2025            I  Davey! duration=889ms; Flags=0, FrameTimelineVsyncId=1188367, IntendedVsync=131995213072428, Vsync=131995713072408, InputEventId=267899387, HandleInputStart=131995743192880, AnimationStart=131995743247180, PerformTraversalsStart=131995759543480, DrawStart=131996026798180, FrameDeadline=131996279739052, FrameStartTime=131995722047680, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=131996035681580, SyncStart=131996251720280, IssueDrawCommandsStart=131996252800980, SwapBuffers=131996264981280, FrameCompleted=131996318419680, DequeueBufferDuration=25928500, QueueBufferDuration=228600, GpuCompleted=131996318336680, SwapBuffersCompleted=131996318419680, DisplayPresentTime=0, CommandSubmissionCompleted=131996264981280,
+2025-07-30 14:44:15.390 11270-11270 Choreographer           com.example.hirelink_2025            I  Skipped 49 frames!  The application may be doing too much work on its main thread.
+2025-07-30 14:44:15.577 11270-11300 HWUI                    com.example.hirelink_2025            I  Davey! duration=1230ms; Flags=1, FrameTimelineVsyncId=1188549, IntendedVsync=131995763072406, Vsync=131996296405718, InputEventId=0, HandleInputStart=131996317232480, AnimationStart=131996318888680, PerformTraversalsStart=131996321337480, DrawStart=131996885459480, FrameDeadline=131995779739072, FrameStartTime=131996311602880, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=131996885677180, SyncStart=131997023987780, IssueDrawCommandsStart=131997024282080, SwapBuffers=131997037157280, FrameCompleted=131997131439080, DequeueBufferDuration=24800, QueueBufferDuration=275500, GpuCompleted=131997131439080, SwapBuffersCompleted=131997078674880, DisplayPresentTime=0, CommandSubmissionCompleted=131997037157280,
+2025-07-30 14:44:15.654 11270-11300 HWUI                    com.example.hirelink_2025            I  Davey! duration=997ms; Flags=0, FrameTimelineVsyncId=1188688, IntendedVsync=131996329739050, Vsync=131997146405684, InputEventId=0, HandleInputStart=131997153107880, AnimationStart=131997153171380, PerformTraversalsStart=131997153346380, DrawStart=131997154964780, FrameDeadline=131997013072356, FrameStartTime=131997151148780, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=131997155291580, SyncStart=131997155367180, IssueDrawCommandsStart=131997159728380, SwapBuffers=131997163962280, FrameCompleted=131997327468380, DequeueBufferDuration=20600, QueueBufferDuration=5150500, GpuCompleted=131997327468380, SwapBuffersCompleted=131997235795780, DisplayPresentTime=0, CommandSubmissionCompleted=131997163962280,
+2025-07-30 14:44:15.813 11270-11355 InteractionJankMonitor  com.example.hirelink_2025            W  Initializing without READ_DEVICE_CONFIG permission. enabled=false, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.example.hirelink_2025
+2025-07-30 14:44:16.022 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:b6ca5c76: onShown
+2025-07-30 14:44:16.437 11270-11270 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
+2025-07-30 14:44:16.440 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:c4444dd9: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
+2025-07-30 14:44:16.441 11270-11270 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
+2025-07-30 14:44:16.444 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:c4444dd9: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+2025-07-30 14:44:16.444 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@c668276
+2025-07-30 14:44:17.216 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@1a2feb9
+2025-07-30 14:44:17.243 11270-11270 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
+2025-07-30 14:44:17.245 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:a1b0dcad: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
+2025-07-30 14:44:17.245 11270-11270 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
+2025-07-30 14:44:17.245 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:a1b0dcad: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+2025-07-30 14:44:17.325 11270-11270 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
+2025-07-30 14:44:17.434 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@6859c7c
+2025-07-30 14:44:25.461 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:25.464 11270-11270 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
+2025-07-30 14:44:25.465 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:ddbc6775: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
+2025-07-30 14:44:25.466 11270-11270 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
+2025-07-30 14:44:25.468 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:ddbc6775: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+2025-07-30 14:44:25.511 11270-11270 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
+2025-07-30 14:44:25.663 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@6859c7c
+2025-07-30 14:44:39.450 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:39.451 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:39.462 11270-11270 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
+2025-07-30 14:44:39.463 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:db354525: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
+2025-07-30 14:44:39.463 11270-11270 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
+2025-07-30 14:44:39.463 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:db354525: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+2025-07-30 14:44:39.502 11270-11270 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
+2025-07-30 14:44:39.511 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@6859c7c
+2025-07-30 14:44:52.455 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:44:52.464 11270-11270 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
+2025-07-30 14:44:52.465 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:45e4b4bb: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
+2025-07-30 14:44:52.467 11270-11270 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
+2025-07-30 14:44:52.467 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:45e4b4bb: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+2025-07-30 14:44:52.528 11270-11270 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
+2025-07-30 14:44:52.567 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@6859c7c
+2025-07-30 14:44:54.398 11270-11270 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
+2025-07-30 14:44:54.400 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:b2e97188: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
+2025-07-30 14:44:54.401 11270-11270 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
+2025-07-30 14:44:54.402 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:b2e97188: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+2025-07-30 14:44:54.523 11270-11270 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
+2025-07-30 14:44:54.530 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@6859c7c
+2025-07-30 14:45:10.634 11270-11270 Choreographer           com.example.hirelink_2025            I  Skipped 37 frames!  The application may be doing too much work on its main thread.
+2025-07-30 14:45:10.926 11270-11280 HWUI                    com.example.hirelink_2025            I  Davey! duration=708ms; Flags=0, FrameTimelineVsyncId=1194418, IntendedVsync=132051763070166, Vsync=132052379736808, InputEventId=0, HandleInputStart=132052396315280, AnimationStart=132052396371280, PerformTraversalsStart=132052409993580, DrawStart=132052411073380, FrameDeadline=132052579736800, FrameStartTime=132052395591880, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=132052416346480, SyncStart=132052561189780, IssueDrawCommandsStart=132052561402380, SwapBuffers=132052570688280, FrameCompleted=132052616911180, DequeueBufferDuration=22375300, QueueBufferDuration=204800, GpuCompleted=132052616911180, SwapBuffersCompleted=132052616707280, DisplayPresentTime=0, CommandSubmissionCompleted=132052570688280,
+2025-07-30 14:45:11.145 11270-11328 HWUI                    com.example.hirelink_2025            I  Davey! duration=948ms; Flags=0, FrameTimelineVsyncId=1194418, IntendedVsync=132051763070166, Vsync=132052379736808, InputEventId=0, HandleInputStart=132052396315280, AnimationStart=132052396371280, PerformTraversalsStart=132052409993580, DrawStart=132052617742780, FrameDeadline=132052346403476, FrameStartTime=132052395591880, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=132052618092480, SyncStart=132052742219680, IssueDrawCommandsStart=132052742467580, SwapBuffers=132052743391180, FrameCompleted=132052835392980, DequeueBufferDuration=125400, QueueBufferDuration=1235300, GpuCompleted=132052835392980, SwapBuffersCompleted=132052767493380, DisplayPresentTime=60129542145, CommandSubmissionCompleted=132052743391180,
+2025-07-30 14:45:12.994 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@b528c79
+2025-07-30 14:45:13.218 11270-11302 HWUI                    com.example.hirelink_2025            D  endAllActiveAnimators on 0x7f72156ced90 (DropDownListView) with handle 0x7f72e56f7460
+2025-07-30 14:45:17.910 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:5cd38ec9: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
+2025-07-30 14:45:22.845 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@814db32
+2025-07-30 14:45:22.930 11270-11302 HWUI                    com.example.hirelink_2025            D  endAllActiveAnimators on 0x7f72157bbd40 (RippleDrawable) with handle 0x7f72e56ff4d0
+2025-07-30 14:45:23.232 11270-11270 ImeTracker              com.example.hirelink_2025            I  system_server:b8c21fff: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
+2025-07-30 14:45:23.233 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@6859c7c
+2025-07-30 14:45:26.486 11270-11270 AutofillManager         com.example.hirelink_2025            I  showAutofillDialog() return false due to improve fill dialog
+2025-07-30 14:45:26.487 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:4a3406b4: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
+2025-07-30 14:45:26.489 11270-11270 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=false)
+2025-07-30 14:45:26.489 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:4a3406b4: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+2025-07-30 14:45:26.521 11270-11270 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
+2025-07-30 14:45:26.611 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@6859c7c
+2025-07-30 14:45:42.978 11270-11270 JobRegisterViewModel    com.example.hirelink_2025            D  Registering job: VENDEDOR COSO for company: COSO SAC
+2025-07-30 14:45:44.143 11270-11270 JobRegisterViewModel    com.example.hirelink_2025            D  Job registered successfully with ID: d7SrRUatIG44oyRLEnyB
+2025-07-30 14:45:44.434 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:45:44.435 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:45:44.443 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:45:44.443 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:45:44.445 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:45:44.447 11270-11270 AutofillManager         com.example.hirelink_2025            D  view not autofillable - has multiline input type
+2025-07-30 14:45:44.557 11270-11270 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ImeBackAnimationController@6859c7c
+2025-07-30 14:45:44.576 11270-11270 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:5a43b2ca: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_CLOSE_CURRENT_SESSION fromUser false
+2025-07-30 14:45:44.577 11270-11270 InsetsController        com.example.hirelink_2025            D  hide(ime(), fromIme=false)
+2025-07-30 14:45:44.577 11270-11270 InsetsController        com.example.hirelink_2025            D  Setting requestedVisibleTypes to -9 (was -1)
+2025-07-30 14:45:45.105 11270-11328 HWUI                    com.example.hirelink_2025            I  Davey! duration=817ms; Flags=0, FrameTimelineVsyncId=1199623, IntendedVsync=132085929735466, Vsync=132086213068788, InputEventId=0, HandleInputStart=132086226147580, AnimationStart=132086226170980, PerformTraversalsStart=132086226441180, DrawStart=132086298142880, FrameDeadline=132086329735450, FrameStartTime=132086219287980, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=132086315315880, SyncStart=132086316004280, IssueDrawCommandsStart=132086316411580, SwapBuffers=132086494540680, FrameCompleted=132086747650980, DequeueBufferDuration=26700, QueueBufferDuration=348400, GpuCompleted=132086747650980, SwapBuffersCompleted=132086553453680, DisplayPresentTime=0, CommandSubmissionCompleted=132086494540680,
+2025-07-30 14:45:45.373 11270-11270 ImeBackDispatcher       com.example.hirelink_2025            E  Ime callback not found. Ignoring unregisterReceivedCallback. callbackId: 168964432
+2025-07-30 14:45:45.386 11270-11270 ImeTracker              com.example.hirelink_2025            I  system_server:45b61afd: onCancelled at PHASE_CLIENT_ON_CONTROLS_CHANGED
+2025-07-30 14:45:55.775 11270-11270 e.hirelink_2025         com.example.hirelink_2025            W  Verification of void androidx.viewpager2.widget.ViewPager2$PageAwareAccessibilityProvider.onRvInitializeAccessibilityEvent(android.view.accessibility.AccessibilityEvent) took 171.920ms (75.62 bytecodes/s) (0B arena alloc)
+2025-07-30 14:45:56.225 11270-11326 HWUI                    com.example.hirelink_2025            I  Davey! duration=778ms; Flags=0, FrameTimelineVsyncId=1200401, IntendedVsync=132097129735018, Vsync=132097613068332, InputEventId=34987018, HandleInputStart=132097625080180, AnimationStart=132097625098880, PerformTraversalsStart=132097625434080, DrawStart=132097756052480, FrameDeadline=132097796401658, FrameStartTime=132097624676580, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=132097771635080, SyncStart=132097775507380, IssueDrawCommandsStart=132097775667480, SwapBuffers=132097834049080, FrameCompleted=132097912297180, DequeueBufferDuration=555000, QueueBufferDuration=706800, GpuCompleted=132097912297180, SwapBuffersCompleted=132097887272780, DisplayPresentTime=0, CommandSubmissionCompleted=132097834049080,
