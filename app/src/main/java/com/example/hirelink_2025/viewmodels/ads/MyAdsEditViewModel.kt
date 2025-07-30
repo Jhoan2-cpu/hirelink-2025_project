@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.models.JobStatus
 import com.example.hirelink_2025.repository.MyAdsRepository
-import com.example.hirelink_2025.ui.utils.isValidString
+import com.example.hirelink_2025.view.ui.utils.isValidString
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 

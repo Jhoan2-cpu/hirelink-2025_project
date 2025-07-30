@@ -8,7 +8,7 @@
     <!-- Login Fragment -->
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.auth.LoginFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.auth.LoginFragment"
         android:label="Iniciar Sesión"
         tools:layout="@layout/fragment_login">
 
@@ -30,7 +30,7 @@
     <!-- Register Fragment -->
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.auth.RegisterFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.auth.RegisterFragment"
         android:label="Registrarse"
         tools:layout="@layout/fragment_register">
 
@@ -50,7 +50,7 @@
     <!-- Placeholder para MainActivity -->
     <activity
         android:id="@+id/mainActivity"
-        android:name="com.example.hirelink_2025.ui.activities.MainActivity"
+        android:name="com.example.hirelink_2025.view.ui.activities.MainActivity"
         android:label="Main" />
 
 </navigation>

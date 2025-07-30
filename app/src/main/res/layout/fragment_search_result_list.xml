@@ -82,7 +82,7 @@
                     android:textColor="@color/text_primary"
                     app:chipIcon="@drawable/ic_arrow_drop_down"
                     app:chipIconTint="@color/text_secondary"
-                    app:chipStrokeColor="@color/new_color"
+                    app:chipStrokeColor="@color/divider"
                     app:chipStrokeWidth="1dp" />
 
                 <com.google.android.material.chip.Chip
@@ -95,7 +95,7 @@
                     android:textColor="@color/text_primary"
                     app:chipIcon="@drawable/ic_arrow_drop_down"
                     app:chipIconTint="@color/text_secondary"
-                    app:chipStrokeColor="@color/new_color"
+                    app:chipStrokeColor="@color/divider"
                     app:chipStrokeWidth="1dp" />
 
                 <TextView
@@ -208,7 +208,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="@dimen/margin_small"
-                android:background="@color/new_color" />
+                android:background="@color/divider" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/showResultsButton"

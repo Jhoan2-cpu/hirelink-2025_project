@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".ui.fragments.common.JobDescriptionDetailFragment">
+    tools:context=".view.ui.fragments.common.JobDescriptionDetailFragment">
 
     <!-- App Bar -->
     <com.google.android.material.appbar.AppBarLayout
@@ -406,7 +406,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textColor="@color/blue_contact"
+                            android:textColor="@color/info"
                             tools:text="+51 987654321" />
 
                     </LinearLayout>
@@ -436,7 +436,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textColor="@color/blue_contact"
+                            android:textColor="@color/info"
                             tools:text="rrhh@techsolutions.com" />
 
                     </LinearLayout>
@@ -465,7 +465,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textColor="@color/blue_contact"
+                            android:textColor="@color/info"
                             tools:text="www.techsolutions.com" />
 
                     </LinearLayout>

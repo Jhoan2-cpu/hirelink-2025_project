@@ -96,7 +96,37 @@
     <style name="Widget.HireLink.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemIconTint">@drawable/bottom_nav_color_selector</item>
         <item name="itemTextColor">@drawable/bottom_nav_color_selector</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.HireLink.BottomNavigationView.ActiveIndicator</item>
+        <item name="itemRippleColor">@color/ripple</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.HireLink.BottomNav.Active</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.HireLink.BottomNav.Inactive</item>
         <item name="labelVisibilityMode">labeled</item>
+        <item name="elevation">0dp</item>
+        <item name="android:background">@color/bottom_nav_background</item>
+    </style>
+
+    <style name="Widget.HireLink.BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/selected_item</item>
+        <item name="android:width">48dp</item>
+        <item name="android:height">28dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HireLink.BottomNav.ActiveIndicator</item>
+    </style>
+
+    <style name="ShapeAppearance.HireLink.BottomNav.ActiveIndicator" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">14dp</item>
+    </style>
+
+    <style name="TextAppearance.HireLink.BottomNav.Active" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/bottom_nav_selected</item>
+    </style>
+
+    <style name="TextAppearance.HireLink.BottomNav.Inactive" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/bottom_nav_unselected</item>
     </style>
 
     <!-- FAB Style -->
@@ -109,47 +139,7 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <!-- Estilo para el contenedor del menú -->
-    <style name="CustomBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="android:background">@color/bottom_nav_background</item>
-        <item name="itemIconTint">@drawable/bottom_nav_item_selector</item>
-        <item name="itemTextColor">@drawable/bottom_nav_item_selector</item>
-        <item name="itemTextAppearanceActive">@style/BottomNavTextActive</item>
-        <item name="itemTextAppearanceInactive">@style/BottomNavTextInactive</item>
-    </style>
-
-    <style name="BottomNavTextActive" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textSize">12sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="BottomNavTextInactive" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textSize">10sp</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <!-- Modern Bottom Navigation Active Indicator -->
-    <style name="Widget.HireLink.BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/primary</item>
-        <item name="android:width">48dp</item>
-        <item name="android:height">28dp</item>
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HireLink.BottomNav.ActiveIndicator</item>
-    </style>
-
-    <style name="ShapeAppearance.HireLink.BottomNav.ActiveIndicator" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">14dp</item>
-    </style>
-
-    <!-- Enhanced Bottom Navigation Style -->
-    <style name="Widget.HireLink.BottomNavigationView.Modern" parent="Widget.Material3.BottomNavigationView">
-        <item name="itemIconTint">@drawable/bottom_nav_color_selector</item>
-        <item name="itemTextColor">@drawable/bottom_nav_color_selector</item>
-        <item name="itemActiveIndicatorStyle">@style/Widget.HireLink.BottomNavigationView.ActiveIndicator</item>
-        <item name="itemRippleColor">@color/ripple</item>
-        <item name="labelVisibilityMode">labeled</item>
-        <item name="elevation">0dp</item>
-        <item name="android:background">@android:color/transparent</item>
-    </style>
+    <!-- Custom Bottom Navigation (For backward compatibility) -->
+    <style name="CustomBottomNavigation" parent="Widget.HireLink.BottomNavigationView" />
 
 </resources>
