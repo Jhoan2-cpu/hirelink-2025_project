@@ -111,7 +111,7 @@ class JobDetailFragment : Fragment() {
         }
 
         // Bookmark button
-        updateBookmarkButton(state.isBookmarked)
+        updateBookmarkButton(state.bookmarked)
 
         // Apply button
         applyButton.isEnabled = !state.isApplying
@@ -140,8 +140,8 @@ class JobDetailFragment : Fragment() {
         requirementsText.text = job.habilidades.joinToString("\n• ", "• ")
     }
 
-    private fun updateBookmarkButton(isBookmarked: Boolean) {
-        val iconRes = if (isBookmarked) {
+    private fun updateBookmarkButton(bookmarked: Boolean) {
+        val iconRes = if (bookmarked) {
             R.drawable.ic_bookmark_filled
         } else {
             R.drawable.ic_bookmark_border

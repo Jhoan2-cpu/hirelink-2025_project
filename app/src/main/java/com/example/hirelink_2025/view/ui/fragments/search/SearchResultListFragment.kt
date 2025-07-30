@@ -176,7 +176,7 @@ class SearchResultListFragment : Fragment() {
                 type = "$employmentType - $modality",
                 publishedDate = "Hace ${daysAgo} día${if (daysAgo > 1) "s" else ""}",
                 description = "Buscamos un $title para unirse a nuestro equipo en $company. Trabajo $employmentType en modalidad $modality en $locationJob. Nivel de experiencia requerido: $experienceLevel.",
-                isBookmarked = (i % 4 == 0), // Algunos trabajos marcados como favoritos
+                bookmarked = (i % 4 == 0), // Algunos trabajos marcados como favoritos
                 // Campos adicionales para filtros
                 status = status,
                 experienceLevel = experienceLevel,
@@ -475,17 +475,17 @@ class SearchResultListFragment : Fragment() {
         // Actualizar el estado del bookmark en la lista
         val index = filteredJobs.indexOfFirst { it.id == job.id }
         if (index != -1) {
-            filteredJobs[index].isBookmarked = !filteredJobs[index].isBookmarked
+            filteredJobs[index].bookmarked = !filteredJobs[index].bookmarked
             jobResultsAdapter.notifyItemChanged(index)
         }
 
         // También actualizar en la lista completa
         val allIndex = allJobs.indexOfFirst { it.id == job.id }
         if (allIndex != -1) {
-            allJobs[allIndex].isBookmarked = !allJobs[allIndex].isBookmarked
+            allJobs[allIndex].bookmarked = !allJobs[allIndex].bookmarked
         }
 
-        val message = if (job.isBookmarked) {
+        val message = if (job.bookmarked) {
             "Guardado en favoritos: ${job.title}"
         } else {
             "Removido de favoritos: ${job.title}"

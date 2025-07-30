@@ -8,7 +8,7 @@ data class JobResult(
     val type: String,
     val publishedDate: String,
     val description: String,
-    var isBookmarked: Boolean = false,
+    var bookmarked: Boolean = false,
 
     // Campos adicionales para filtros
     val status: String = "Activo",

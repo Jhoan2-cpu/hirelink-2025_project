@@ -3,6 +3,8 @@ package com.example.hirelink_2025.view.ui.activities
 
 import android.content.Intent //Usado para cambiar de Activity
 import android.os.Bundle //Representa datos pasados entre activities o guardados en estado.
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity //Permite usar componentes modernos (compatibilidad).
 import androidx.navigation.NavController //Objeto que controla la navegación entre fragmentos.
 import androidx.navigation.fragment.NavHostFragment //Es el contenedor (que muestra el fragmento actual en el gráfico de navegación).

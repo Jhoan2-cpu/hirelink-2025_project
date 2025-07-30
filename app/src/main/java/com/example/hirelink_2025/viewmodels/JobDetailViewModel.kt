@@ -15,7 +15,7 @@ data class JobDetailUiState(
     val error: String? = null,
     val isApplying: Boolean = false,
     val applicationSuccess: Boolean = false,
-    val isBookmarked: Boolean = false
+    val bookmarked: Boolean = false
 )
 
 class JobDetailViewModel : ViewModel() {
@@ -35,7 +35,7 @@ class JobDetailViewModel : ViewModel() {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         job = job,
-                        isBookmarked = false
+                        bookmarked = false
                     )
                 } else {
                     _uiState.value = _uiState.value.copy(
@@ -73,7 +73,7 @@ class JobDetailViewModel : ViewModel() {
 
     fun toggleBookmark() {
         _uiState.value = _uiState.value.copy(
-            isBookmarked = !_uiState.value.isBookmarked
+            bookmarked = !_uiState.value.bookmarked
         )
     }
 

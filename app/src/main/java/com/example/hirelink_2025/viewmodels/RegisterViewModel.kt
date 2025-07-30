@@ -1,14 +1,15 @@
 package com.example.hirelink_2025.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.hirelink_2025.models.RegisterRequest
 import com.example.hirelink_2025.models.User
-import com.example.hirelink_2025.repository.AuthRepository
+import com.example.hirelink_2025.network.FirestoreService
+import com.example.hirelink_2025.network.AuthCallback
+import com.example.hirelink_2025.network.ExistsCallback
+import com.example.hirelink_2025.network.VoidCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 data class RegisterUiState(
     val isLoading: Boolean = false,
@@ -23,42 +24,110 @@ data class RegisterUiState(
 
 class RegisterViewModel : ViewModel() {
 
-    private val authRepository = AuthRepository()
+    private val firestoreService = FirestoreService()
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
     fun register(name: String, email: String, password: String, confirmPassword: String, phone: String?) {
+        Log.d("RegisterViewModel", "register() called with: name=$name, email=$email, phone=$phone")
+        
         if (!validateInputs(name, email, password, confirmPassword)) {
+            Log.e("RegisterViewModel", "Validation failed")
             return
         }
 
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                error = null
-            )
+        Log.d("RegisterViewModel", "Validation passed, testing Firebase connection first")
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
-            try {
-                val registerRequest = RegisterRequest(
-                    name = name.trim(),
-                    email = email.trim(),
-                    password = password,
-                    phone = phone?.trim()
-                )
-                val user = authRepository.register(registerRequest)
+        // Primero probar la conectividad Firebase
+        firestoreService.testFirebaseConnection(object : VoidCallback {
+            override fun onSuccess() {
+                Log.d("RegisterViewModel", "Firebase connection OK, proceeding with registration")
+                proceedWithRegistration(email, password, name, phone)
+            }
 
+            override fun onError(exception: Exception) {
+                Log.e("RegisterViewModel", "Firebase connection failed", exception)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    user = user,
-                    isRegisterSuccess = true
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message ?: "Error desconocido"
+                    error = "Error de conectividad Firebase: ${exception.message}"
                 )
             }
+        })
+    }
+    
+    private fun proceedWithRegistration(email: String, password: String, name: String, phone: String?) {
+        // Crear datos del usuario
+        val userData = User(
+            id = "", // Se asignará automáticamente por Firebase Auth
+            email = email.trim(),
+            name = name.trim(),
+            phone = phone?.trim(),
+            profileImageUrl = null,
+            active = true
+        )
+        
+        Log.d("RegisterViewModel", "User data created: $userData")
+
+        // Proceder directamente con el registro - Firebase Auth maneja la verificación de email duplicado
+        firestoreService.registerUser(email.trim(), password, userData, object : AuthCallback {
+            override fun onSuccess(userId: String, isNewUser: Boolean) {
+                Log.d("RegisterViewModel", "Registration successful: userId=$userId, isNewUser=$isNewUser")
+                // Usuario registrado exitosamente
+                val userWithId = userData.copy(id = userId)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    user = userWithId,
+                    isRegisterSuccess = true,
+                    error = null
+                )
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("RegisterViewModel", "Registration failed", exception)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = getAuthErrorMessage(exception)
+                )
+            }
+        })
+    }
+
+    /**
+     * Verificar si un email está disponible
+     */
+    fun checkEmailAvailability(email: String) {
+        if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            return
+        }
+
+        firestoreService.checkUserExists(email.trim(), object : ExistsCallback {
+            override fun onSuccess(exists: Boolean) {
+                _uiState.value = _uiState.value.copy(
+                    emailError = if (exists) "El email ya está registrado" else null
+                )
+            }
+
+            override fun onError(exception: Exception) {
+                // No mostrar error al usuario para esta verificación silenciosa
+            }
+        })
+    }
+
+    private fun getAuthErrorMessage(exception: Exception): String {
+        return when {
+            exception.message?.contains("email-already-in-use") == true -> 
+                "El email ya está en uso"
+            exception.message?.contains("invalid-email") == true -> 
+                "Email inválido"
+            exception.message?.contains("weak-password") == true -> 
+                "La contraseña es muy débil"
+            exception.message?.contains("operation-not-allowed") == true -> 
+                "Registro no permitido"
+            exception.message?.contains("network-request-failed") == true -> 
+                "Error de conexión. Verifica tu internet"
+            else -> exception.message ?: "Error de registro"
         }
     }
 
@@ -119,5 +188,9 @@ class RegisterViewModel : ViewModel() {
             passwordError = null,
             confirmPasswordError = null
         )
+    }
+    
+    fun resetRegisterSuccess() {
+        _uiState.value = _uiState.value.copy(isRegisterSuccess = false)
     }
 }

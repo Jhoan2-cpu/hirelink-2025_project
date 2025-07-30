@@ -1,28 +1,47 @@
 package com.example.hirelink_2025.view.ui.fragments.ads
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.models.Company
 import com.example.hirelink_2025.view.adapter.CompanyAdapter
+import com.example.hirelink_2025.viewmodels.CompanyViewModel
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
+/**
+ * Fragment para mostrar las compañías del usuario
+ */
 class CompanyFragment : Fragment() {
     
     private lateinit var companiesRecyclerView: RecyclerView
     private lateinit var emptyStateLayout: LinearLayout
     private lateinit var addCompanyFab: FloatingActionButton
+    private lateinit var progressIndicator: CircularProgressIndicator
     private lateinit var companyAdapter: CompanyAdapter
     
-    private val companies = mutableListOf<Company>()
+    // ViewModel con factory
+    private val viewModel: CompanyViewModel by viewModels { ViewModelFactory() }
+    
+    // Usuario actual
+    private var currentUserId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,109 +53,144 @@ class CompanyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        Log.d("CompanyFragment", "Fragment created")
+        
         initViews(view)
         setupRecyclerView()
         setupClickListeners()
-        loadCompanies()
+        observeViewModel()
+        
+        // Obtener usuario actual y cargar compañías
+        getCurrentUserAndLoadCompanies()
     }
     
     private fun initViews(view: View) {
         companiesRecyclerView = view.findViewById(R.id.companiesRecyclerView)
         emptyStateLayout = view.findViewById(R.id.emptyStateLayout)
         addCompanyFab = view.findViewById(R.id.addCompanyFab)
+        
+        // Buscar progress indicator, crear uno si no existe en el XML
+        progressIndicator = view.findViewById<CircularProgressIndicator>(R.id.progressIndicator) 
+            ?: CircularProgressIndicator(requireContext()).apply {
+                visibility = View.GONE
+                // El progressIndicator no existe en el XML, usar este fallback
+            }
     }
     
     private fun setupRecyclerView() {
         companyAdapter = CompanyAdapter(
-            companies = companies,
-            onEditClick = { company -> editCompany(company) },
-            onDeleteClick = { company -> confirmDeleteCompany(company) },
-            onItemClick = { company -> viewCompanyDetails(company) }
+            companies = mutableListOf(),
+            onEditClick = { company ->
+                Log.d("CompanyFragment", "Edit company: ${company.name}")
+                navigateToEditCompany(company)
+            },
+            onDeleteClick = { company ->
+                Log.d("CompanyFragment", "Delete company requested: ${company.name}")
+                showDeleteConfirmation(company)
+            },
+            onItemClick = { company ->
+                Log.d("CompanyFragment", "Company clicked: ${company.name}")
+                navigateToCompanyDetail(company)
+            }
         )
         
         companiesRecyclerView.apply {
-            adapter = companyAdapter
             layoutManager = LinearLayoutManager(requireContext())
+            adapter = companyAdapter
         }
     }
     
     private fun setupClickListeners() {
         addCompanyFab.setOnClickListener {
+            Log.d("CompanyFragment", "Add company FAB clicked")
             navigateToRegisterCompany()
         }
     }
     
-    private fun loadCompanies() {
-        // TODO: Load companies from repository/database
-        // For now, add some sample data
-        loadSampleData()
-        updateUI()
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                
+                // Observar lista de compañías
+                viewModel.listCompany.observe(viewLifecycleOwner) { companies ->
+                    Log.d("CompanyFragment", "Companies updated: ${companies.size}")
+                    updateUI(companies)
+                }
+                
+                // Observar estado de carga
+                launch {
+                    viewModel.isLoading.collect { isLoading ->
+                        Log.d("CompanyFragment", "Loading state: $isLoading")
+                        updateLoadingState(isLoading)
+                    }
+                }
+                
+                // Observar errores
+                launch {
+                    viewModel.error.collect { error ->
+                        error?.let {
+                            Log.e("CompanyFragment", "Error: $it")
+                            showError(it)
+                            viewModel.clearError()
+                        }
+                    }
+                }
+                
+                // Observar resultados de operaciones
+                launch {
+                    viewModel.operationResult.collect { result ->
+                        result?.let {
+                            Log.d("CompanyFragment", "Operation result: $it")
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                            viewModel.clearOperationResult()
+                        }
+                    }
+                }
+            }
+        }
     }
     
-    private fun loadSampleData() {
-        val sampleCompanies = listOf(
-            Company(
-                id = "1",
-                name = "TechSolutions S.A.C.",
-                type = "Tecnología",
-                description = "Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras.",
-                size = "50-100",
-                foundedYear = 2020,
-                city = "Lima",
-                country = "Perú",
-                phone = "987654321",
-                email = "info@techsolutions.com",
-                website = "www.techsolutions.com",
-                employeeCount = 75,
-                activeJobsCount = 3
-            ),
-            Company(
-                id = "2",
-                name = "Innovate Corp",
-                type = "Consultoría",
-                description = "Consultoría especializada en transformación digital.",
-                size = "10-50",
-                foundedYear = 2018,
-                city = "Arequipa",
-                country = "Perú",
-                phone = "123456789",
-                email = "contact@innovate.com",
-                website = "www.innovate.com",
-                employeeCount = 25,
-                activeJobsCount = 1
-            )
-        )
+    private fun getCurrentUserAndLoadCompanies() {
+        currentUserId = FirebaseAuth.getInstance().currentUser?.uid
         
-        companies.clear()
-        companies.addAll(sampleCompanies)
+        if (currentUserId != null) {
+            Log.d("CompanyFragment", "Loading companies for user: $currentUserId")
+            viewModel.loadUserCompanies(currentUserId!!)
+        } else {
+            Log.w("CompanyFragment", "No authenticated user found")
+            showError("Usuario no autenticado")
+        }
     }
     
-    private fun updateUI() {
+    private fun updateUI(companies: List<Company>) {
         if (companies.isEmpty()) {
+            // Mostrar estado vacío
             companiesRecyclerView.visibility = View.GONE
             emptyStateLayout.visibility = View.VISIBLE
         } else {
+            // Mostrar lista de compañías
             companiesRecyclerView.visibility = View.VISIBLE
             emptyStateLayout.visibility = View.GONE
+            companyAdapter.updateCompanies(companies)
         }
-        companyAdapter.notifyDataSetChanged()
     }
     
-    private fun navigateToRegisterCompany() {
-        findNavController().navigate(R.id.action_companyFragment_to_companyRegisterFragment)
-    }
-    
-    private fun editCompany(company: Company) {
-        val bundle = Bundle().apply {
-            putString("companyId", company.id)
+    private fun updateLoadingState(isLoading: Boolean) {
+        if (isLoading) {
+            progressIndicator.visibility = View.VISIBLE
+        } else {
+            progressIndicator.visibility = View.GONE
         }
-        findNavController().navigate(R.id.action_companyFragment_to_companyEditFragment, bundle)
     }
     
-    private fun confirmDeleteCompany(company: Company) {
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+    
+    private fun showDeleteConfirmation(company: Company) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Eliminar Compañía")
-            .setMessage("¿Estás seguro de que deseas eliminar \"${company.name}\"?")
+            .setMessage("¿Estás seguro de que deseas eliminar '${company.name}'? Esta acción no se puede deshacer.")
             .setPositiveButton("Eliminar") { _, _ ->
                 deleteCompany(company)
             }
@@ -145,16 +199,43 @@ class CompanyFragment : Fragment() {
     }
     
     private fun deleteCompany(company: Company) {
-        // TODO: Delete company from repository/database
-        companies.remove(company)
-        companyAdapter.removeCompany(company)
-        updateUI()
+        currentUserId?.let { ownerId ->
+            viewModel.deleteCompany(company.id, ownerId) { success ->
+                if (success) {
+                    Log.d("CompanyFragment", "Company deleted successfully")
+                } else {
+                    Log.e("CompanyFragment", "Failed to delete company")
+                }
+            }
+        }
     }
     
-    private fun viewCompanyDetails(company: Company) {
+    private fun navigateToCompanyDetail(company: Company) {
+        viewModel.selectCompany(company)
         val bundle = Bundle().apply {
             putString("companyId", company.id)
         }
         findNavController().navigate(R.id.action_companyFragment_to_companyDetailFragment, bundle)
+    }
+    
+    private fun navigateToEditCompany(company: Company) {
+        viewModel.selectCompany(company)
+        val bundle = Bundle().apply {
+            putString("companyId", company.id)
+        }
+        findNavController().navigate(R.id.action_companyFragment_to_companyEditFragment, bundle)
+    }
+    
+    private fun navigateToRegisterCompany() {
+        findNavController().navigate(R.id.action_companyFragment_to_companyRegisterFragment)
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Recargar compañías cuando el fragment se vuelve visible
+        currentUserId?.let { userId ->
+            Log.d("CompanyFragment", "Refreshing companies on resume")
+            viewModel.refreshCompanies(userId)
+        }
     }
 }

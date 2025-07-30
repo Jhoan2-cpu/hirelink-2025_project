@@ -1,14 +1,13 @@
 package com.example.hirelink_2025.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.hirelink_2025.models.LoginRequest
 import com.example.hirelink_2025.models.User
-import com.example.hirelink_2025.repository.AuthRepository
+import com.example.hirelink_2025.network.FirestoreService
+import com.example.hirelink_2025.network.AuthCallback
+import com.example.hirelink_2025.network.Callback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 data class LoginUiState(
     val isLoading: Boolean = false,
@@ -16,39 +15,136 @@ data class LoginUiState(
     val error: String? = null,
     val isLoginSuccess: Boolean = false,
     val emailError: String? = null,
-    val passwordError: String? = null
+    val passwordError: String? = null,
+    val isResetPasswordSent: Boolean = false,
+    val resetPasswordMessage: String? = null
 )
 
 class LoginViewModel : ViewModel() {
 
-    private val authRepository = AuthRepository()
+    private val firestoreService = FirestoreService()
 
-    private val _uiState = MutableStateFlow(LoginUiState())//Es un MutableStateFlow que almacena el estado inicial del login(LoginUiState)., y este estado
-    //... puede cambiar a lo largo del tiempo.
-
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()//Definimos una propiedad pública llamada uiState.
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun login(email: String, password: String) {
         if (!validateInputs(email, password)) {
             return
         }
 
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)//Cambiamos el estado de _uiState
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
-            try {//Hacemos un intento de login con Try.
-                val user = authRepository.login(LoginRequest(email, password))
+        firestoreService.loginUser(email, password, object : AuthCallback {
+            override fun onSuccess(userId: String, isNewUser: Boolean) {
+                // Obtener datos completos del usuario
+                firestoreService.getUserById(userId, object : Callback<User?> {
+                    override fun onSuccess(user: User?) {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            user = user,
+                            isLoginSuccess = true,
+                            error = null
+                        )
+                    }
+
+                    override fun onError(exception: Exception) {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = "Error al obtener datos del usuario: ${exception.message}"
+                        )
+                    }
+                })
+            }
+
+            override fun onError(exception: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    user = user,
-                    isLoginSuccess = true
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message ?: "Error desconocido"
+                    error = getAuthErrorMessage(exception)
                 )
             }
+        })
+    }
+
+    /**
+     * Recuperar contraseña
+     */
+    fun resetPassword(email: String) {
+        if (email.isBlank()) {
+            _uiState.value = _uiState.value.copy(
+                emailError = "El email es requerido para recuperar la contraseña"
+            )
+            return
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _uiState.value = _uiState.value.copy(
+                emailError = "Email inválido"
+            )
+            return
+        }
+
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+
+        firestoreService.resetPassword(email, object : com.example.hirelink_2025.network.VoidCallback {
+            override fun onSuccess() {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = null,
+                    isResetPasswordSent = true,
+                    resetPasswordMessage = "Se ha enviado un enlace de recuperación a tu email"
+                )
+            }
+
+            override fun onError(exception: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Error al enviar email de recuperación: ${exception.message}"
+                )
+            }
+        })
+    }
+
+    /**
+     * Verificar si hay usuario autenticado
+     */
+    fun checkAuthState() {
+        if (firestoreService.isUserAuthenticated()) {
+            val userId = firestoreService.getCurrentUserId()
+            userId?.let { id ->
+                firestoreService.getUserById(id, object : Callback<User?> {
+                    override fun onSuccess(user: User?) {
+                        if (user != null) {
+                            _uiState.value = _uiState.value.copy(
+                                user = user,
+                                isLoginSuccess = true
+                            )
+                        }
+                    }
+
+                    override fun onError(exception: Exception) {
+                        // Usuario autenticado pero sin datos en Firestore
+                        // Podrías manejar este caso según sea necesario
+                    }
+                })
+            }
+        }
+    }
+
+    private fun getAuthErrorMessage(exception: Exception): String {
+        return when {
+            exception.message?.contains("user-not-found") == true -> 
+                "Usuario no encontrado"
+            exception.message?.contains("wrong-password") == true -> 
+                "Contraseña incorrecta"
+            exception.message?.contains("invalid-email") == true -> 
+                "Email inválido"
+            exception.message?.contains("user-disabled") == true -> 
+                "Usuario deshabilitado"
+            exception.message?.contains("too-many-requests") == true -> 
+                "Demasiados intentos. Intenta más tarde"
+            exception.message?.contains("network-request-failed") == true -> 
+                "Error de conexión. Verifica tu internet"
+            else -> exception.message ?: "Error de autenticación"
         }
     }
 
@@ -94,5 +190,20 @@ class LoginViewModel : ViewModel() {
 
     fun resetLoginSuccess() {
         _uiState.value = _uiState.value.copy(isLoginSuccess = false)
+    }
+
+    fun clearResetPasswordState() {
+        _uiState.value = _uiState.value.copy(
+            isResetPasswordSent = false,
+            resetPasswordMessage = null
+        )
+    }
+    
+    /**
+     * Cerrar sesión
+     */
+    fun signOut() {
+        firestoreService.signOut()
+        _uiState.value = LoginUiState() // Reset a estado inicial
     }
 }

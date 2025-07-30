@@ -1,6 +1,9 @@
 package com.example.hirelink_2025.view.ui.fragments.auth
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +16,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentRegisterBinding
+import com.example.hirelink_2025.view.ui.activities.AuthActivity
+import com.example.hirelink_2025.view.ui.utils.AuthUtils
 import com.example.hirelink_2025.viewmodels.RegisterUiState
 import com.example.hirelink_2025.viewmodels.RegisterViewModel
 import kotlinx.coroutines.launch
@@ -37,6 +42,7 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupClickListeners()
+        setupTextWatchers()
         observeViewModel()
     }
 
@@ -48,12 +54,52 @@ class RegisterFragment : Fragment() {
             val password = binding.passwordEditText.text.toString()
             val confirmPassword = binding.confirmPasswordEditText.text.toString()
 
+            Log.d("RegisterFragment", "Register button clicked with: name=$name, email=$email, phone=$phone")
+            
+            // Limpiar errores previos
+            viewModel.clearFieldErrors()
+
             viewModel.register(name, email, password, confirmPassword, phone.ifBlank { null })
         }
 
         binding.loginButton.setOnClickListener {
             findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
+        
+        // Limpiar errores cuando el usuario haga focus en los campos
+        binding.nameEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) viewModel.clearFieldErrors()
+        }
+        
+        binding.emailEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) viewModel.clearFieldErrors()
+        }
+        
+        binding.passwordEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) viewModel.clearFieldErrors()
+        }
+        
+        binding.confirmPasswordEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) viewModel.clearFieldErrors()
+        }
+    }
+    
+    private fun setupTextWatchers() {
+        // Verificar disponibilidad de email en tiempo real
+        binding.emailEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            
+            override fun afterTextChanged(s: Editable?) {
+                val email = s.toString().trim()
+                if (email.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    // Verificar disponibilidad con un pequeño delay
+                    binding.emailEditText.postDelayed({
+                        viewModel.checkEmailAvailability(email)
+                    }, 1000) // 1 segundo de delay
+                }
+            }
+        })
     }
 
     private fun observeViewModel() {
@@ -70,6 +116,9 @@ class RegisterFragment : Fragment() {
         // Loading state
         binding.registerButton.isEnabled = !state.isLoading
         binding.registerButton.text = if (state.isLoading) "Registrando..." else "Registrarse"
+        
+        // Deshabilitar botón de login mientras se carga
+        binding.loginButton.isEnabled = !state.isLoading
 
         // Field errors
         binding.nameInputLayout.error = state.nameError
@@ -79,15 +128,18 @@ class RegisterFragment : Fragment() {
 
         // General error
         state.error?.let { error ->
-            Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
+            AuthUtils.showErrorMessage(requireContext(), error)
             viewModel.clearError()
         }
 
         // Register success
         if (state.isRegisterSuccess) {
-            Toast.makeText(requireContext(), "¡Cuenta creada exitosamente!", Toast.LENGTH_SHORT).show()
-            // Navegar al menú principal
-            findNavController().navigate(R.id.action_registerFragment_to_mainActivity)
+            val userName = state.user?.name ?: "Usuario"
+            AuthUtils.showSuccessMessage(requireContext(), "¡Bienvenido $userName! Cuenta creada exitosamente")
+            
+            // Navegar a MainActivity a través de AuthActivity (similar al login)
+            (requireActivity() as AuthActivity).navigateToMain()
+            viewModel.resetRegisterSuccess()
         }
     }
 

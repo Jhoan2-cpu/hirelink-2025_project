@@ -75,6 +75,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
     implementation("com.google.firebase:firebase-analytics:23.0.0")
     implementation("com.google.firebase:firebase-firestore:26.0.0")
+    implementation("com.google.firebase:firebase-auth:23.1.0")
+    implementation("com.google.firebase:firebase-storage:21.0.1")
     
     // Image Loading - Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")

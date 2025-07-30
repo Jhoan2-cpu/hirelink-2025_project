@@ -1,144 +1,219 @@
 package com.example.hirelink_2025.repository
 
+import android.util.Log
 import com.example.hirelink_2025.models.Company
-import kotlinx.coroutines.flow.Flow
+import com.example.hirelink_2025.network.FirestoreService
+import com.example.hirelink_2025.network.Callback
+import com.example.hirelink_2025.network.VoidCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/**
+ * Repository para manejo de compañías usando FirestoreService
+ */
 class CompanyRepository {
+    private val firestoreService = FirestoreService()
+    
     private val _companies = MutableStateFlow<List<Company>>(emptyList())
     val companies: StateFlow<List<Company>> = _companies.asStateFlow()
-
-    private val companiesList = mutableListOf<Company>()
+    
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
 
     init {
-        // Initialize with sample data
-        loadSampleData()
+        Log.d("CompanyRepository", "Repository initialized with FirestoreService")
     }
 
-    private fun loadSampleData() {
-        val sampleCompanies = listOf(
-            Company(
-                id = "1",
-                name = "TechSolutions S.A.C.",
-                type = "Tecnología",
-                description = "Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras para el mercado peruano.",
-                size = "50-100",
-                foundedYear = 2020,
-                address = "Av. Javier Prado Este 123",
-                city = "Lima",
-                country = "Perú",
-                phone = "987654321",
-                email = "info@techsolutions.com",
-                website = "www.techsolutions.com",
-                employeeCount = 75,
-                activeJobsCount = 3,
-                ownerId = "user1"
-            ),
-            Company(
-                id = "2",
-                name = "Innovate Corp",
-                type = "Consultoría",
-                description = "Consultoría especializada en transformación digital y gestión empresarial.",
-                size = "10-50",
-                foundedYear = 2018,
-                address = "Calle Los Incas 456",
-                city = "Arequipa",
-                country = "Perú",
-                phone = "123456789",
-                email = "contact@innovate.com",
-                website = "www.innovate.com",
-                employeeCount = 25,
-                activeJobsCount = 1,
-                ownerId = "user1"
-            ),
-            Company(
-                id = "3",
-                name = "DigitalWorks",
-                type = "Marketing Digital",
-                description = "Agencia de marketing digital especializada en estrategias de crecimiento online.",
-                size = "1-10",
-                foundedYear = 2022,
-                address = "Jr. Junín 789",
-                city = "Cusco",
-                country = "Perú",
-                phone = "555666777",
-                email = "hello@digitalworks.pe",
-                website = "www.digitalworks.pe",
-                employeeCount = 8,
-                activeJobsCount = 2,
-                ownerId = "user1"
-            )
-        )
+    /**
+     * Cargar compañías del usuario actual
+     */
+    fun loadUserCompanies(ownerId: String) {
+        Log.d("CompanyRepository", "Loading companies for owner: $ownerId")
+        _isLoading.value = true
+        _error.value = null
         
-        companiesList.addAll(sampleCompanies)
-        _companies.value = companiesList.toList()
-    }
-
-    suspend fun getAllCompanies(): List<Company> {
-        return companiesList.toList()
-    }
-
-    suspend fun getCompaniesByOwner(ownerId: String): List<Company> {
-        return companiesList.filter { it.ownerId == ownerId }
-    }
-
-    suspend fun getCompanyById(id: String): Company? {
-        return companiesList.find { it.id == id }
-    }
-
-    suspend fun addCompany(company: Company): Boolean {
-        return try {
-            companiesList.add(0, company) // Add to beginning
-            _companies.value = companiesList.toList()
-            true
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    suspend fun updateCompany(company: Company): Boolean {
-        return try {
-            val index = companiesList.indexOfFirst { it.id == company.id }
-            if (index != -1) {
-                companiesList[index] = company
-                _companies.value = companiesList.toList()
-                true
-            } else {
-                false
+        firestoreService.getCompaniesByOwner(ownerId, object : Callback<List<Company>> {
+            override fun onSuccess(result: List<Company>) {
+                Log.d("CompanyRepository", "Successfully loaded ${result.size} companies")
+                _companies.value = result
+                _isLoading.value = false
             }
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    suspend fun deleteCompany(companyId: String): Boolean {
-        return try {
-            val removed = companiesList.removeIf { it.id == companyId }
-            if (removed) {
-                _companies.value = companiesList.toList()
+            
+            override fun onError(exception: Exception) {
+                Log.e("CompanyRepository", "Error loading companies", exception)
+                _error.value = exception.message ?: "Error cargando compañías"
+                _isLoading.value = false
             }
-            removed
-        } catch (e: Exception) {
-            false
-        }
+        })
     }
 
-    suspend fun searchCompanies(query: String): List<Company> {
-        return companiesList.filter { company ->
-            company.name.contains(query, ignoreCase = true) ||
-            company.type.contains(query, ignoreCase = true) ||
-            company.city.contains(query, ignoreCase = true) ||
-            company.description.contains(query, ignoreCase = true)
-        }
+    /**
+     * Obtener compañía por ID
+     */
+    fun getCompanyById(companyId: String, callback: (Company?) -> Unit) {
+        Log.d("CompanyRepository", "Getting company by ID: $companyId")
+        
+        firestoreService.getCompanyById(companyId, object : Callback<Company?> {
+            override fun onSuccess(result: Company?) {
+                Log.d("CompanyRepository", "Company found: ${result?.name}")
+                callback(result)
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("CompanyRepository", "Error getting company", exception)
+                callback(null)
+            }
+        })
     }
 
-    suspend fun getCompaniesByType(type: String): List<Company> {
-        return companiesList.filter { it.type.equals(type, ignoreCase = true) }
+    /**
+     * Crear nueva compañía
+     */
+    fun createCompany(company: Company, callback: (Boolean, String?) -> Unit) {
+        Log.d("CompanyRepository", "Creating company: ${company.name}")
+        _isLoading.value = true
+        _error.value = null
+        
+        firestoreService.createCompany(company, object : Callback<String> {
+            override fun onSuccess(result: String) {
+                Log.d("CompanyRepository", "Company created successfully with ID: $result")
+                // Recargar lista después de crear
+                loadUserCompanies(company.ownerId)
+                callback(true, result)
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("CompanyRepository", "Error creating company", exception)
+                _isLoading.value = false
+                _error.value = exception.message ?: "Error creando compañía"
+                callback(false, null)
+            }
+        })
     }
 
-    suspend fun getCompaniesByCity(city: String): List<Company> {
-        return companiesList.filter { it.city.equals(city, ignoreCase = true) }
+    /**
+     * Actualizar compañía existente
+     */
+    fun updateCompany(company: Company, callback: (Boolean) -> Unit) {
+        Log.d("CompanyRepository", "Updating company: ${company.name}")
+        _isLoading.value = true
+        _error.value = null
+        
+        firestoreService.updateCompany(company, object : VoidCallback {
+            override fun onSuccess() {
+                Log.d("CompanyRepository", "Company updated successfully")
+                // Recargar lista después de actualizar
+                loadUserCompanies(company.ownerId)
+                callback(true)
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("CompanyRepository", "Error updating company", exception)
+                _isLoading.value = false
+                _error.value = exception.message ?: "Error actualizando compañía"
+                callback(false)
+            }
+        })
+    }
+
+    /**
+     * Eliminar compañía
+     */
+    fun deleteCompany(companyId: String, ownerId: String, callback: (Boolean) -> Unit) {
+        Log.d("CompanyRepository", "Deleting company: $companyId")
+        _isLoading.value = true
+        _error.value = null
+        
+        firestoreService.deleteCompany(companyId, object : VoidCallback {
+            override fun onSuccess() {
+                Log.d("CompanyRepository", "Company deleted successfully")
+                // Recargar lista después de eliminar
+                loadUserCompanies(ownerId)
+                callback(true)
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("CompanyRepository", "Error deleting company", exception)
+                _isLoading.value = false
+                _error.value = exception.message ?: "Error eliminando compañía"
+                callback(false)
+            }
+        })
+    }
+
+    /**
+     * Buscar compañías por nombre
+     */
+    fun searchCompanies(query: String, callback: (List<Company>) -> Unit) {
+        Log.d("CompanyRepository", "Searching companies with query: $query")
+        
+        firestoreService.searchCompanies(query, object : Callback<List<Company>> {
+            override fun onSuccess(result: List<Company>) {
+                Log.d("CompanyRepository", "Search returned ${result.size} companies")
+                callback(result)
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("CompanyRepository", "Error searching companies", exception)
+                callback(emptyList())
+            }
+        })
+    }
+
+    /**
+     * Filtrar compañías por tipo
+     */
+    fun getCompaniesByType(type: String, callback: (List<Company>) -> Unit) {
+        val currentCompanies = _companies.value
+        val filtered = currentCompanies.filter { it.type.equals(type, ignoreCase = true) }
+        callback(filtered)
+    }
+
+    /**
+     * Filtrar compañías por ciudad
+     */
+    fun getCompaniesByCity(city: String, callback: (List<Company>) -> Unit) {
+        val currentCompanies = _companies.value
+        val filtered = currentCompanies.filter { it.city.equals(city, ignoreCase = true) }
+        callback(filtered)
+    }
+
+    /**
+     * Filtrar compañías por tamaño
+     */
+    fun getCompaniesBySize(size: String, callback: (List<Company>) -> Unit) {
+        val currentCompanies = _companies.value
+        val filtered = currentCompanies.filter { it.size.equals(size, ignoreCase = true) }
+        callback(filtered)
+    }
+
+    /**
+     * Limpiar error
+     */
+    fun clearError() {
+        _error.value = null
+    }
+
+    /**
+     * Obtener todas las compañías (sin filtro de usuario)
+     */
+    fun getAllCompanies(callback: (List<Company>) -> Unit) {
+        Log.d("CompanyRepository", "Getting all companies")
+        
+        firestoreService.getAllCompanies(object : Callback<List<Company>> {
+            override fun onSuccess(result: List<Company>) {
+                Log.d("CompanyRepository", "Retrieved ${result.size} companies")
+                callback(result)
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("CompanyRepository", "Error getting all companies", exception)
+                callback(emptyList())
+            }
+        })
     }
 }

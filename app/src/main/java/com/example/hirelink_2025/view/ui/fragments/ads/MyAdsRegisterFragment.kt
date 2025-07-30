@@ -47,7 +47,8 @@ class MyAdsRegisterFragment : Fragment() {
     
     private var selectedCompany: Company? = null
     private var userCompanies: List<Company> = emptyList()
-    private lateinit var companyRepository: CompanyRepository
+    private lateinit var companyRepository: CompanyRepository//Ya no usaremos repository: Eliminarlo cuanto antes e implementar FirebaseServices A TRAVÉS DE SU VIEWMODEL.
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -116,17 +117,21 @@ class MyAdsRegisterFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // TODO: Filter by current user ID
-                val companies = companyRepository.getCompaniesByOwner("user1")
-                userCompanies = companies
+                //val companies = companyRepository.getCompaniesByOwner("user1")
+
+                //userCompanies = companies
                 
                 withContext(Dispatchers.Main) {
                     setupCompanyDropdown()
                 }
+
+
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Error al cargar compañías", Toast.LENGTH_SHORT).show()
                 }
             }
+
         }
     }
     

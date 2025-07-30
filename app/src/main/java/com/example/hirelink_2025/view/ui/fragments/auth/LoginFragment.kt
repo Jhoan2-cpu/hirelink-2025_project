@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentLoginBinding
 import com.example.hirelink_2025.view.ui.activities.AuthActivity
+import com.example.hirelink_2025.view.ui.utils.AuthUtils
 import com.example.hirelink_2025.viewmodels.LoginUiState
 import com.example.hirelink_2025.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
@@ -36,23 +37,51 @@ class LoginFragment : Fragment() {
         return binding.root//DEVUELVE LA RAÍZ DE LA VISTA INFLADA PARA QUE ANDROID LO MUESTRE EN PANTALLA.
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {//Se llama después de que la vista del fragmento se ha creado e inflado. Punto ideal para
-        //..interactuar con los elementos de la interfaz de usuario (UI). configurar el comportamiento, como agregar listeners a botones o observar cambios en el ViewModel.
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupClickListeners()//Método donde se configura la lógica para los botones
-        observeViewModel()//Método donde se observa el estado del ViewModel de LoginViewModel
+        setupClickListeners()
+        observeViewModel()
+        
+        // Verificar si ya hay usuario autenticado
+        viewModel.checkAuthState()
     }
 
     private fun setupClickListeners() {
-        binding.loginButton.setOnClickListener {//Configura un listener.
+        binding.loginButton.setOnClickListener {
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
+            
+            // Limpiar errores previos
+            viewModel.clearFieldErrors()
+            
             viewModel.login(email, password)
         }
 
         binding.registerButton.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
+        
+        // Agregar funcionalidad de "Olvidé mi contraseña"
+        binding.forgotPasswordButton?.setOnClickListener {
+            val email = binding.emailEditText.text.toString()
+            if (email.isBlank()) {
+                AuthUtils.showErrorMessage(requireContext(), "Ingresa tu email para recuperar la contraseña")
+                return@setOnClickListener
+            }
+            
+            AuthUtils.showPasswordResetDialog(requireContext(), email) {
+                viewModel.resetPassword(email)
+            }
+        }
+        
+        // Limpiar errores cuando el usuario empiece a escribir
+        binding.emailEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) viewModel.clearFieldErrors()
+        }
+        
+        binding.passwordEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) viewModel.clearFieldErrors()
         }
     }
 
@@ -70,11 +99,16 @@ class LoginFragment : Fragment() {
         }
     }
 
-    //Básicamente la función anterior hace que se actualice el estado de la UI de forma reactiva, y le pasa el esatado a través del objeto LoginUiState (con la variable state):
     private fun updateUI(state: LoginUiState) {
         // Loading state
         binding.loginButton.isEnabled = !state.isLoading
         binding.loginButton.text = if (state.isLoading) "Iniciando sesión..." else "Iniciar Sesión"
+        
+        // Deshabilitar botón de registro mientras se carga
+        binding.registerButton.isEnabled = !state.isLoading
+        
+        // Deshabilitar botón de recuperar contraseña mientras se carga
+        binding.forgotPasswordButton?.isEnabled = !state.isLoading
 
         // Field errors
         binding.emailInputLayout.error = state.emailError
@@ -82,13 +116,23 @@ class LoginFragment : Fragment() {
 
         // General error
         state.error?.let { error ->
-            Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
+            AuthUtils.showErrorMessage(requireContext(), error)
             viewModel.clearError()
+        }
+
+        // Reset password success
+        if (state.isResetPasswordSent) {
+            state.resetPasswordMessage?.let { message ->
+                AuthUtils.showSuccessMessage(requireContext(), message)
+            }
+            viewModel.clearResetPasswordState()
         }
 
         // Login success
         if (state.isLoginSuccess) {
-            Toast.makeText(requireContext(), "¡Bienvenido!", Toast.LENGTH_SHORT).show()
+            val userName = state.user?.name ?: "Usuario"
+            AuthUtils.showSuccessMessage(requireContext(), "¡Bienvenido $userName!")
+            
             // Navegar a MainActivity a través de AuthActivity
             (requireActivity() as AuthActivity).navigateToMain()
             viewModel.resetLoginSuccess()

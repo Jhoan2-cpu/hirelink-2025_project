@@ -58,7 +58,7 @@ class JobResultsAdapter(
             companyLogo.setImageResource(R.drawable.ic_launcher_foreground)
 
             // Estado del bookmark
-            updateBookmarkButton(job.isBookmarked)
+            updateBookmarkButton(job.bookmarked)
 
             // Click listeners
             jobCard.setOnClickListener {
@@ -66,8 +66,8 @@ class JobResultsAdapter(
             }
 
             bookmarkButton.setOnClickListener {
-                job.isBookmarked = !job.isBookmarked
-                updateBookmarkButton(job.isBookmarked)
+                job.bookmarked = !job.bookmarked
+                updateBookmarkButton(job.bookmarked)
                 onBookmarkClick(job)
             }
 
@@ -76,8 +76,8 @@ class JobResultsAdapter(
             }
         }
 
-        private fun updateBookmarkButton(isBookmarked: Boolean) {
-            val iconRes = if (isBookmarked) {
+        private fun updateBookmarkButton(bookmarked: Boolean) {
+            val iconRes = if (bookmarked) {
                 R.drawable.ic_bookmark_filled
             } else {
                 R.drawable.ic_bookmark_border
