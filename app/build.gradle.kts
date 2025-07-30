@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
+    kotlin("kapt")
 }
 
 android {
@@ -40,6 +42,7 @@ android {
 
 dependencies {
 
+    // Core Android Dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -48,17 +51,32 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.filament.android)
+    
+    // Testing Dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    
+    // UI Components
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    // ViewModel y LiveData
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
-
-// Fragment KTX
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    
+    // Architecture Components - MVVM
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.9.2")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
-
-// Corrutinas
+    
+    // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    
+    // Firebase Dependencies
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-analytics:23.0.0")
+    implementation("com.google.firebase:firebase-firestore:26.0.0")
+    
+    // Image Loading - Glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
 }
