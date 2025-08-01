@@ -363,16 +363,16 @@ class FirestoreService {
     }
     
     /**
-     * Obtener trabajos activos con paginación
+     * Obtener trabajos activos con paginación (sin requerir índice compuesto)
      */
     fun getActiveJobs(limit: Int = 20, callback: Callback<List<Job>>) {
         db.collection(JOBS_COLLECTION)
             .whereEqualTo("status", JobStatus.ACTIVE.name)
-            .orderBy("postedDate", Query.Direction.DESCENDING)
             .limit(limit.toLong())
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val jobs = querySnapshot.toObjects(Job::class.java)
+                    .sortedByDescending { it.createdAt ?: 0L } // Ordenar en el cliente
                 callback.onSuccess(jobs)
             }
             .addOnFailureListener { callback.onError(it) }
@@ -406,11 +406,11 @@ class FirestoreService {
             query = query.whereEqualTo("modality", it)
         }
         
-        query.orderBy("postedDate", Query.Direction.DESCENDING)
-            .limit(limit.toLong())
+        query.limit(limit.toLong())
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val jobs = querySnapshot.toObjects(Job::class.java)
+                    .sortedByDescending { it.createdAt ?: 0L } // Ordenar en el cliente
                 callback.onSuccess(jobs)
             }
             .addOnFailureListener { callback.onError(it) }
@@ -422,10 +422,10 @@ class FirestoreService {
     fun getJobsByCompany(companyName: String, callback: Callback<List<Job>>) {
         db.collection(JOBS_COLLECTION)
             .whereEqualTo("companyName", companyName)
-            .orderBy("postedDate", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val jobs = querySnapshot.toObjects(Job::class.java)
+                    .sortedByDescending { it.createdAt ?: 0L } // Ordenar en el cliente
                 callback.onSuccess(jobs)
             }
             .addOnFailureListener { callback.onError(it) }
@@ -1251,8 +1251,7 @@ class FirestoreService {
             query = query.whereGreaterThanOrEqualTo("postedDate", it)
         }
         
-        query.orderBy("postedDate", Query.Direction.DESCENDING)
-            .limit(limit.toLong())
+        query.limit(limit.toLong())
             .get()
             .addOnSuccessListener { querySnapshot ->
                 var jobs = querySnapshot.toObjects(Job::class.java)
@@ -1273,7 +1272,8 @@ class FirestoreService {
                     }
                 }
                 
-                callback.onSuccess(jobs)
+                // Ordenar en el cliente
+                callback.onSuccess(jobs.sortedByDescending { it.createdAt ?: 0L })
             }
             .addOnFailureListener { callback.onError(it) }
     }
@@ -1301,8 +1301,7 @@ class FirestoreService {
                         .whereLessThanOrEqualTo("title", profession + '\uf8ff')
                 }
                 
-                query.orderBy("postedDate", Query.Direction.DESCENDING)
-                    .limit(limit.toLong())
+                query.limit(limit.toLong())
                     .get()
                     .addOnSuccessListener { querySnapshot ->
                         var jobs = querySnapshot.toObjects(Job::class.java)
@@ -1326,6 +1325,15 @@ class FirestoreService {
                                 }
                             }
                         }
+                        
+                        // Ordenar por relevancia y fecha
+                        jobs = jobs.sortedWith(compareByDescending<Job> { job ->
+                            job.requirements.count { requirement ->
+                                profile.skills.any { skill ->
+                                    requirement.contains(skill, ignoreCase = true)
+                                }
+                            }
+                        }.thenByDescending { it.createdAt ?: 0L })
                         
                         callback.onSuccess(jobs.take(limit))
                     }

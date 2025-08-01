@@ -21,6 +21,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Close Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/closeButton"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/white"
+            android:elevation="4dp"
+            app:icon="@drawable/ic_close"
+            app:iconGravity="textStart"
+            app:iconTint="@color/text_primary"
+            app:iconSize="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="Cerrar" />
+
         <!-- Job Title and Status -->
         <TextView
             android:id="@+id/jobTitleText"

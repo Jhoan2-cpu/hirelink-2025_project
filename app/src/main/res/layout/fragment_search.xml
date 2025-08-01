@@ -15,6 +15,56 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Collapsed Search Bar (initially hidden) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/collapsedSearchBar"
+        style="@style/Widget.HireLink.Card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:visibility="gone"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/collapsedSearchContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/margin_medium"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/searchIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_search"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:contentDescription="Buscar" />
+
+            <TextView
+                android:id="@+id/searchHint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Buscar trabajos..."
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/expandIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_drop_down"
+                android:contentDescription="Expandir búsqueda" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- App Logo -->
     <TextView
         android:id="@+id/appLogo"
@@ -105,31 +155,51 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Recent Searches -->
+    <!-- Job Offers Title -->
     <TextView
-        android:id="@+id/recentSearchesTitle"
+        android:id="@+id/jobOffersTitle"
         style="@style/TextAppearance.HireLink.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_marginTop="@dimen/margin_large"
-        android:text="Búsquedas recientes"
+        android:text="Ofertas laborales"
         android:textColor="@color/text_primary"
-        android:alpha="0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchCard" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recentSearchesRecyclerView"
-        android:layout_width="0dp"
+    <!-- Spacer for collapsed state -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/collapsedGuideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="80dp" />
+
+    <!-- Jobs RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/jobsRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/margin_medium"
         android:paddingHorizontal="@dimen/margin_large"
+        android:paddingBottom="@dimen/margin_large"
         android:clipToPadding="false"
-        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recentSearchesTitle" />
+        app:layout_constraintTop_toBottomOf="@id/jobOffersTitle" />
+
+    <!-- Loading indicator -->
+    <ProgressBar
+        android:id="@+id/loadingProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/jobsRecyclerView"
+        app:layout_constraintEnd_toEndOf="@id/jobsRecyclerView"
+        app:layout_constraintStart_toStartOf="@id/jobsRecyclerView"
+        app:layout_constraintTop_toTopOf="@id/jobsRecyclerView" />
 
     <!-- Bottom decoration -->
     <View

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.example.hirelink_2025.R
 import androidx.navigation.fragment.findNavController
@@ -29,10 +30,16 @@ class MyAdDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
+        setupBackButton()
         loadJobData()
     }
 
     private fun setupUI() {
+        
+        // Configurar botón de cerrar
+        binding.closeButton.setOnClickListener {
+            navigateBack()
+        }
 
         // Configurar otros botones específicos para "mis anuncios"
         binding.editJobButton?.setOnClickListener {
@@ -90,6 +97,20 @@ class MyAdDetailFragment : Fragment() {
                 putString("job_title", jobTitle)
             }
         )
+    }
+
+    private fun setupBackButton() {
+        // Manejar el botón atrás del sistema
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateBack()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    private fun navigateBack() {
+        findNavController().navigateUp()
     }
 
     private fun showDeleteConfirmation() {
