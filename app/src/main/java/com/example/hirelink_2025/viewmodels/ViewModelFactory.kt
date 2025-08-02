@@ -41,6 +41,9 @@ class ViewModelFactory : ViewModelProvider.Factory {
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
                 ProfileViewModel(userRepository) as T  // Pasamos UserRepository
             }
+            modelClass.isAssignableFrom(ApplicationsViewModel::class.java) -> {
+                ApplicationsViewModel() as T
+            }
             // Agregar otros ViewModels aquí conforme los creemos
             else -> throw IllegalArgumentException("ViewModel class desconocida: ${modelClass.name}")
         }
