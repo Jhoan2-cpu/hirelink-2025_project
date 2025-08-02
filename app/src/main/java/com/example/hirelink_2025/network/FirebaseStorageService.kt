@@ -16,6 +16,7 @@ class FirebaseStorageService {
     
     companion object {
         private const val COMPANY_LOGOS_PATH = "company_logos"
+        private const val PROFILE_IMAGES_PATH = "profile_images"
         private const val MAX_FILE_SIZE_MB = 5L * 1024 * 1024 // 5MB
     }
     
@@ -170,6 +171,90 @@ class FirebaseStorageService {
     
     
     /**
+     * Subir imagen de perfil de usuario a Firebase Storage
+     */
+    fun uploadProfileImage(
+        imageUri: Uri,
+        userId: String,
+        callback: Callback<String>
+    ) {
+        Log.d("FirebaseStorageService", "Uploading profile image for user: $userId")
+        
+        if (!isValidImageFile(imageUri)) {
+            callback.onError(Exception("Archivo no válido. Por favor selecciona una imagen."))
+            return
+        }
+        
+        if (!isValidFileSize(imageUri)) {
+            callback.onError(Exception("La imagen es demasiado grande. Máximo 5MB."))
+            return
+        }
+        
+        val fileName = "${userId}_profile_${System.currentTimeMillis()}.jpg"
+        val profileImageRef = storageRef.child("$PROFILE_IMAGES_PATH/$fileName")
+        
+        // Subir archivo
+        val uploadTask = profileImageRef.putFile(imageUri)
+        
+        uploadTask
+            .addOnProgressListener { taskSnapshot ->
+                val progress = (100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount)
+                Log.d("FirebaseStorageService", "Profile image upload progress: $progress%")
+            }
+            .addOnSuccessListener { taskSnapshot ->
+                Log.d("FirebaseStorageService", "Profile image upload successful")
+                
+                // Obtener URL de descarga
+                profileImageRef.downloadUrl
+                    .addOnSuccessListener { downloadUrl ->
+                        Log.d("FirebaseStorageService", "Profile image download URL obtained: $downloadUrl")
+                        callback.onSuccess(downloadUrl.toString())
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("FirebaseStorageService", "Failed to get profile image download URL", exception)
+                        handleStorageError(exception, callback)
+                    }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirebaseStorageService", "Profile image upload failed", exception)
+                handleStorageError(exception, callback)
+            }
+    }
+    
+    /**
+     * Eliminar imagen de perfil anterior del storage
+     */
+    fun deleteProfileImage(
+        imageUrl: String,
+        callback: VoidCallback
+    ) {
+        if (imageUrl.isEmpty()) {
+            Log.d("FirebaseStorageService", "No profile image URL provided, nothing to delete")
+            callback.onSuccess()
+            return
+        }
+        
+        Log.d("FirebaseStorageService", "Deleting profile image: $imageUrl")
+        
+        try {
+            val imageRef = storage.getReferenceFromUrl(imageUrl)
+            
+            imageRef.delete()
+                .addOnSuccessListener {
+                    Log.d("FirebaseStorageService", "Profile image deleted successfully")
+                    callback.onSuccess()
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("FirebaseStorageService", "Failed to delete profile image", exception)
+                    callback.onError(exception)
+                }
+        } catch (e: Exception) {
+            Log.e("FirebaseStorageService", "Invalid profile image URL", e)
+            callback.onError(e)
+        }
+    }
+    
+    /**
      * Manejar errores de Storage con fallback a logo vacío
      */
     private fun handleStorageError(exception: Exception, callback: Callback<String>) {
@@ -177,11 +262,11 @@ class FirebaseStorageService {
         
         when {
             errorMessage.contains("404") || errorMessage.contains("Not Found") -> {
-                Log.w("FirebaseStorageService", "Storage bucket not configured, using empty logo")
+                Log.w("FirebaseStorageService", "Storage bucket not configured, using empty image")
                 callback.onSuccess("")
             }
             errorMessage.contains("Object does not exist") -> {
-                Log.w("FirebaseStorageService", "Storage object issue, using empty logo")
+                Log.w("FirebaseStorageService", "Storage object issue, using empty image")
                 callback.onSuccess("")
             }
             else -> {

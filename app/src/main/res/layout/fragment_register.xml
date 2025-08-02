@@ -98,7 +98,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
                     android:hint="Teléfono (opcional)"
-                    app:startIconDrawable="@drawable/ic_phone">
+                    app:startIconDrawable="@drawable/ic_phone"
+                    app:helperText="Formato recomendado: +51 987654321">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/phoneEditText"

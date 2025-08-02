@@ -13,6 +13,7 @@ import com.example.hirelink_2025.databinding.FragmentProfileEditExperienceBindin
 import com.example.hirelink_2025.view.adapter.ExperienceEditAdapter
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.checkbox.MaterialCheckBox
 
 class ProfileEditExperienceFragment : Fragment() {
 
@@ -63,7 +64,9 @@ class ProfileEditExperienceFragment : Fragment() {
                 position = "Analista",
                 company = "Universidad Nacional Del Santo",
                 description = "Desarrollador técnico en la empresa x trabajando 2 años.",
-                years = 2
+                startDate = "Enero 2022",
+                endDate = "Diciembre 2023",
+                isCurrent = false
             )
         )
         experienceAdapter.notifyDataSetChanged()
@@ -91,8 +94,14 @@ class ProfileEditExperienceFragment : Fragment() {
         val descriptionInput = dialogView.findViewById<TextInputEditText>(
             R.id.descriptionInput
         )
-        val yearsInput = dialogView.findViewById<TextInputEditText>(
-            R.id.yearsInput
+        val startDateInput = dialogView.findViewById<TextInputEditText>(
+            R.id.startDateInput
+        )
+        val endDateInput = dialogView.findViewById<TextInputEditText>(
+            R.id.endDateInput
+        )
+        val currentJobCheckbox = dialogView.findViewById<MaterialCheckBox>(
+            R.id.currentJobCheckbox
         )
 
         val saveButton = dialogView.findViewById<MaterialButton>(
@@ -107,7 +116,17 @@ class ProfileEditExperienceFragment : Fragment() {
             positionInput.setText(it.position)
             companyInput.setText(it.company)
             descriptionInput.setText(it.description)
-            yearsInput.setText(it.years.toString())
+            startDateInput.setText(it.startDate)
+            endDateInput.setText(it.endDate)
+            currentJobCheckbox.isChecked = it.isCurrent
+        }
+
+        // Handle current job checkbox
+        currentJobCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            endDateInput.isEnabled = !isChecked
+            if (isChecked) {
+                endDateInput.setText("")
+            }
         }
 
         val dialog = AlertDialog.Builder(requireContext())
@@ -118,14 +137,18 @@ class ProfileEditExperienceFragment : Fragment() {
             val position = positionInput.text.toString().trim()
             val company = companyInput.text.toString().trim()
             val description = descriptionInput.text.toString().trim()
-            val years = yearsInput.text.toString().toIntOrNull() ?: 0
+            val startDate = startDateInput.text.toString().trim()
+            val endDate = if (currentJobCheckbox.isChecked) "" else endDateInput.text.toString().trim()
+            val isCurrent = currentJobCheckbox.isChecked
 
             if (position.isNotEmpty() && company.isNotEmpty()) {
                 val newExperience = ProfileEditFragment.Experience(
                     position = position,
                     company = company,
                     description = description,
-                    years = years
+                    startDate = startDate,
+                    endDate = endDate,
+                    isCurrent = isCurrent
                 )
 
                 if (experience != null) {

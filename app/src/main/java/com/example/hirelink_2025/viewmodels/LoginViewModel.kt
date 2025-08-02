@@ -1,13 +1,15 @@
 package com.example.hirelink_2025.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.hirelink_2025.models.User
-import com.example.hirelink_2025.network.FirestoreService
-import com.example.hirelink_2025.network.AuthCallback
+import com.example.hirelink_2025.repository.UserRepository
 import com.example.hirelink_2025.network.Callback
+import com.example.hirelink_2025.network.VoidCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class LoginUiState(
     val isLoading: Boolean = false,
@@ -22,7 +24,7 @@ data class LoginUiState(
 
 class LoginViewModel : ViewModel() {
 
-    private val firestoreService = FirestoreService()
+    private val userRepository = UserRepository.getInstance()
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -34,26 +36,14 @@ class LoginViewModel : ViewModel() {
 
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
-        firestoreService.loginUser(email, password, object : AuthCallback {
-            override fun onSuccess(userId: String, isNewUser: Boolean) {
-                // Obtener datos completos del usuario
-                firestoreService.getUserById(userId, object : Callback<User?> {
-                    override fun onSuccess(user: User?) {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            user = user,
-                            isLoginSuccess = true,
-                            error = null
-                        )
-                    }
-
-                    override fun onError(exception: Exception) {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            error = "Error al obtener datos del usuario: ${exception.message}"
-                        )
-                    }
-                })
+        userRepository.loginUser(email, password, object : Callback<User> {
+            override fun onSuccess(user: User) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    user = user,
+                    isLoginSuccess = true,
+                    error = null
+                )
             }
 
             override fun onError(exception: Exception) {
@@ -85,7 +75,7 @@ class LoginViewModel : ViewModel() {
 
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
-        firestoreService.resetPassword(email, object : com.example.hirelink_2025.network.VoidCallback {
+        userRepository.resetPassword(email, object : VoidCallback {
             override fun onSuccess() {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -108,29 +98,24 @@ class LoginViewModel : ViewModel() {
      * Verificar si hay usuario autenticado
      */
     fun checkAuthState() {
-        if (firestoreService.isUserAuthenticated()) {
-            val userId = firestoreService.getCurrentUserId()
-            userId?.let { id ->
-                firestoreService.getUserById(id, object : Callback<User?> {
-                    override fun onSuccess(user: User?) {
-                        if (user != null) {
-                            _uiState.value = _uiState.value.copy(
-                                user = user,
-                                isLoginSuccess = true
-                            )
-                        }
-                    }
-
-                    override fun onError(exception: Exception) {
-                        // Usuario autenticado pero sin datos en Firestore
-                        // Podrías manejar este caso según sea necesario
-                    }
-                })
+        userRepository.checkAuthState(object : Callback<User?> {
+            override fun onSuccess(user: User?) {
+                if (user != null) {
+                    _uiState.value = _uiState.value.copy(
+                        user = user,
+                        isLoginSuccess = true
+                    )
+                }
             }
-        }
+
+            override fun onError(exception: Exception) {
+                // Usuario autenticado pero sin datos en Firestore
+                // Podrías manejar este caso según sea necesario
+            }
+        })
     }
 
-    private fun getAuthErrorMessage(exception: Exception): String {
+    private fun getAuthErrorMessage(exception: Throwable): String {
         return when {
             exception.message?.contains("user-not-found") == true -> 
                 "Usuario no encontrado"
@@ -203,7 +188,7 @@ class LoginViewModel : ViewModel() {
      * Cerrar sesión
      */
     fun signOut() {
-        firestoreService.signOut()
+        userRepository.signOut()
         _uiState.value = LoginUiState() // Reset a estado inicial
     }
 }

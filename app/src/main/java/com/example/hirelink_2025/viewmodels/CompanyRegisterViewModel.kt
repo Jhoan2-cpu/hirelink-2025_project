@@ -138,13 +138,13 @@ class CompanyRegisterViewModel : ViewModel() {
     ) {
         Log.d("CompanyRegisterViewModel", "Creating company with logo URL: $logoUrl")
         
-        // Crear objeto Company
+        // Crear objeto Company usando CompanySize enum
         val company = Company(
             id = "", // Se generará automáticamente
             name = name.trim(),
             type = type.trim(),
             description = description.trim(),
-            size = size,
+            size = parseCompanySize(size),
             foundedYear = foundedYear,
             address = address.trim(),
             city = city.trim(),
@@ -154,8 +154,6 @@ class CompanyRegisterViewModel : ViewModel() {
             website = website.trim(),
             ownerId = ownerId,
             logoUrl = logoUrl,
-            employeeCount = parseEmployeeCount(size),
-            activeJobsCount = 0,
             createdAt = System.currentTimeMillis(),
             updatedAt = System.currentTimeMillis()
         )
@@ -260,17 +258,16 @@ class CompanyRegisterViewModel : ViewModel() {
     }
 
     /**
-     * Parsear tamaño de empleados a número
+     * Parsear string de tamaño a CompanySize enum
      */
-    private fun parseEmployeeCount(size: String): Int {
+    private fun parseCompanySize(size: String): com.example.hirelink_2025.models.CompanySize {
         return when (size) {
-            "1-10" -> 5
-            "11-50" -> 30
-            "51-100" -> 75
-            "101-500" -> 300
-            "501-1000" -> 750
-            "1000+" -> 1500
-            else -> 0
+            "1-10" -> com.example.hirelink_2025.models.CompanySize.STARTUP
+            "11-50" -> com.example.hirelink_2025.models.CompanySize.SMALL
+            "51-200" -> com.example.hirelink_2025.models.CompanySize.MEDIUM
+            "201-1000" -> com.example.hirelink_2025.models.CompanySize.LARGE
+            "1000+" -> com.example.hirelink_2025.models.CompanySize.ENTERPRISE
+            else -> com.example.hirelink_2025.models.CompanySize.SMALL
         }
     }
 
@@ -321,9 +318,8 @@ class CompanyRegisterViewModel : ViewModel() {
         return listOf(
             "1-10",
             "11-50", 
-            "51-100",
-            "101-500",
-            "501-1000",
+            "51-200",
+            "201-1000",
             "1000+"
         )
     }

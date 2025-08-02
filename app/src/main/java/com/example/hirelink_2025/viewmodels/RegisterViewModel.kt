@@ -2,14 +2,17 @@ package com.example.hirelink_2025.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.hirelink_2025.models.User
-import com.example.hirelink_2025.network.FirestoreService
+import com.example.hirelink_2025.repository.UserRepository
 import com.example.hirelink_2025.network.AuthCallback
+import com.example.hirelink_2025.network.Callback
 import com.example.hirelink_2025.network.ExistsCallback
 import com.example.hirelink_2025.network.VoidCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class RegisterUiState(
     val isLoading: Boolean = false,
@@ -24,7 +27,7 @@ data class RegisterUiState(
 
 class RegisterViewModel : ViewModel() {
 
-    private val firestoreService = FirestoreService()
+    private val userRepository = UserRepository.getInstance()
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
@@ -41,7 +44,7 @@ class RegisterViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
         // Primero probar la conectividad Firebase
-        firestoreService.testFirebaseConnection(object : VoidCallback {
+        userRepository.testFirebaseConnection(object : VoidCallback {
             override fun onSuccess() {
                 Log.d("RegisterViewModel", "Firebase connection OK, proceeding with registration")
                 proceedWithRegistration(email, password, name, phone)
@@ -58,30 +61,38 @@ class RegisterViewModel : ViewModel() {
     }
     
     private fun proceedWithRegistration(email: String, password: String, name: String, phone: String?) {
-        // Crear datos del usuario
-        val userData = User(
-            id = "", // Se asignará automáticamente por Firebase Auth
-            email = email.trim(),
-            name = name.trim(),
-            phone = phone?.trim(),
-            profileImageUrl = null,
-            active = true
-        )
-        
-        Log.d("RegisterViewModel", "User data created: $userData")
+        Log.d("RegisterViewModel", "Proceeding with registration using UserRepository")
 
-        // Proceder directamente con el registro - Firebase Auth maneja la verificación de email duplicado
-        firestoreService.registerUser(email.trim(), password, userData, object : AuthCallback {
+        userRepository.registerUser(email, password, name, phone, object : AuthCallback {
             override fun onSuccess(userId: String, isNewUser: Boolean) {
                 Log.d("RegisterViewModel", "Registration successful: userId=$userId, isNewUser=$isNewUser")
-                // Usuario registrado exitosamente
-                val userWithId = userData.copy(id = userId)
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    user = userWithId,
-                    isRegisterSuccess = true,
-                    error = null
-                )
+                
+                // Obtener datos completos del usuario registrado
+                userRepository.getUserById(userId, object : Callback<User?> {
+                    override fun onSuccess(user: User?) {
+                        if (user != null) {
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                user = user,
+                                isRegisterSuccess = true,
+                                error = null
+                            )
+                        } else {
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                error = "Error al obtener datos del usuario registrado"
+                            )
+                        }
+                    }
+                    
+                    override fun onError(exception: Exception) {
+                        Log.e("RegisterViewModel", "Error getting user data after registration", exception)
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = "Error al obtener datos del usuario: ${exception.message}"
+                        )
+                    }
+                })
             }
 
             override fun onError(exception: Exception) {
@@ -102,7 +113,7 @@ class RegisterViewModel : ViewModel() {
             return
         }
 
-        firestoreService.checkUserExists(email.trim(), object : ExistsCallback {
+        userRepository.checkUserExists(email.trim(), object : ExistsCallback {
             override fun onSuccess(exists: Boolean) {
                 _uiState.value = _uiState.value.copy(
                     emailError = if (exists) "El email ya está registrado" else null
@@ -115,7 +126,7 @@ class RegisterViewModel : ViewModel() {
         })
     }
 
-    private fun getAuthErrorMessage(exception: Exception): String {
+    private fun getAuthErrorMessage(exception: Throwable): String {
         return when {
             exception.message?.contains("email-already-in-use") == true -> 
                 "El email ya está en uso"

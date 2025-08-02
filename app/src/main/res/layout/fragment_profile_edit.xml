@@ -91,7 +91,7 @@
                         android:background="@color/surface"
                         android:padding="0dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/profile_random" />
+                        android:src="@drawable/ic_profile" />
 
                     <!-- Camera overlay -->
                     <View
@@ -147,20 +147,48 @@
                     android:orientation="vertical"
                     android:padding="@dimen/margin_medium">
 
-                    <!-- Education Input -->
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:text="Información Básica"
+                        android:textColor="@color/text_primary" />
+
+                    <!-- Profession Input -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_medium"
-                        app:startIconDrawable="@drawable/ic_education"
+                        android:hint="Profesión"
+                        app:startIconDrawable="@drawable/ic_work"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/educationInput"
+                            android:id="@+id/professionInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Escriba su educación"
-                            android:inputType="text" />
+                            android:inputType="textCapWords" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Bio Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:hint="Biografía / Sobre mí"
+                        app:startIconDrawable="@drawable/ic_person"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/bioInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="top|start"
+                            android:inputType="textMultiLine|textCapSentences"
+                            android:lines="4"
+                            android:maxLines="8" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -168,6 +196,7 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:hint="Ubicación"
                         app:startIconDrawable="@drawable/ic_location_on"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
@@ -175,7 +204,6 @@
                             android:id="@+id/locationInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Escriba su dirección"
                             android:inputType="textPostalAddress" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -243,42 +271,158 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Tab Layout for Profile Sections -->
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/profileTabLayout"
+            <!-- Skills & Languages Card -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.HireLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/surface"
-                app:tabGravity="fill"
-                app:tabIndicatorColor="@color/primary"
-                app:tabMode="fixed"
-                app:tabSelectedTextColor="@color/primary"
-                app:tabTextColor="@color/text_secondary">
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardElevation="2dp">
 
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Acerca de mí" />
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_medium">
 
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Experiencia" />
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:text="Habilidades e Idiomas"
+                        android:textColor="@color/text_primary" />
 
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Habilidades" />
+                    <!-- Skills Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:hint="Habilidades (separadas por comas)"
+                        app:startIconDrawable="@drawable/ic_skill"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-            </com.google.android.material.tabs.TabLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/skillsInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapWords" />
 
-            <!-- ViewPager for Tab Content -->
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/profileViewPager"
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Languages Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Idiomas (separados por comas)"
+                        app:startIconDrawable="@drawable/ic_people"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/languagesInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapWords" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Professional Info Card -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.HireLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_medium"
-                android:minHeight="400dp" />
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/margin_medium">
+
+                    <TextView
+                        style="@style/TextAppearance.HireLink.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:text="Información Profesional"
+                        android:textColor="@color/text_primary" />
+
+                    <!-- Availability Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:hint="Disponibilidad"
+                        app:startIconDrawable="@drawable/ic_calendar"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/availabilityInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Salary Expectation Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:hint="Expectativa salarial"
+                        app:startIconDrawable="@drawable/ic_money"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/salaryInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- LinkedIn URL Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_medium"
+                        android:hint="LinkedIn URL"
+                        app:startIconDrawable="@drawable/ic_link"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/linkedinInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textUri" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Portfolio URL Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Portfolio URL"
+                        app:startIconDrawable="@drawable/ic_web"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/portfolioInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textUri" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
 
         </LinearLayout>
 

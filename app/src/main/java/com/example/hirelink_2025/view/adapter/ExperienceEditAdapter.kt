@@ -38,7 +38,13 @@ class ExperienceEditAdapter(
                 experiencePosition.text = experience.position
                 experienceCompany.text = experience.company
                 experienceDescription.text = experience.description
-                experienceYears.text = "Experiencia: ${experience.years} Año${if (experience.years != 1) "s" else ""}"
+                
+                val dateRange = if (experience.isCurrent) {
+                    "${experience.startDate} - Presente"
+                } else {
+                    "${experience.startDate} - ${experience.endDate}"
+                }
+                experienceYears.text = dateRange
 
                 editExperienceButton.setOnClickListener {
                     onEditClick(experience)

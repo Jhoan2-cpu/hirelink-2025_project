@@ -47,21 +47,19 @@ class CompanyAdapter(
             companyType.text = "${company.type} • ${company.city}, ${company.country}"
             companyDescription.text = company.description.ifEmpty { "Sin descripción disponible" }
             
-            // Set employee count chip
-            val employeeText = when {
-                company.employeeCount == 0 -> company.size.ifEmpty { "No especificado" }
-                company.employeeCount == 1 -> "1 empleado"
-                else -> "${company.employeeCount} empleados"
+            // Set employee count chip using CompanySize enum
+            val employeeText = when (company.size) {
+                com.example.hirelink_2025.models.CompanySize.STARTUP -> "1-10 empleados"
+                com.example.hirelink_2025.models.CompanySize.SMALL -> "11-50 empleados"
+                com.example.hirelink_2025.models.CompanySize.MEDIUM -> "51-200 empleados"
+                com.example.hirelink_2025.models.CompanySize.LARGE -> "201-1000 empleados"
+                com.example.hirelink_2025.models.CompanySize.ENTERPRISE -> "1000+ empleados"
             }
             employeeCountChip.text = employeeText
             
-            // Set active jobs chip
-            val jobsText = when (company.activeJobsCount) {
-                0 -> "Sin empleos activos"
-                1 -> "1 empleo activo"
-                else -> "${company.activeJobsCount} empleos activos"
-            }
-            activeJobsChip.text = jobsText
+            // Set active jobs chip - Note: activeJobsCount not in model, using placeholder
+            // TODO: Add activeJobsCount to Company model or get from FirestoreService
+            activeJobsChip.text = "Jobs: N/A"
             
             // Set click listeners
             companyCard.setOnClickListener { onItemClick(company) }

@@ -13,21 +13,29 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.request.RequestOptions
+import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentProfileEditBinding
-import com.example.hirelink_2025.view.adapter.ProfileEditPagerAdapter
-import com.google.android.material.tabs.TabLayoutMediator
+import com.example.hirelink_2025.models.User
+import com.example.hirelink_2025.models.UserProfile
+import com.example.hirelink_2025.viewmodels.ProfileViewModel
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
+import kotlinx.coroutines.launch
 
 class ProfileEditFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileEditBinding
-    private lateinit var pagerAdapter: ProfileEditPagerAdapter
+    
+    // ViewModel con Factory (MVVM)
+    private val viewModel: ProfileViewModel by viewModels {
+        ViewModelFactory()
+    }
 
-    // Variables para los datos editables
-    private var currentEducation: String = ""
-    private var currentLocation: String = ""
-    private var currentPhone: String = ""
-    private var currentEmail: String = ""
     private var profileImageUri: Uri? = null
 
     // Launcher para seleccionar imagen
@@ -37,8 +45,25 @@ class ProfileEditFragment : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 profileImageUri = uri
-                binding.profileImage.setImageURI(uri)
-                Toast.makeText(requireContext(), "Imagen seleccionada", Toast.LENGTH_SHORT).show()
+                
+                // Preview inmediato con Glide
+                try {
+                    Glide.with(this)
+                        .load(uri)
+                        .apply(
+                            RequestOptions()
+                                .placeholder(R.drawable.profile_random)
+                                .error(R.drawable.profile_random)
+                                .transform(CircleCrop())
+                        )
+                        .into(binding.profileImage)
+                } catch (e: Exception) {
+                    android.util.Log.e("ProfileEditFragment", "Error showing image preview", e)
+                    binding.profileImage.setImageURI(uri) // Fallback
+                }
+                
+                // Subir imagen inmediatamente al seleccionarla
+                uploadProfileImage(uri)
             }
         }
     }
@@ -55,48 +80,74 @@ class ProfileEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loadCurrentData()
-        setupUI()
-        setupViewPager()
+        setupAvailabilityDropdown()
         setupClickListeners()
+        observeViewModel()
     }
 
-    private fun loadCurrentData() {
-        // Cargar datos actuales del usuario (SharedPreferences, Room, etc.)
-        // Por ahora usamos datos de ejemplo
-        currentEducation = "Ingeniero de Sistemas"
-        currentLocation = "Chimbote, Perú"
-        currentPhone = "+51 980440594"
-        currentEmail = "usuario@gmail.com"
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                if (state.isLoading) {
+                    // TODO: Mostrar loading
+                }
+                
+                state.error?.let { error ->
+                    Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
+                }
 
-        // Llenar los inputs con datos actuales
+                state.user?.let { user ->
+                    loadUserData(user)
+                }
+
+                state.userProfile?.let { profile ->
+                    loadUserProfileData(profile)
+                }
+                
+                if (state.isProfileUpdated) {
+                    Toast.makeText(requireContext(), "Perfil actualizado correctamente", Toast.LENGTH_SHORT).show()
+                    // Resetear el flag antes de navegar para que ProfileFragment pueda manejar la actualización
+                    viewModel.resetProfileUpdated()
+                    findNavController().popBackStack()
+                }
+            }
+        }
+    }
+    
+    private fun loadUserData(user: User) {
         with(binding) {
-            educationInput.setText(currentEducation)
-            locationInput.setText(currentLocation)
-            phoneInput.setText(currentPhone)
-            emailInput.setText(currentEmail)
+            userName.text = user.name
+            emailInput.setText(user.email)
+            phoneInput.setText(user.phone ?: "")
+            
+            // Cargar imagen de perfil si existe
+            user.profileImageUrl?.let { imageUrl ->
+                if (imageUrl.isNotEmpty()) {
+                    loadProfileImage(imageUrl)
+                }
+            }
+        }
+    }
+    
+    private fun loadUserProfileData(profile: UserProfile) {
+        with(binding) {
+            professionInput.setText(profile.profession ?: "")
+            bioInput.setText(profile.bio)
+            skillsInput.setText(profile.skills.joinToString(", "))
+            languagesInput.setText(profile.languages.joinToString(", "))
+            locationInput.setText(profile.location)
+            availabilityInput.setText(profile.availability)
+            salaryInput.setText(profile.salaryExpectation)
+            linkedinInput.setText(profile.linkedinUrl)
+            portfolioInput.setText(profile.portfolioUrl)
         }
     }
 
-    private fun setupUI() {
-        // Configurar la interfaz inicial
-        binding.userName.text = "Nombre del usuario"
-    }
-
-    private fun setupViewPager() {
-        // Setup ViewPager2 con TabLayout para modo edición
-        pagerAdapter = ProfileEditPagerAdapter(requireActivity())
-        binding.profileViewPager.adapter = pagerAdapter
-
-        // Conectar TabLayout con ViewPager2
-        TabLayoutMediator(binding.profileTabLayout, binding.profileViewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> "Acerca de mí"
-                1 -> "Experiencia"
-                2 -> "Habilidades"
-                else -> ""
-            }
-        }.attach()
+    private fun setupAvailabilityDropdown() {
+        // Setup dropdown for availability
+        val availabilityOptions = arrayOf("Inmediato", "2 semanas", "1 mes", "2 meses", "3+ meses")
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, availabilityOptions)
+        binding.availabilityInput.setAdapter(adapter)
     }
 
     private fun setupClickListeners() {
@@ -121,15 +172,22 @@ class ProfileEditFragment : Fragment() {
     }
 
     private fun saveProfileChanges() {
-        // Validar campos
-        val education = binding.educationInput.text.toString().trim()
+        // Obtener datos de todos los campos
+        val profession = binding.professionInput.text.toString().trim()
+        val bio = binding.bioInput.text.toString().trim()
+        val skills = binding.skillsInput.text.toString().trim()
+        val languages = binding.languagesInput.text.toString().trim()
         val location = binding.locationInput.text.toString().trim()
         val phone = binding.phoneInput.text.toString().trim()
         val email = binding.emailInput.text.toString().trim()
+        val availability = binding.availabilityInput.text.toString().trim()
+        val salary = binding.salaryInput.text.toString().trim()
+        val linkedin = binding.linkedinInput.text.toString().trim()
+        val portfolio = binding.portfolioInput.text.toString().trim()
 
-        // Validaciones básicas
-        if (education.isEmpty()) {
-            binding.educationInput.error = "La educación es requerida"
+        // Validaciones básicas (solo campos requeridos)
+        if (email.isEmpty()) {
+            binding.emailInput.error = "El email es requerido"
             return
         }
 
@@ -154,13 +212,7 @@ class ProfileEditFragment : Fragment() {
         builder.setMessage("¿Estás seguro de que quieres guardar los cambios en tu perfil?")
 
         builder.setPositiveButton("Guardar") { _, _ ->
-            // TODO: Implementar guardado real (SharedPreferences, Room, API)
-            saveDataToStorage(education, location, phone, email)
-
-            Toast.makeText(requireContext(), "Perfil actualizado exitosamente", Toast.LENGTH_LONG).show()
-
-            // Regresar al perfil principal
-            findNavController().popBackStack()
+            saveToViewModel(profession, bio, skills, languages, location, phone, email, availability, salary, linkedin, portfolio)
         }
 
         builder.setNegativeButton("Continuar editando") { dialog, _ ->
@@ -170,19 +222,51 @@ class ProfileEditFragment : Fragment() {
         builder.show()
     }
 
-    private fun saveDataToStorage(education: String, location: String, phone: String, email: String) {
-        // Implementar guardado real de datos
-        val sharedPrefs = requireContext().getSharedPreferences("user_profile", Context.MODE_PRIVATE)
-        with(sharedPrefs.edit()) {
-            putString("education", education)
-            putString("location", location)
-            putString("phone", phone)
-            putString("email", email)
-            if (profileImageUri != null) {
-                putString("profile_image_uri", profileImageUri.toString())
-            }
-            apply()
+    private fun saveToViewModel(
+        profession: String, 
+        bio: String, 
+        skills: String, 
+        languages: String, 
+        location: String, 
+        phone: String, 
+        email: String, 
+        availability: String, 
+        salary: String, 
+        linkedin: String, 
+        portfolio: String
+    ) {
+        val currentUser = viewModel.getCurrentUser()
+        val currentProfile = viewModel.getCurrentUserProfile()
+        
+        if (currentUser == null || currentProfile == null) {
+            Toast.makeText(requireContext(), "Error: No se pudo cargar los datos del usuario", Toast.LENGTH_LONG).show()
+            return
         }
+        
+        // Actualizar User si cambió teléfono o email
+        val updatedUser = currentUser.copy(
+            phone = phone.ifBlank { null }
+        )
+        
+        // Actualizar UserProfile
+        val skillsList = if (skills.isBlank()) emptyList() else skills.split(",").map { it.trim() }.filter { it.isNotBlank() }
+        val languagesList = if (languages.isBlank()) emptyList() else languages.split(",").map { it.trim() }.filter { it.isNotBlank() }
+        
+        val updatedProfile = currentProfile.copy(
+            profession = profession.ifBlank { null },
+            bio = bio,
+            skills = skillsList,
+            languages = languagesList,
+            location = location,
+            availability = availability,
+            salaryExpectation = salary,
+            linkedinUrl = linkedin,
+            portfolioUrl = portfolio,
+            lastUpdated = System.currentTimeMillis()
+        )
+        
+        // Guardar a través del ViewModel
+        viewModel.updateProfile(updatedUser, updatedProfile)
     }
 
     private fun showCancelConfirmation() {
@@ -213,6 +297,37 @@ class ProfileEditFragment : Fragment() {
             Toast.makeText(requireContext(), "No se pudo abrir el selector de imágenes", Toast.LENGTH_SHORT).show()
         }
     }
+    
+    /**
+     * Subir imagen de perfil usando el ViewModel
+     */
+    private fun uploadProfileImage(imageUri: Uri) {
+        Toast.makeText(requireContext(), "Subiendo imagen...", Toast.LENGTH_SHORT).show()
+        viewModel.updateProfileImage(imageUri)
+    }
+    
+    /**
+     * Cargar imagen de perfil desde URL usando Glide
+     */
+    private fun loadProfileImage(imageUrl: String) {
+        android.util.Log.d("ProfileEditFragment", "Loading profile image: $imageUrl")
+        
+        try {
+            Glide.with(this)
+                .load(imageUrl)
+                .apply(
+                    RequestOptions()
+                        .placeholder(R.drawable.profile_random) // Imagen por defecto mientras carga
+                        .error(R.drawable.profile_random) // Imagen por defecto si hay error
+                        .transform(CircleCrop()) // Hacer la imagen circular
+                )
+                .into(binding.profileImage)
+        } catch (e: Exception) {
+            android.util.Log.e("ProfileEditFragment", "Error loading profile image", e)
+            // Fallback a imagen por defecto
+            binding.profileImage.setImageResource(R.drawable.profile_random)
+        }
+    }
 
     // Métodos para obtener datos actuales de las tabs
     fun getCurrentAboutMe(): String {
@@ -227,7 +342,9 @@ class ProfileEditFragment : Fragment() {
                 position = "Analista",
                 company = "Universidad Nacional Del Santo",
                 description = "Desarrollador técnico en la empresa x trabajando 2 años.",
-                years = 2
+                startDate = "Enero 2022",
+                endDate = "Diciembre 2023",
+                isCurrent = false
             )
         )
     }
@@ -245,7 +362,9 @@ class ProfileEditFragment : Fragment() {
         val position: String,
         val company: String,
         val description: String,
-        val years: Int
+        val startDate: String,
+        val endDate: String,
+        val isCurrent: Boolean
     )
 }
 

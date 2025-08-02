@@ -199,8 +199,13 @@ class FirestoreService {
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val company = document.toObject(Company::class.java)
-                    callback.onSuccess(company)
+                    try {
+                        val company = document.toObject(Company::class.java)
+                        callback.onSuccess(company)
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize company document ${document.id}: ${e.message}")
+                        callback.onSuccess(null)
+                    }
                 } else {
                     callback.onSuccess(null)
                 }
@@ -219,7 +224,16 @@ class FirestoreService {
             .get()
             .addOnSuccessListener { querySnapshot ->
                 Log.d("FirestoreService", "Found ${querySnapshot.size()} companies for owner")
-                val companies = querySnapshot.toObjects(Company::class.java)
+                val companies = mutableListOf<Company>()
+                for (document in querySnapshot.documents) {
+                    try {
+                        val company = document.toObject(Company::class.java)
+                        company?.let { companies.add(it) }
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize company document ${document.id}: ${e.message}")
+                        // Skip this document and continue with others
+                    }
+                }
                 callback.onSuccess(companies)
             }
             .addOnFailureListener { 
@@ -238,7 +252,16 @@ class FirestoreService {
             .get()
             .addOnSuccessListener { querySnapshot ->
                 Log.d("FirestoreService", "Found ${querySnapshot.size()} total companies")
-                val companies = querySnapshot.toObjects(Company::class.java)
+                val companies = mutableListOf<Company>()
+                for (document in querySnapshot.documents) {
+                    try {
+                        val company = document.toObject(Company::class.java)
+                        company?.let { companies.add(it) }
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize company document ${document.id}: ${e.message}")
+                        // Skip this document and continue with others
+                    }
+                }
                 callback.onSuccess(companies)
             }
             .addOnFailureListener { 
@@ -279,7 +302,16 @@ class FirestoreService {
             .limit(20)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val companies = querySnapshot.toObjects(Company::class.java)
+                val companies = mutableListOf<Company>()
+                for (document in querySnapshot.documents) {
+                    try {
+                        val company = document.toObject(Company::class.java)
+                        company?.let { companies.add(it) }
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize company document ${document.id}: ${e.message}")
+                        // Skip this document and continue with others
+                    }
+                }
                 callback.onSuccess(companies)
             }
             .addOnFailureListener { callback.onError(it) }
@@ -299,11 +331,17 @@ class FirestoreService {
                 var updatesCount = 0
                 
                 for (document in querySnapshot.documents) {
-                    val company = document.toObject(Company::class.java)
-                    if (company?.logoUrl?.contains("via.placeholder.com") == true) {
-                        Log.d("FirestoreService", "Cleaning placeholder URL for company: ${company.name}")
-                        batch.update(document.reference, "logoUrl", "")
-                        updatesCount++
+                    try {
+                        val company = document.toObject(Company::class.java)
+                        if (company?.logoUrl?.contains("via.placeholder.com") == true) {
+                            Log.d("FirestoreService", "Cleaning placeholder URL for company: ${company.name}")
+                            batch.update(document.reference, "logoUrl", "")
+                            updatesCount++
+                        }
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize company document ${document.id}: ${e.message}")
+                        // Skip this document and continue with others
+                        continue
                     }
                 }
                 
@@ -353,8 +391,13 @@ class FirestoreService {
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val job = document.toObject(Job::class.java)
-                    callback.onSuccess(job)
+                    try {
+                        val job = document.toObject(Job::class.java)
+                        callback.onSuccess(job)
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize job document ${document.id}: ${e.message}")
+                        callback.onSuccess(null)
+                    }
                 } else {
                     callback.onSuccess(null)
                 }
@@ -525,8 +568,9 @@ class FirestoreService {
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val job = document.toObject(Job::class.java)
-                    if (job?.ownerId == ownerId) {
+                    try {
+                        val job = document.toObject(Job::class.java)
+                        if (job?.ownerId == ownerId) {
                         // Eliminar el documento
                         document.reference.delete()
                             .addOnSuccessListener {
@@ -537,9 +581,13 @@ class FirestoreService {
                                 Log.e("FirestoreService", "Error deleting job", exception)
                                 callback.onError(exception)
                             }
-                    } else {
-                        Log.w("FirestoreService", "Job owner mismatch")
-                        callback.onError(Exception("No tienes permisos para eliminar este anuncio"))
+                        } else {
+                            Log.w("FirestoreService", "Job owner mismatch")
+                            callback.onError(Exception("No tienes permisos para eliminar este anuncio"))
+                        }
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize job document ${document.id}: ${e.message}")
+                        callback.onError(Exception("Error al procesar el anuncio"))
                     }
                 } else {
                     Log.w("FirestoreService", "Job not found")

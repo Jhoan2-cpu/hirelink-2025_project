@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.models.Company
+import com.example.hirelink_2025.models.CompanySize
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -157,7 +158,7 @@ class CompanyEditFragment : Fragment() {
                 name = "TechSolutions S.A.C.",
                 type = "Tecnología",
                 description = "Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras para el mercado peruano.",
-                size = "50-100",
+                size = com.example.hirelink_2025.models.CompanySize.MEDIUM,
                 foundedYear = 2020,
                 address = "Av. Javier Prado Este 123",
                 city = "Lima",
@@ -166,8 +167,6 @@ class CompanyEditFragment : Fragment() {
                 email = "info@techsolutions.com",
                 website = "www.techsolutions.com",
                 logoUrl = "",
-                employeeCount = 75,
-                activeJobsCount = 3,
                 ownerId = "user1"
             )
             "2" -> Company(
@@ -175,7 +174,7 @@ class CompanyEditFragment : Fragment() {
                 name = "Innovate Corp",
                 type = "Consultoría",
                 description = "Consultoría especializada en transformación digital y gestión empresarial.",
-                size = "10-50",
+                size = com.example.hirelink_2025.models.CompanySize.SMALL,
                 foundedYear = 2018,
                 address = "Calle Los Incas 456",
                 city = "Arequipa",
@@ -184,8 +183,6 @@ class CompanyEditFragment : Fragment() {
                 email = "contact@innovate.com",
                 website = "www.innovate.com",
                 logoUrl = "",
-                employeeCount = 25,
-                activeJobsCount = 1,
                 ownerId = "user1"
             )
             else -> Company(
@@ -193,7 +190,7 @@ class CompanyEditFragment : Fragment() {
                 name = "Compañía de Ejemplo",
                 type = "General",
                 description = "Descripción de ejemplo",
-                size = "1-10",
+                size = com.example.hirelink_2025.models.CompanySize.STARTUP,
                 foundedYear = 2023,
                 address = "",
                 city = "Lima",
@@ -202,8 +199,6 @@ class CompanyEditFragment : Fragment() {
                 email = "",
                 website = "",
                 logoUrl = "",
-                employeeCount = 0,
-                activeJobsCount = 0,
                 ownerId = "user1"
             )
         }
@@ -214,7 +209,17 @@ class CompanyEditFragment : Fragment() {
             companyNameEditText.setText(company.name)
             companyTypeEditText.setText(company.type)
             companyDescriptionEditText.setText(company.description)
-            companySizeEditText.setText(company.size)
+            
+            // Convert CompanySize enum to display string
+            val sizeText = when (company.size) {
+                com.example.hirelink_2025.models.CompanySize.STARTUP -> "1-10"
+                com.example.hirelink_2025.models.CompanySize.SMALL -> "11-50"
+                com.example.hirelink_2025.models.CompanySize.MEDIUM -> "51-200"
+                com.example.hirelink_2025.models.CompanySize.LARGE -> "201-1000"
+                com.example.hirelink_2025.models.CompanySize.ENTERPRISE -> "1000+"
+            }
+            companySizeEditText.setText(sizeText)
+            
             if (company.foundedYear > 0) {
                 foundedYearEditText.setText(company.foundedYear.toString())
             }
@@ -340,7 +345,7 @@ class CompanyEditFragment : Fragment() {
                 name = companyNameEditText.text.toString().trim(),
                 type = companyTypeEditText.text.toString().trim(),
                 description = companyDescriptionEditText.text.toString().trim(),
-                size = companySizeEditText.text.toString().trim(),
+                size = convertStringToCompanySize(companySizeEditText.text.toString().trim()),
                 foundedYear = foundedYearEditText.text?.toString()?.toIntOrNull() ?: 0,
                 address = addressEditText.text.toString().trim(),
                 city = cityEditText.text.toString().trim(),
@@ -381,7 +386,7 @@ class CompanyEditFragment : Fragment() {
             name = companyNameEditText.text.toString().trim(),
             type = companyTypeEditText.text.toString().trim(),
             description = companyDescriptionEditText.text.toString().trim(),
-            size = companySizeEditText.text.toString().trim(),
+            size = convertStringToCompanySize(companySizeEditText.text.toString().trim()),
             foundedYear = foundedYearEditText.text?.toString()?.toIntOrNull() ?: 0,
             address = addressEditText.text.toString().trim(),
             city = cityEditText.text.toString().trim(),
@@ -408,5 +413,16 @@ class CompanyEditFragment : Fragment() {
         loadingProgressBar.visibility = if (show) View.VISIBLE else View.GONE
         updateCompanyButton.isEnabled = !show
         discardChangesButton.isEnabled = !show
+    }
+    
+    private fun convertStringToCompanySize(sizeText: String): CompanySize {
+        return when (sizeText) {
+            "1-10" -> CompanySize.STARTUP
+            "11-50" -> CompanySize.SMALL
+            "51-200" -> CompanySize.MEDIUM
+            "201-1000" -> CompanySize.LARGE
+            "1000+" -> CompanySize.ENTERPRISE
+            else -> CompanySize.SMALL // Default fallback
+        }
     }
 }

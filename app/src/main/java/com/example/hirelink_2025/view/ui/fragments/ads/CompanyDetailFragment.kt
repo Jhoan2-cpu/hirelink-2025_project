@@ -249,18 +249,17 @@ class CompanyDetailFragment : Fragment() {
         }
         
         // Chips informativos
-        val employeeText = when {
-            company.employeeCount == 0 -> company.size.ifEmpty { "No especificado" }
-            company.employeeCount == 1 -> "1 empleado"
-            else -> "${company.employeeCount} empleados"
+        val employeeText = when (company.size) {
+            com.example.hirelink_2025.models.CompanySize.STARTUP -> "1-10 empleados"
+            com.example.hirelink_2025.models.CompanySize.SMALL -> "11-50 empleados"
+            com.example.hirelink_2025.models.CompanySize.MEDIUM -> "51-200 empleados"
+            com.example.hirelink_2025.models.CompanySize.LARGE -> "201-1000 empleados"
+            com.example.hirelink_2025.models.CompanySize.ENTERPRISE -> "1000+ empleados"
         }
         employeeCountChip.text = employeeText
         
-        val jobsText = when (company.activeJobsCount) {
-            0 -> "Sin empleos activos"
-            1 -> "1 empleo activo"
-            else -> "${company.activeJobsCount} empleos activos"
-        }
+        // TODO: Get active jobs count from Firestore or remove this feature
+        val jobsText = "Jobs: N/A"
         activeJobsChip.text = jobsText
         
         if (company.foundedYear > 0) {

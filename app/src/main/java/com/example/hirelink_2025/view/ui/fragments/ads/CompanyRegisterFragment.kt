@@ -28,6 +28,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import android.widget.AutoCompleteTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
@@ -43,7 +44,7 @@ class CompanyRegisterFragment : Fragment() {
     private lateinit var companyDescriptionInputLayout: TextInputLayout
     private lateinit var companyDescriptionEditText: TextInputEditText
     private lateinit var companySizeInputLayout: TextInputLayout
-    private lateinit var companySizeEditText: TextInputEditText
+    private lateinit var companySizeEditText: AutoCompleteTextView
     private lateinit var foundedYearInputLayout: TextInputLayout
     private lateinit var foundedYearEditText: TextInputEditText
     private lateinit var addressInputLayout: TextInputLayout
@@ -154,6 +155,22 @@ class CompanyRegisterFragment : Fragment() {
     private fun setupValidation() {
         // Set default country
         countryEditText.setText("Perú")
+        
+        // Setup company size dropdown
+        setupCompanySizeDropdown()
+    }
+    
+    private fun setupCompanySizeDropdown() {
+        val companySizes = viewModel.getCompanySizes()
+        val adapter = android.widget.ArrayAdapter(
+            requireContext(), 
+            android.R.layout.simple_dropdown_item_1line, 
+            companySizes
+        )
+        companySizeEditText.apply {
+            setAdapter(adapter)
+            setText(companySizes[0], false) // Set default to first option (1-10)
+        }
     }
     
     private fun observeViewModel() {

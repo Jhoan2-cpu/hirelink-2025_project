@@ -1,18 +1,212 @@
-Muy bien.
-Cada usuario puede ser propietario de más de una compañía, puede generar ofertas laborales, y también puede ver ofertas laborales de otros usuarios, osea también puede aplicar
-a otros trabajos de las compañías de otros usuarios si así lo quiere.
-
-Mi opinión: Sería bueno tener estos modelos: Modelo de oferta laboral (solo contenga atributos propios como el salario, vacantes etc, lo demás está en el proeycto) y evitar usar datos que facilmente lo
-obtendríamos a través del propietario de la oferta laboral, o en todo caso solo guardaría el id del propietario, luego del propietario obtener su compañía , pero tener
-en cuenta que un propietario puede tener muchas compañías así que en el modelo de oferta laboral también contendría un id de la compañía.
-
-Ahora para postular a esas ofertas, debería haber un filtro, pero eso se manejaría en la clase de servicios de firestore, o en el viewModel (es para evitar que el usuario postule a sus propias ofertas laborales, sin embargo, los podrá ver en el modulo de búsqueda de empleos)
-Bueno, teniendo eso en cuenta, todos los usuarios podrán postularse, no se como manejar eso,
-sería bueno crear un modelo de "emplos" y que adentro guarde en una lista a los usuarios que están aplicando? no estoy seguro
-También estaba pensando en crear modelos de "postulante", NO SE SI SERÍA redundante, ya que es el usuario el postulante, bueno averigua en internet, y dame una buena propuesto de modelo.
-
-GENERALIDADES:
-La app se trata de ofertas laborales, todos los usuarios puede registrar mas de una empresa, también pueden registrar ofertas laborales a nombre de cada empresa.
-Nuevos usuarios pueden registrarse y logearse a la app,
-Todos los usuarios podrán buscar anuncios laborales (buscar empleos), podrán postular, y estos (como está en el layout) pasaran por una serie de estados, si fueron aceptados o rechazados, creo que hay más, revisa el layout.
-básicamnete eso es todo.
+2025-08-01 23:21:48.984  3873-3873  e.hirelink_2025         com.example.hirelink_2025            I  Late-enabling -Xcheck:jni
+2025-08-01 23:21:49.060  3873-3873  e.hirelink_2025         com.example.hirelink_2025            I  Using CollectorTypeCMC GC.
+2025-08-01 23:21:49.060  3873-3873  e.hirelink_2025         com.example.hirelink_2025            W  Unexpected CPU variant for x86: x86_64.
+                                                                                                    Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, alderlake, default
+2025-08-01 23:21:49.113  3873-3873  nativeloader            com.example.hirelink_2025            D  Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+2025-08-01 23:21:49.438  3873-3873  ApplicationLoaders      com.example.hirelink_2025            D  Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+2025-08-01 23:21:49.438  3873-3873  ApplicationLoaders      com.example.hirelink_2025            D  Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+2025-08-01 23:21:49.580  3873-3873  nativeloader            com.example.hirelink_2025            D  Configuring clns-9 for other apk /data/app/~~yyuAH2HawBNKiBNevlj-aQ==/com.example.hirelink_2025-My1FrcWIZo37lwdNgcNW_A==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~yyuAH2HawBNKiBNevlj-aQ==/com.example.hirelink_2025-My1FrcWIZo37lwdNgcNW_A==/lib/x86_64:/data/app/~~yyuAH2HawBNKiBNevlj-aQ==/com.example.hirelink_2025-My1FrcWIZo37lwdNgcNW_A==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.example.hirelink_2025
+2025-08-01 23:21:49.584  3873-3873  CompatChangeReporter    com.example.hirelink_2025            D  Compat change id reported: 202956589; UID 10223; state: ENABLED
+2025-08-01 23:21:49.591  3873-3873  e.hirelink_2025         com.example.hirelink_2025            I  AssetManager2(0x7adc2de888d8) locale list changing from [] to [en-US]
+2025-08-01 23:21:49.600  3873-3873  GraphicsEnvironment     com.example.hirelink_2025            V  Currently set values for:
+2025-08-01 23:21:49.601  3873-3873  GraphicsEnvironment     com.example.hirelink_2025            V    angle_gl_driver_selection_pkgs=[]
+2025-08-01 23:21:49.601  3873-3873  GraphicsEnvironment     com.example.hirelink_2025            V    angle_gl_driver_selection_values=[]
+2025-08-01 23:21:49.601  3873-3873  GraphicsEnvironment     com.example.hirelink_2025            V  com.example.hirelink_2025 is not listed in per-application setting
+2025-08-01 23:21:49.601  3873-3873  GraphicsEnvironment     com.example.hirelink_2025            V  ANGLE allowlist from config:
+2025-08-01 23:21:49.601  3873-3873  GraphicsEnvironment     com.example.hirelink_2025            V  com.example.hirelink_2025 is not listed in ANGLE allowlist or settings, returning default
+2025-08-01 23:21:49.602  3873-3873  GraphicsEnvironment     com.example.hirelink_2025            V  Neither updatable production driver nor prerelease driver is supported.
+2025-08-01 23:21:49.732  3873-3873  FirebaseApp             com.example.hirelink_2025            I  Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+2025-08-01 23:21:49.766  3873-3873  FirebaseInitProvider    com.example.hirelink_2025            I  FirebaseApp initialization successful
+2025-08-01 23:21:49.788  3873-3890  e.hirelink_2025         com.example.hirelink_2025            W  ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*867641888]{PCL[/system/framework/org.apache.http.legacy.jar*4247870504]#PCL[/system/framework/com.android.media.remotedisplay.jar*487574312]#PCL[/system/framework/com.android.location.provider.jar*1570284764]#PCL[/system_ext/framework/androidx.window.extensions.jar*1030441313]#PCL[/system_ext/framework/androidx.window.sidecar.jar*3860983653]} | DLC[];PCL[])
+2025-08-01 23:21:49.795  3873-3890  DynamiteModule          com.example.hirelink_2025            I  Considering local module com.google.android.gms.measurement.dynamite:155 and remote module com.google.android.gms.measurement.dynamite:153
+2025-08-01 23:21:49.795  3873-3890  DynamiteModule          com.example.hirelink_2025            I  Selected local version of com.google.android.gms.measurement.dynamite
+2025-08-01 23:21:49.796  3873-3873  CompatChangeReporter    com.example.hirelink_2025            D  Compat change id reported: 279646685; UID 10223; state: ENABLED
+2025-08-01 23:21:49.808  3873-3873  HireLinkApplication     com.example.hirelink_2025            D  Initializing Firebase
+2025-08-01 23:21:50.003  3873-3896  FA                      com.example.hirelink_2025            I  App measurement initialized, version: 133005
+2025-08-01 23:21:50.003  3873-3896  FA                      com.example.hirelink_2025            I  To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+2025-08-01 23:21:50.003  3873-3896  FA                      com.example.hirelink_2025            I  To enable faster debug mode event logging run:
+                                                                                                      adb shell setprop debug.firebase.analytics.app com.example.hirelink_2025
+2025-08-01 23:21:50.071  3873-3873  HireLinkApplication     com.example.hirelink_2025            D  App verification disabled for testing
+2025-08-01 23:21:50.132  3873-3896  ashmem                  com.example.hirelink_2025            E  Pinning is deprecated since Android Q. Please use trim or other methods.
+2025-08-01 23:21:50.178  3873-3873  HireLinkApplication     com.example.hirelink_2025            D  Firestore configured successfully
+2025-08-01 23:21:50.193  3873-3873  e.hirelink_2025         com.example.hirelink_2025            I  AssetManager2(0x7adc2de91578) locale list changing from [] to [en-US]
+2025-08-01 23:21:50.197  3873-3905  DisplayManager          com.example.hirelink_2025            I  Choreographer implicitly registered for the refresh rate.
+2025-08-01 23:21:50.204  3873-3907  DynamiteModule          com.example.hirelink_2025            W  Local module descriptor class for com.google.android.gms.providerinstaller.dynamite not found.
+2025-08-01 23:21:50.206  3873-3907  DynamiteModule          com.example.hirelink_2025            I  Considering local module com.google.android.gms.providerinstaller.dynamite:0 and remote module com.google.android.gms.providerinstaller.dynamite:0
+2025-08-01 23:21:50.207  3873-3907  ProviderInstaller       com.example.hirelink_2025            W  Failed to load providerinstaller module: No acceptable module com.google.android.gms.providerinstaller.dynamite found. Local version is 0 and remote version is 0.
+2025-08-01 23:21:50.215  3873-3907  ApplicationLoaders      com.example.hirelink_2025            D  Returning zygote-cached class loader: /system/framework/org.apache.http.legacy.jar
+2025-08-01 23:21:50.216  3873-3907  ApplicationLoaders      com.example.hirelink_2025            D  Returning zygote-cached class loader: /system/framework/com.android.media.remotedisplay.jar
+2025-08-01 23:21:50.216  3873-3907  ApplicationLoaders      com.example.hirelink_2025            D  Returning zygote-cached class loader: /system/framework/com.android.location.provider.jar
+2025-08-01 23:21:50.218  3873-3907  ApplicationLoaders      com.example.hirelink_2025            D  Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+2025-08-01 23:21:50.218  3873-3907  ApplicationLoaders      com.example.hirelink_2025            D  Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+2025-08-01 23:21:50.280  3873-3907  e.hirelink_2025         com.example.hirelink_2025            W  Loading /data/app/~~BCz5OQQhcgHhJIz0Fi5lqg==/com.google.android.gms-DHF6_pJL2KmT6I2id51w2g==/oat/x86_64/base.odex non-executable as it requires an image which we failed to load
+2025-08-01 23:21:50.304  3873-3873  AppCompatDelegate       com.example.hirelink_2025            D  Checking for metadata for AppLocalesMetadataHolderService : Service not found
+2025-08-01 23:21:50.309  3873-3873  e.hirelink_2025         com.example.hirelink_2025            I  AssetManager2(0x7adc2de8a4f8) locale list changing from [] to [en-US]
+2025-08-01 23:21:50.317  3873-3907  nativeloader            com.example.hirelink_2025            D  Configuring clns-10 for other apk /data/app/~~BCz5OQQhcgHhJIz0Fi5lqg==/com.google.android.gms-DHF6_pJL2KmT6I2id51w2g==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~BCz5OQQhcgHhJIz0Fi5lqg==/com.google.android.gms-DHF6_pJL2KmT6I2id51w2g==/lib/x86_64:/data/app/~~BCz5OQQhcgHhJIz0Fi5lqg==/com.google.android.gms-DHF6_pJL2KmT6I2id51w2g==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+2025-08-01 23:21:50.338  3873-3905  EGL_emulation           com.example.hirelink_2025            I  Opening libGLESv1_CM_emulation.so
+2025-08-01 23:21:50.339  3873-3905  EGL_emulation           com.example.hirelink_2025            I  Opening libGLESv2_emulation.so
+2025-08-01 23:21:50.344  3873-3907  e.hirelink_2025         com.example.hirelink_2025            I  AssetManager2(0x7adc2de8e698) locale list changing from [] to [en-US]
+2025-08-01 23:21:50.351  3873-3896  FA                      com.example.hirelink_2025            I  Tag Manager is not found and thus will not be used
+2025-08-01 23:21:50.358  3873-3905  HWUI                    com.example.hirelink_2025            W  Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+2025-08-01 23:21:50.362  3873-3905  HWUI                    com.example.hirelink_2025            W  Failed to initialize 101010-2 format, error = EGL_SUCCESS
+2025-08-01 23:21:50.381  3873-3873  AuthActivity            com.example.hirelink_2025            D  onCreate called
+2025-08-01 23:21:50.461  3873-3911  e.hirelink_2025         com.example.hirelink_2025            I  hiddenapi: Accessing hidden method Ldalvik/system/VMStack;->getStackClass2()Ljava/lang/Class; (runtime_flags=0, domain=core-platform, api=unsupported) from Lgbdc; (domain=app) using reflection: allowed
+2025-08-01 23:21:50.497  3873-3911  fkev                    com.example.hirelink_2025            I  Unable to retrieve flag snapshot for com.google.android.gms.providerinstaller#com.example.hirelink_2025, using defaults.
+2025-08-01 23:21:50.535  3873-3907  nativeloader            com.example.hirelink_2025            D  Load /data/app/~~BCz5OQQhcgHhJIz0Fi5lqg==/com.google.android.gms-DHF6_pJL2KmT6I2id51w2g==/base.apk!/lib/x86_64/libconscrypt_gmscore_jni.so using class loader ns clns-10 (caller=/data/app/~~BCz5OQQhcgHhJIz0Fi5lqg==/com.google.android.gms-DHF6_pJL2KmT6I2id51w2g==/base.apk): ok
+2025-08-01 23:21:50.536  3873-3907  NativeCrypto            com.example.hirelink_2025            V  Registering com/google/android/gms/org/conscrypt/NativeCrypto's 315 native methods...
+2025-08-01 23:21:50.547  3873-3907  e.hirelink_2025         com.example.hirelink_2025            I  hiddenapi: Accessing hidden method Ljava/security/spec/ECParameterSpec;->getCurveName()Ljava/lang/String; (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app) using reflection: allowed
+2025-08-01 23:21:50.569  3873-3907  ProviderInstaller       com.example.hirelink_2025            I  Installed default security provider GmsCore_OpenSSL
+2025-08-01 23:21:50.640  3873-3873  CompatChangeReporter    com.example.hirelink_2025            D  Compat change id reported: 309578419; UID 10223; state: ENABLED
+2025-08-01 23:21:50.643  3873-3873  DesktopModeFlags        com.example.hirelink_2025            D  Toggle override initialized to: OVERRIDE_UNSET
+2025-08-01 23:21:50.661  3873-3873  e.hirelink_2025         com.example.hirelink_2025            I  hiddenapi: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (runtime_flags=0, domain=platform, api=unsupported) from Landroidx/appcompat/widget/ViewUtils; (domain=app) using reflection: allowed
+2025-08-01 23:21:50.661  3873-3873  AuthActivity            com.example.hirelink_2025            D  Navigation setup complete
+2025-08-01 23:21:50.707  3873-3873  CompatChangeReporter    com.example.hirelink_2025            D  Compat change id reported: 63938206; UID 10223; state: ENABLED
+2025-08-01 23:21:50.834  3873-3873  CompatChangeReporter    com.example.hirelink_2025            D  Compat change id reported: 352594277; UID 10223; state: ENABLED
+2025-08-01 23:21:50.848  3873-3873  CompatChangeReporter    com.example.hirelink_2025            D  Compat change id reported: 303326708; UID 10223; state: ENABLED
+2025-08-01 23:21:50.958  3873-3873  FirestoreService        com.example.hirelink_2025            D  App verification disabled for testing
+2025-08-01 23:21:51.000  3873-3873  CompatChangeReporter    com.example.hirelink_2025            D  Compat change id reported: 349153669; UID 10223; state: ENABLED
+2025-08-01 23:21:51.012  3873-3873  HWUI                    com.example.hirelink_2025            W  Unknown dataspace 0
+2025-08-01 23:21:51.052  3873-3910  GoogleApiManager        com.example.hirelink_2025            E  Failed to get service from broker.
+                                                                                                    java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+                                                                                                    	at android.os.Parcel.createExceptionOrNull(Parcel.java:3340)
+                                                                                                    	at android.os.Parcel.createException(Parcel.java:3324)
+                                                                                                    	at android.os.Parcel.readException(Parcel.java:3307)
+                                                                                                    	at android.os.Parcel.readException(Parcel.java:3249)
+                                                                                                    	at aywi.a(:com.google.android.gms@252635038@25.26.35 (260800-783060121):36)
+                                                                                                    	at ayup.z(:com.google.android.gms@252635038@25.26.35 (260800-783060121):143)
+                                                                                                    	at aybo.run(:com.google.android.gms@252635038@25.26.35 (260800-783060121):42)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:995)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:103)
+                                                                                                    	at cirt.mw(:com.google.android.gms@252635038@25.26.35 (260800-783060121):1)
+                                                                                                    	at cirt.dispatchMessage(:com.google.android.gms@252635038@25.26.35 (260800-783060121):5)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:248)
+                                                                                                    	at android.os.Looper.loop(Looper.java:338)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:85)
+2025-08-01 23:21:51.060  3873-3909  FlagRegistrar           com.example.hirelink_2025            W  Failed to register com.google.android.gms.providerinstaller#com.example.hirelink_2025
+                                                                                                    fkfh: 17: 17: API: Phenotype.API is not available on this device. Connection failed with: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null}
+                                                                                                    	at fkfj.a(:com.google.android.gms@252635038@25.26.35 (260800-783060121):13)
+                                                                                                    	at ggap.d(:com.google.android.gms@252635038@25.26.35 (260800-783060121):3)
+                                                                                                    	at ggar.run(:com.google.android.gms@252635038@25.26.35 (260800-783060121):130)
+                                                                                                    	at ggcy.execute(:com.google.android.gms@252635038@25.26.35 (260800-783060121):1)
+                                                                                                    	at ggaz.f(:com.google.android.gms@252635038@25.26.35 (260800-783060121):1)
+                                                                                                    	at ggaz.m(:com.google.android.gms@252635038@25.26.35 (260800-783060121):99)
+                                                                                                    	at ggaz.r(:com.google.android.gms@252635038@25.26.35 (260800-783060121):17)
+                                                                                                    	at fcog.hJ(:com.google.android.gms@252635038@25.26.35 (260800-783060121):35)
+                                                                                                    	at eqsv.run(:com.google.android.gms@252635038@25.26.35 (260800-783060121):12)
+                                                                                                    	at ggcy.execute(:com.google.android.gms@252635038@25.26.35 (260800-783060121):1)
+                                                                                                    	at eqsw.b(:com.google.android.gms@252635038@25.26.35 (260800-783060121):18)
+                                                                                                    	at eqtl.b(:com.google.android.gms@252635038@25.26.35 (260800-783060121):36)
+                                                                                                    	at eqtn.d(:com.google.android.gms@252635038@25.26.35 (260800-783060121):25)
+                                                                                                    	at axyx.c(:com.google.android.gms@252635038@25.26.35 (260800-783060121):9)
+                                                                                                    	at aybm.q(:com.google.android.gms@252635038@25.26.35 (260800-783060121):48)
+                                                                                                    	at aybm.d(:com.google.android.gms@252635038@25.26.35 (260800-783060121):10)
+                                                                                                    	at aybm.g(:com.google.android.gms@252635038@25.26.35 (260800-783060121):185)
+                                                                                                    	at aybm.onConnectionFailed(:com.google.android.gms@252635038@25.26.35 (260800-783060121):2)
+                                                                                                    	at aybo.run(:com.google.android.gms@252635038@25.26.35 (260800-783060121):70)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:995)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:103)
+                                                                                                    	at cirt.mw(:com.google.android.gms@252635038@25.26.35 (260800-783060121):1)
+                                                                                                    	at cirt.dispatchMessage(:com.google.android.gms@252635038@25.26.35 (260800-783060121):5)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:248)
+                                                                                                    	at android.os.Looper.loop(Looper.java:338)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:85)
+                                                                                                    Caused by: axxl: 17: API: Phenotype.API is not available on this device. Connection failed with: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null}
+                                                                                                    	at ayub.a(:com.google.android.gms@252635038@25.26.35 (260800-783060121):15)
+                                                                                                    	at axza.a(:com.google.android.gms@252635038@25.26.35 (260800-783060121):1)
+                                                                                                    	at axyx.c(:com.google.android.gms@252635038@25.26.35 (260800-783060121):5)
+                                                                                                    	at aybm.q(:com.google.android.gms@252635038@25.26.35 (260800-783060121):48) 
+                                                                                                    	at aybm.d(:com.google.android.gms@252635038@25.26.35 (260800-783060121):10) 
+                                                                                                    	at aybm.g(:com.google.android.gms@252635038@25.26.35 (260800-783060121):185) 
+                                                                                                    	at aybm.onConnectionFailed(:com.google.android.gms@252635038@25.26.35 (260800-783060121):2) 
+                                                                                                    	at aybo.run(:com.google.android.gms@252635038@25.26.35 (260800-783060121):70) 
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:995) 
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:103) 
+                                                                                                    	at cirt.mw(:com.google.android.gms@252635038@25.26.35 (260800-783060121):1) 
+                                                                                                    	at cirt.dispatchMessage(:com.google.android.gms@252635038@25.26.35 (260800-783060121):5) 
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:248) 
+                                                                                                    	at android.os.Looper.loop(Looper.java:338) 
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:85) 
+2025-08-01 23:21:51.378  3873-3922  e.hirelink_2025         com.example.hirelink_2025            I  hiddenapi: Accessing hidden field Ljava/net/Socket;->impl:Ljava/net/SocketImpl; (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app) using reflection: allowed
+2025-08-01 23:21:51.574  3873-3873  InsetsController        com.example.hirelink_2025            D  hide(ime(), fromIme=false)
+2025-08-01 23:21:51.574  3873-3873  ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:805101cb: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-08-01 23:21:51.739  3873-3922  e.hirelink_2025         com.example.hirelink_2025            I  hiddenapi: Accessing hidden method Ljava/security/spec/ECParameterSpec;->setCurveName(Ljava/lang/String;)V (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app) using reflection: allowed
+2025-08-01 23:21:52.266  3873-3878  e.hirelink_2025         com.example.hirelink_2025            I  Compiler allocated 5042KB to compile void android.view.ViewRootImpl.performTraversals()
+2025-08-01 23:21:52.667  3873-3873  AuthActivity            com.example.hirelink_2025            D  navigateToMain called
+2025-08-01 23:21:52.678  3873-3873  AuthActivity            com.example.hirelink_2025            D  Login state saved
+2025-08-01 23:21:52.692  3873-3873  AuthActivity            com.example.hirelink_2025            D  Navigating to MainActivity
+2025-08-01 23:21:52.961  3873-3873  FirestoreService        com.example.hirelink_2025            D  App verification disabled for testing
+2025-08-01 23:21:53.131  3873-3873  InsetsController        com.example.hirelink_2025            D  hide(ime(), fromIme=false)
+2025-08-01 23:21:53.131  3873-3873  ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:885e699b: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+2025-08-01 23:21:53.357  3873-3873  VRI[AuthActivity]       com.example.hirelink_2025            D  visibilityChanged oldVisibility=true newVisibility=false
+2025-08-01 23:21:53.404  3873-3873  WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda13@398af5a
+2025-08-01 23:21:53.407  3873-3873  ViewRootImpl            com.example.hirelink_2025            D  Skipping stats log for color mode
+2025-08-01 23:21:54.530  3873-3873  WindowOnBackDispatcher  com.example.hirelink_2025            W  OnBackInvokedCallback is not enabled for the application.
+                                                                                                    Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+2025-08-01 23:21:55.206  3873-3947  ProfileInstaller        com.example.hirelink_2025            D  Installing profile for com.example.hirelink_2025
+2025-08-01 23:21:56.544  3873-3873  FirestoreService        com.example.hirelink_2025            D  App verification disabled for testing
+2025-08-01 23:21:56.544  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Loading ads for user: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.544  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Loading ads for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.544  3873-3873  FirestoreService        com.example.hirelink_2025            D  Getting jobs for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.545  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Loading ads for user: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.545  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Loading ads for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.545  3873-3873  FirestoreService        com.example.hirelink_2025            D  Getting jobs for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.687  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Loading ads for user: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.687  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Loading ads for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.687  3873-3873  FirestoreService        com.example.hirelink_2025            D  Getting jobs for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:56.877  3873-3873  FirestoreService        com.example.hirelink_2025            D  Found 0 jobs for owner
+2025-08-01 23:21:56.878  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Successfully loaded 0 ads
+2025-08-01 23:21:56.878  3873-3873  FirestoreService        com.example.hirelink_2025            D  Found 0 jobs for owner
+2025-08-01 23:21:56.878  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Successfully loaded 0 ads
+2025-08-01 23:21:56.878  3873-3873  FirestoreService        com.example.hirelink_2025            D  Found 0 jobs for owner
+2025-08-01 23:21:56.878  3873-3873  MyAdsViewModel          com.example.hirelink_2025            D  Successfully loaded 0 ads
+2025-08-01 23:21:59.062  3873-3873  CompanyFragment         com.example.hirelink_2025            D  Fragment created
+2025-08-01 23:21:59.066  3873-3873  CompanyFragment         com.example.hirelink_2025            D  Loading companies for user: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:59.071  3873-3873  FirestoreService        com.example.hirelink_2025            D  App verification disabled for testing
+2025-08-01 23:21:59.071  3873-3873  CompanyViewModel        com.example.hirelink_2025            D  ViewModel initialized
+2025-08-01 23:21:59.071  3873-3873  CompanyViewModel        com.example.hirelink_2025            D  Cleaning placeholder URLs for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:59.071  3873-3873  FirestoreService        com.example.hirelink_2025            D  Cleaning placeholder URLs for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:59.074  3873-3873  CompanyFragment         com.example.hirelink_2025            D  Loading state: false
+2025-08-01 23:21:59.076  3873-3873  CompanyFragment         com.example.hirelink_2025            D  Refreshing companies on resume
+2025-08-01 23:21:59.076  3873-3873  CompanyViewModel        com.example.hirelink_2025            D  Refreshing companies for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:59.076  3873-3873  CompanyViewModel        com.example.hirelink_2025            D  Loading companies for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:59.076  3873-3873  CompanyFragment         com.example.hirelink_2025            D  Loading state: true
+2025-08-01 23:21:59.077  3873-3873  FirestoreService        com.example.hirelink_2025            D  Getting companies for owner: SyHrELPAfadr6JFGuqCotcvssJl1
+2025-08-01 23:21:59.094  3873-3879  e.hirelink_2025         com.example.hirelink_2025            W  Cleared Reference was only reachable from finalizer (only reported once)
+2025-08-01 23:21:59.411  3873-3873  Firestore               com.example.hirelink_2025            W  (26.0.0) [CustomClassMapper]: No setter/field for activeJobsCount found on class com.example.hirelink_2025.models.Company
+2025-08-01 23:21:59.411  3873-3873  Firestore               com.example.hirelink_2025            W  (26.0.0) [CustomClassMapper]: No setter/field for employeeCount found on class com.example.hirelink_2025.models.Company
+--------- beginning of crash
+2025-08-01 23:21:59.412  3873-3873  AndroidRuntime          com.example.hirelink_2025            D  Shutting down VM
+2025-08-01 23:21:59.412  3873-3873  AndroidRuntime          com.example.hirelink_2025            E  FATAL EXCEPTION: main
+                                                                                                    Process: com.example.hirelink_2025, PID: 3873
+                                                                                                    java.lang.RuntimeException: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "10-100" (found in field 'size')
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper.deserializeError(CustomClassMapper.java:579)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper.deserializeToEnum(CustomClassMapper.java:365)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper.deserializeToClass(CustomClassMapper.java:257)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper.deserializeToType(CustomClassMapper.java:196)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper.access$300(CustomClassMapper.java:58)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper$BeanMapper.deserialize(CustomClassMapper.java:802)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper$BeanMapper.deserialize(CustomClassMapper.java:765)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper.convertBean(CustomClassMapper.java:558)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper.deserializeToClass(CustomClassMapper.java:259)
+                                                                                                    	at com.google.firebase.firestore.util.CustomClassMapper.convertToCustomClass(CustomClassMapper.java:104)
+                                                                                                    	at com.google.firebase.firestore.DocumentSnapshot.toObject(DocumentSnapshot.java:183)
+                                                                                                    	at com.google.firebase.firestore.QueryDocumentSnapshot.toObject(QueryDocumentSnapshot.java:116)
+                                                                                                    	at com.google.firebase.firestore.DocumentSnapshot.toObject(DocumentSnapshot.java:161)
+                                                                                                    	at com.google.firebase.firestore.QueryDocumentSnapshot.toObject(QueryDocumentSnapshot.java:97)
+                                                                                                    	at com.example.hirelink_2025.network.FirestoreService.cleanPlaceholderUrls$lambda$45(FirestoreService.kt:302)
+                                                                                                    	at com.example.hirelink_2025.network.FirestoreService.$r8$lambda$6ObZ0yIKdGP4E2lGksIplp_SZGI(Unknown Source:0)
+                                                                                                    	at com.example.hirelink_2025.network.FirestoreService$$ExternalSyntheticLambda179.invoke(D8$$SyntheticClass:0)
+                                                                                                    	at com.example.hirelink_2025.network.FirestoreService.cleanPlaceholderUrls$lambda$46(FirestoreService.kt:297)
+                                                                                                    	at com.example.hirelink_2025.network.FirestoreService.$r8$lambda$VEzN3gV_EXYR0hjVwhRmK--XJfQ(Unknown Source:0)
+                                                                                                    	at com.example.hirelink_2025.network.FirestoreService$$ExternalSyntheticLambda180.onSuccess(D8$$SyntheticClass:0)
+                                                                                                    	at com.google.android.gms.tasks.zzm.run(com.google.android.gms:play-services-tasks@@18.1.0:1)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:995)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:103)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:248)
+                                                                                                    	at android.os.Looper.loop(Looper.java:338)
+                                                                                                    	at android.app.ActivityThread.main(ActivityThread.java:9067)
+                                                                                                    	at java.lang.reflect.Method.invoke(Native Method)
+                                                                                                    	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+                                                                                                    	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+2025-08-01 23:21:59.436  3873-3873  Process                 com.example.hirelink_2025            I  Sending signal. PID: 3873 SIG: 9
+2025-08-01 23:21:59.446   718-841   InputDispatcher         system_server                        E  channel '78f0245 com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity' ~ Channel is unrecoverably broken and will be disposed!

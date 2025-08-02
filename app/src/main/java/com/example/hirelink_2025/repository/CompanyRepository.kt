@@ -183,11 +183,11 @@ class CompanyRepository {
     }
 
     /**
-     * Filtrar compañías por tamaño
+     * Filtrar compañías por tamaño usando CompanySize enum
      */
-    fun getCompaniesBySize(size: String, callback: (List<Company>) -> Unit) {
+    fun getCompaniesBySize(size: com.example.hirelink_2025.models.CompanySize, callback: (List<Company>) -> Unit) {
         val currentCompanies = _companies.value
-        val filtered = currentCompanies.filter { it.size.equals(size, ignoreCase = true) }
+        val filtered = currentCompanies.filter { it.size == size }
         callback(filtered)
     }
 

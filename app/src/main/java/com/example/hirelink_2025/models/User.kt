@@ -2,11 +2,13 @@ package com.example.hirelink_2025.models
 
 data class User(
     val id: String = "",
-    val email: String = "",
-    val name: String = "",
-    val phone: String? = null,
-    val profileImageUrl: String? = null,
-    val active: Boolean = true
+    val email: String = "",//1 2
+    val name: String = "",//
+    val phone: String? = null,//1 2
+    val profileImageUrl: String? = null,//1
+    val active: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val lastLoginAt: Long = System.currentTimeMillis()
 )
 
 /**

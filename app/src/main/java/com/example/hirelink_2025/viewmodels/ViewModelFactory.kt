@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.hirelink_2025.repository.ApplicantsRepository
 import com.example.hirelink_2025.repository.MockApplicantsRepository
+import com.example.hirelink_2025.repository.UserRepository
 import com.example.hirelink_2025.viewmodels.ads.MyAdsApplicantsViewModel
 import com.example.hirelink_2025.viewmodels.ads.MyAdsViewModel
 import com.example.hirelink_2025.viewmodels.ads.JobRegisterViewModel
@@ -14,7 +15,9 @@ import com.example.hirelink_2025.viewmodels.ads.JobRegisterViewModel
  */
 class ViewModelFactory : ViewModelProvider.Factory {
 
-    // Repository instances (solo para ViewModels que aún usan repository)
+    // Repositorios
+    // Usamos el UserRepository existente
+    private val userRepository: UserRepository = UserRepository.getInstance()
     private val applicantsRepository: ApplicantsRepository = MockApplicantsRepository()
 
     @Suppress("UNCHECKED_CAST")
@@ -34,6 +37,9 @@ class ViewModelFactory : ViewModelProvider.Factory {
             }
             modelClass.isAssignableFrom(JobRegisterViewModel::class.java) -> {
                 JobRegisterViewModel() as T
+            }
+            modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
+                ProfileViewModel(userRepository) as T  // Pasamos UserRepository
             }
             // Agregar otros ViewModels aquí conforme los creemos
             else -> throw IllegalArgumentException("ViewModel class desconocida: ${modelClass.name}")
