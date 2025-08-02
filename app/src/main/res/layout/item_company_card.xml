@@ -113,18 +113,6 @@
                 app:chipIconSize="16dp"
                 app:chipMinHeight="32dp"
                 tools:text="50+ empleados" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/activeJobsChip"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:textSize="@dimen/text_size_small"
-                app:chipIcon="@drawable/ic_work_small"
-                app:chipIconSize="16dp"
-                app:chipMinHeight="32dp"
-                tools:text="3 empleos activos" />
-
         </com.google.android.material.chip.ChipGroup>
 
         <!-- Action Buttons -->

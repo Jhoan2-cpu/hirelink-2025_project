@@ -48,7 +48,11 @@ class SearchViewModel : ViewModel() {
             }
     }
     
-    fun searchJobs(title: String?, location: String?) {
+    /**
+     * Search jobs by title. Location parameter is kept for compatibility but not used
+     * since location is now stored in Company.city and would require additional queries.
+     */
+    fun searchJobs(title: String?, location: String? = null) {
         _isLoading.value = true
         _error.value = null
         
@@ -68,12 +72,8 @@ class SearchViewModel : ViewModel() {
                 _isLoading.value = false
                 var jobs = querySnapshot.toObjects(Job::class.java)
                 
-                // Filtrar por ubicación en el cliente si se especifica
-                location?.takeIf { it.isNotBlank() }?.let { locationFilter ->
-                    jobs = jobs.filter { job ->
-                        job.location.contains(locationFilter, ignoreCase = true)
-                    }
-                }
+                // Note: Location filtering removed because Job model no longer has location field
+                // Location information is now stored in Company.city and would require additional query
                 
                 // Ordenar por fecha de creación en el cliente
                 _jobs.value = jobs.sortedByDescending { it.createdAt ?: 0L }

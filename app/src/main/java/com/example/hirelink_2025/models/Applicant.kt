@@ -14,9 +14,3 @@ data class Applicant(
     val jobId: String = "", // ID del trabajo al que aplicó
     val coverLetter: String? = null
 )
-
-enum class ApplicationStatus {
-    PENDING,    // Pendiente
-    ACCEPTED,   // Aceptado
-    REJECTED    // Rechazado
-}

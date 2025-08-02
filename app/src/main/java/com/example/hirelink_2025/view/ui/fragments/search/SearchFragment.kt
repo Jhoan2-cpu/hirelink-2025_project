@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hirelink_2025.R
+import com.example.hirelink_2025.models.Company
 import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.view.adapter.JobAdapter
 import com.example.hirelink_2025.viewmodels.SearchViewModel
@@ -98,9 +99,10 @@ class SearchFragment : Fragment() {
         jobAdapter = JobAdapter(
             onJobClick = { job -> onJobClicked(job) },
             onApplyClick = { job -> onApplyClicked(job) },
-            onBookmarkClick = { job -> onBookmarkClicked(job) }
+            onBookmarkClick = { job -> onBookmarkClicked(job)},
+            getCompanyInfo = { companyId -> getCompanyInfo(companyId) }
         )
-        
+
         jobsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = jobAdapter
@@ -247,7 +249,17 @@ class SearchFragment : Fragment() {
     private fun onBookmarkClicked(job: Job) {
         Toast.makeText(context, "Trabajo guardado: ${job.title}", Toast.LENGTH_SHORT).show()
     }
-    
+
+    //TEMPORAL
+    fun getCompanyInfo(companyId: String): Company? {
+        return cachedCompanyMap[companyId]
+    }
+    //TEMPORAL
+    private val cachedCompanyMap: Map<String, Company> = mapOf(
+        "1" to Company("1", "Tech Solutions S.A.C.", "Lima"),
+        "2" to Company("2", "GlobalSoft", "Cusco")
+    )
+
     private fun collapseSearchForm() {
         if (isSearchCollapsed) return
         

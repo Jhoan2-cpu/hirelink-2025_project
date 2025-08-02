@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentActiveApplicationsBinding
 import com.example.hirelink_2025.models.Application
+import com.example.hirelink_2025.models.ApplicationDisplay
 import com.example.hirelink_2025.view.adapter.ApplicationAdapter
 
 // TODO: Rename parameter arguments, choose names that match
@@ -42,14 +43,14 @@ class ReviewApplicationsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val sampleList = listOf(
-            Application(
+            ApplicationDisplay(
                 jobTitle = "Desarrollador Android Senior",
                 companyName = "Tech Solutions S.A.C.",
                 applicationDate = "Postulado hace 3 días",
                 status = "En revisión",
                 logoResId = R.drawable.ic_title
             ),
-            Application(
+            ApplicationDisplay(
                 jobTitle = "Backend Developer",
                 companyName = "GlobalSoft",
                 applicationDate = "Postulado ayer",
@@ -59,7 +60,7 @@ class ReviewApplicationsFragment : Fragment() {
         )
 
         // ✅ CORREGIR: Pasar los 3 parámetros requeridos
-        adapter = ApplicationAdapter(
+        /*adapter = ApplicationAdapter(
             apps = sampleList,
             onCancelClicked = { item ->
                 Toast.makeText(requireContext(), "Cancelaste: ${item.jobTitle}", Toast.LENGTH_SHORT).show()
@@ -69,7 +70,7 @@ class ReviewApplicationsFragment : Fragment() {
                 navigateToApplicationDetail(item)
             }
         )
-
+*/
         binding.applicationsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.applicationsRecyclerView.adapter = adapter
     }
@@ -80,6 +81,7 @@ class ReviewApplicationsFragment : Fragment() {
      */
     private fun navigateToApplicationDetail(application: Application) {
         val bundle = Bundle().apply {
+            /*
             putString("job_title", application.jobTitle)
             putString("company_name", application.companyName)
             putString("application_date", application.applicationDate)
@@ -89,6 +91,8 @@ class ReviewApplicationsFragment : Fragment() {
             putString("job_requirements", "Kotlin, Android, MVVM")
             putString("employment_type", "Tiempo completo")
             putString("modality", "Remoto")
+            */
+
         }
 
         findNavController().navigate(

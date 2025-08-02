@@ -8,10 +8,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.hirelink_2025.databinding.ItemJobCardBinding
 import com.example.hirelink_2025.models.Job
 
+/**
+ * Adapter para mostrar trabajos usando modelo simplificado
+ * - Job: modelo con companyId (sin companyName ni location directos)
+ * - Obtiene información de Company por separado
+ */
 class JobAdapter(
     private val onJobClick: (Job) -> Unit,
     private val onApplyClick: (Job) -> Unit,
-    private val onBookmarkClick: (Job) -> Unit
+    private val onBookmarkClick: (Job) -> Unit,
+    private val getCompanyInfo: (String) -> com.example.hirelink_2025.models.Company?
 ) : ListAdapter<Job, JobAdapter.JobViewHolder>(JobDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JobViewHolder {
@@ -58,10 +64,13 @@ class JobAdapter(
         }
 
         fun bind(job: Job) {
+            // Obtener información de la compañía
+            val company = getCompanyInfo(job.companyId)
+            
             binding.apply {
                 jobTitle.text = job.title
-                companyName.text = job.companyName
-                locationChip.text = job.location
+                companyName.text = company?.name ?: "Compañía no encontrada"
+                locationChip.text = company?.city ?: "Ubicación no especificada"
                 modalityChip.text = job.modality
                 salaryChip.text = job.salary
                 postedDate.text = job.postedDate

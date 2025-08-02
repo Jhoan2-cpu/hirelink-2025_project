@@ -117,6 +117,13 @@
         <action
             android:id="@+id/action_myAdsFragment_to_companyFragment"
             app:destination="@+id/companyFragment"/>
+        <action
+            android:id="@+id/action_myAdsFragment_to_jobApplicantsFragment"
+            app:destination="@id/jobApplicantsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
 
@@ -231,6 +238,13 @@
 
         <!-- En nav_graph.xml, dentro del fragment myAdsApplicantsFragment -->
     </fragment>
+
+    <!-- Nuevo fragmento para postulantes usando el modelo Application -->
+    <fragment
+        android:id="@+id/jobApplicantsFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.JobApplicantsFragment"
+        android:label="Postulantes"
+        tools:layout="@layout/fragment_job_applicants" />
 
     <!-- Agregar este nuevo fragment al final del archivo, antes de </navigation> -->
     <!-- AGREGAR ESTE DESTINO -->

@@ -27,7 +27,7 @@ class CompanyAdapter(
         val companyType: TextView = itemView.findViewById(R.id.companyType)
         val companyDescription: TextView = itemView.findViewById(R.id.companyDescription)
         val employeeCountChip: Chip = itemView.findViewById(R.id.employeeCountChip)
-        val activeJobsChip: Chip = itemView.findViewById(R.id.activeJobsChip)
+        //val activeJobsChip: Chip = itemView.findViewById(R.id.activeJobsChip)
         val editCompanyButton: MaterialButton = itemView.findViewById(R.id.editCompanyButton)
         val deleteCompanyButton: MaterialButton = itemView.findViewById(R.id.deleteCompanyButton)
         val menuButton: MaterialButton = itemView.findViewById(R.id.menuButton)
@@ -59,7 +59,7 @@ class CompanyAdapter(
             
             // Set active jobs chip - Note: activeJobsCount not in model, using placeholder
             // TODO: Add activeJobsCount to Company model or get from FirestoreService
-            activeJobsChip.text = "Jobs: N/A"
+            //activeJobsChip.text = "Jobs: N/A"
             
             // Set click listeners
             companyCard.setOnClickListener { onItemClick(company) }

@@ -136,18 +136,29 @@ class FirestoreService {
      * Obtener usuario por ID
      */
     fun getUserById(userId: String, callback: Callback<User?>) {
+        Log.d("FirestoreService", "Getting user by ID: $userId")
         db.collection(USERS_COLLECTION)
             .document(userId)
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val user = document.toObject(User::class.java)
-                    callback.onSuccess(user)
+                    try {
+                        val user = document.toObject(User::class.java)
+                        Log.d("FirestoreService", "User found: ${user?.fullName}")
+                        callback.onSuccess(user)
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize user document $userId: ${e.message}")
+                        callback.onSuccess(null)
+                    }
                 } else {
+                    Log.w("FirestoreService", "User document $userId does not exist")
                     callback.onSuccess(null)
                 }
             }
-            .addOnFailureListener { callback.onError(it) }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "Error getting user by ID $userId", it)
+                callback.onError(it) 
+            }
     }
     
     /**
@@ -194,23 +205,89 @@ class FirestoreService {
      * Obtener empresa por ID
      */
     fun getCompanyById(companyId: String, callback: Callback<Company?>) {
+        Log.d("FirestoreService", "Looking for company with ID: '$companyId'")
         db.collection(COMPANIES_COLLECTION)
             .document(companyId)
             .get()
             .addOnSuccessListener { document ->
+                Log.d("FirestoreService", "Document query result - exists: ${document.exists()}, document ID: '${document.id}'")
                 if (document.exists()) {
                     try {
                         val company = document.toObject(Company::class.java)
+                        Log.d("FirestoreService", "Company deserialized successfully: ${company?.name ?: "null"}")
                         callback.onSuccess(company)
                     } catch (e: Exception) {
                         Log.w("FirestoreService", "Failed to deserialize company document ${document.id}: ${e.message}")
-                        callback.onSuccess(null)
+                        
+                        // Intentar recuperar los datos manualmente para evitar el error de deserialización
+                        try {
+                            val data = document.data
+                            if (data != null) {
+                                Log.d("FirestoreService", "Attempting manual recovery of company data")
+                                val manualCompany = createCompanyFromRawData(document.id, data)
+                                callback.onSuccess(manualCompany)
+                            } else {
+                                callback.onSuccess(null)
+                            }
+                        } catch (e2: Exception) {
+                            Log.e("FirestoreService", "Manual recovery also failed: ${e2.message}")
+                            callback.onSuccess(null)
+                        }
                     }
                 } else {
+                    Log.w("FirestoreService", "Document with ID '$companyId' does not exist in Firestore")
                     callback.onSuccess(null)
                 }
             }
-            .addOnFailureListener { callback.onError(it) }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "Error querying company by ID '$companyId': ${it.message}")
+                callback.onError(it) 
+            }
+    }
+    
+    /**
+     * Crear objeto Company desde datos raw de Firestore (para recuperación manual)
+     */
+    private fun createCompanyFromRawData(documentId: String, data: Map<String, Any>): Company {
+        // Función helper para obtener strings safely
+        fun getString(key: String): String = data[key]?.toString() ?: ""
+        fun getLong(key: String): Long = (data[key] as? Number)?.toLong() ?: 0L
+        fun getInt(key: String): Int = (data[key] as? Number)?.toInt() ?: 0
+        
+        // Manejar el enum CompanySize de forma segura
+        val sizeString = getString("size")
+        val companySize = when (sizeString) {
+            "STARTUP" -> CompanySize.STARTUP
+            "SMALL" -> CompanySize.SMALL
+            "MEDIUM" -> CompanySize.MEDIUM
+            "LARGE" -> CompanySize.LARGE
+            "ENTERPRISE" -> CompanySize.ENTERPRISE
+            // Casos legacy que pueden estar en la base de datos
+            "1-10", "10-100" -> CompanySize.SMALL  // Corregir valores inválidos
+            else -> {
+                Log.w("FirestoreService", "Unknown company size '$sizeString', defaulting to SMALL")
+                CompanySize.SMALL
+            }
+        }
+        
+        return Company(
+            id = documentId,
+            name = getString("name"),
+            type = getString("type"),
+            description = getString("description"),
+            size = companySize,
+            foundedYear = getInt("foundedYear"),
+            address = getString("address"),
+            city = getString("city"),
+            country = getString("country"),
+            phone = getString("phone"),
+            email = getString("email"),
+            website = getString("website"),
+            logoUrl = getString("logoUrl"),
+            ownerId = getString("ownerId"),
+            createdAt = getLong("createdAt"),
+            updatedAt = getLong("updatedAt")
+        )
     }
     
     /**
@@ -460,11 +537,11 @@ class FirestoreService {
     }
     
     /**
-     * Obtener trabajos por empresa
+     * Obtener trabajos por empresa (usando companyId)
      */
-    fun getJobsByCompany(companyName: String, callback: Callback<List<Job>>) {
+    fun getJobsByCompany(companyId: String, callback: Callback<List<Job>>) {
         db.collection(JOBS_COLLECTION)
-            .whereEqualTo("companyName", companyName)
+            .whereEqualTo("companyId", companyId)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val jobs = querySnapshot.toObjects(Job::class.java)
@@ -511,54 +588,116 @@ class FirestoreService {
     }
     
     /**
-     * Obtener trabajos por propietario
+     * Obtener trabajos por propietario (usando companyId del propietario)
      */
     fun getJobsByOwner(ownerId: String, callback: Callback<List<Job>>) {
         Log.d("FirestoreService", "Getting jobs for owner: $ownerId")
         
-        // Usar get() sin orderBy para evitar requerir índice compuesto
-        // Ordenaremos los resultados en el cliente
-        db.collection(JOBS_COLLECTION)
-            .whereEqualTo("ownerId", ownerId)
-            .get() // Sin .orderBy() para evitar el índice compuesto
-            .addOnSuccessListener { querySnapshot ->
-                Log.d("FirestoreService", "Found ${querySnapshot.size()} jobs for owner")
-                val jobs = querySnapshot.toObjects(Job::class.java)
-                    .sortedByDescending { it.createdAt } // Ordenar en el cliente
-                callback.onSuccess(jobs)
+        // Primero obtenemos las compañías del propietario
+        getCompaniesByOwner(ownerId, object : Callback<List<Company>> {
+            override fun onSuccess(companies: List<Company>) {
+                if (companies.isEmpty()) {
+                    Log.d("FirestoreService", "No companies found for owner, returning empty jobs list")
+                    callback.onSuccess(emptyList())
+                    return
+                }
+                
+                // Obtener trabajos para todas las compañías del propietario
+                val allJobs = mutableListOf<Job>()
+                var pendingRequests = companies.size
+                
+                companies.forEach { company ->
+                    db.collection(JOBS_COLLECTION)
+                        .whereEqualTo("companyId", company.id)
+                        .get()
+                        .addOnSuccessListener { querySnapshot ->
+                            val jobs = querySnapshot.toObjects(Job::class.java)
+                            allJobs.addAll(jobs)
+                            pendingRequests--
+                            
+                            if (pendingRequests == 0) {
+                                // Ordenar todos los trabajos por fecha de creación
+                                val sortedJobs = allJobs.sortedByDescending { it.createdAt }
+                                Log.d("FirestoreService", "Found ${sortedJobs.size} total jobs for owner")
+                                callback.onSuccess(sortedJobs)
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("FirestoreService", "Error getting jobs for company ${company.id}", exception)
+                            pendingRequests--
+                            
+                            if (pendingRequests == 0) {
+                                val sortedJobs = allJobs.sortedByDescending { it.createdAt }
+                                callback.onSuccess(sortedJobs)
+                            }
+                        }
+                }
             }
-            .addOnFailureListener { exception ->
-                Log.e("FirestoreService", "Error getting jobs for owner", exception)
+            
+            override fun onError(exception: Exception) {
+                Log.e("FirestoreService", "Error getting companies for owner", exception)
                 callback.onError(exception)
             }
+        })
     }
     
     /**
-     * Obtener trabajos por propietario y estado
+     * Obtener trabajos por propietario y estado (usando companyId del propietario)
      */
     fun getJobsByOwnerAndStatus(ownerId: String, status: JobStatus, callback: Callback<List<Job>>) {
         Log.d("FirestoreService", "Getting jobs for owner: $ownerId with status: $status")
         
-        // Usar get() sin orderBy para evitar requerir índice compuesto
-        // Ordenaremos los resultados en el cliente
-        db.collection(JOBS_COLLECTION)
-            .whereEqualTo("ownerId", ownerId)
-            .whereEqualTo("status", status.name)
-            .get() // Sin .orderBy() para evitar el índice compuesto
-            .addOnSuccessListener { querySnapshot ->
-                Log.d("FirestoreService", "Found ${querySnapshot.size()} jobs for owner with status $status")
-                val jobs = querySnapshot.toObjects(Job::class.java)
-                    .sortedByDescending { it.createdAt } // Ordenar en el cliente
-                callback.onSuccess(jobs)
+        // Primero obtenemos las compañías del propietario
+        getCompaniesByOwner(ownerId, object : Callback<List<Company>> {
+            override fun onSuccess(companies: List<Company>) {
+                if (companies.isEmpty()) {
+                    Log.d("FirestoreService", "No companies found for owner, returning empty jobs list")
+                    callback.onSuccess(emptyList())
+                    return
+                }
+                
+                // Obtener trabajos para todas las compañías del propietario con el estado específico
+                val allJobs = mutableListOf<Job>()
+                var pendingRequests = companies.size
+                
+                companies.forEach { company ->
+                    db.collection(JOBS_COLLECTION)
+                        .whereEqualTo("companyId", company.id)
+                        .whereEqualTo("status", status)
+                        .get()
+                        .addOnSuccessListener { querySnapshot ->
+                            val jobs = querySnapshot.toObjects(Job::class.java)
+                            allJobs.addAll(jobs)
+                            pendingRequests--
+                            
+                            if (pendingRequests == 0) {
+                                // Ordenar todos los trabajos por fecha de creación
+                                val sortedJobs = allJobs.sortedByDescending { it.createdAt }
+                                Log.d("FirestoreService", "Found ${sortedJobs.size} jobs for owner with status $status")
+                                callback.onSuccess(sortedJobs)
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("FirestoreService", "Error getting jobs for company ${company.id} with status", exception)
+                            pendingRequests--
+                            
+                            if (pendingRequests == 0) {
+                                val sortedJobs = allJobs.sortedByDescending { it.createdAt }
+                                callback.onSuccess(sortedJobs)
+                            }
+                        }
+                }
             }
-            .addOnFailureListener { exception ->
-                Log.e("FirestoreService", "Error getting jobs for owner with status", exception)
+            
+            override fun onError(exception: Exception) {
+                Log.e("FirestoreService", "Error getting companies for owner", exception)
                 callback.onError(exception)
             }
+        })
     }
     
     /**
-     * Eliminar trabajo por ID y propietario (seguridad)
+     * Eliminar trabajo por ID y propietario (seguridad usando companyId)
      */
     fun deleteJobByOwner(jobId: String, ownerId: String, callback: VoidCallback) {
         Log.d("FirestoreService", "Deleting job: $jobId for owner: $ownerId")
@@ -570,20 +709,35 @@ class FirestoreService {
                 if (document.exists()) {
                     try {
                         val job = document.toObject(Job::class.java)
-                        if (job?.ownerId == ownerId) {
-                        // Eliminar el documento
-                        document.reference.delete()
-                            .addOnSuccessListener {
-                                Log.d("FirestoreService", "Job deleted successfully")
-                                callback.onSuccess()
-                            }
-                            .addOnFailureListener { exception ->
-                                Log.e("FirestoreService", "Error deleting job", exception)
-                                callback.onError(exception)
-                            }
+                        if (job?.companyId?.isNotEmpty() == true) {
+                            // Verificar que la compañía pertenece al propietario
+                            getCompanyById(job.companyId, object : Callback<Company?> {
+                                override fun onSuccess(company: Company?) {
+                                    if (company?.ownerId == ownerId) {
+                                        // Eliminar el documento
+                                        document.reference.delete()
+                                            .addOnSuccessListener {
+                                                Log.d("FirestoreService", "Job deleted successfully")
+                                                callback.onSuccess()
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                Log.e("FirestoreService", "Error deleting job", exception)
+                                                callback.onError(exception)
+                                            }
+                                    } else {
+                                        Log.w("FirestoreService", "Job owner mismatch")
+                                        callback.onError(Exception("No tienes permisos para eliminar este anuncio"))
+                                    }
+                                }
+                                
+                                override fun onError(exception: Exception) {
+                                    Log.e("FirestoreService", "Error verifying company ownership", exception)
+                                    callback.onError(Exception("Error verificando permisos"))
+                                }
+                            })
                         } else {
-                            Log.w("FirestoreService", "Job owner mismatch")
-                            callback.onError(Exception("No tienes permisos para eliminar este anuncio"))
+                            Log.w("FirestoreService", "Job has no companyId")
+                            callback.onError(Exception("Anuncio inválido"))
                         }
                     } catch (e: Exception) {
                         Log.w("FirestoreService", "Failed to deserialize job document ${document.id}: ${e.message}")
@@ -601,15 +755,15 @@ class FirestoreService {
     }
     
     // ================================
-    // OPERACIONES CON APLICACIONES
+    // OPERACIONES CON APLICACIONES (Application model)
     // ================================
     
     /**
-     * Crear una nueva aplicación a trabajo
+     * Crear nueva postulación usando modelo Application
      */
-    fun createApplication(application: Applicant, callback: Callback<String>) {
+    fun createJobApplication(application: Application, callback: Callback<String>) {
         val docRef = db.collection(APPLICATIONS_COLLECTION).document()
-        val applicationWithId = application.copy(id = docRef.id)
+        val applicationWithId = application.copy(applicationId = docRef.id)
         
         docRef.set(applicationWithId)
             .addOnSuccessListener { callback.onSuccess(docRef.id) }
@@ -617,71 +771,110 @@ class FirestoreService {
     }
     
     /**
-     * Obtener aplicaciones por trabajo
+     * Obtener postulaciones por trabajo (para ver postulantes)
      */
-    fun getApplicationsByJob(jobId: String, callback: Callback<List<Applicant>>) {
+    fun getApplicationsByJobId(jobId: String, callback: Callback<List<Application>>) {
+        Log.d("FirestoreService", "Getting applications for job: $jobId")
         db.collection(APPLICATIONS_COLLECTION)
             .whereEqualTo("jobId", jobId)
-            .orderBy("applicationDate", Query.Direction.DESCENDING)
+            .orderBy("appliedAt", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val applications = querySnapshot.toObjects(Applicant::class.java)
+                val applications = mutableListOf<Application>()
+                for (document in querySnapshot.documents) {
+                    try {
+                        val application = document.toObject(Application::class.java)
+                        application?.let { applications.add(it) }
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize application document ${document.id}: ${e.message}")
+                    }
+                }
+                Log.d("FirestoreService", "Found ${applications.size} applications for job")
                 callback.onSuccess(applications)
             }
-            .addOnFailureListener { callback.onError(it) }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "Error getting applications for job", it)
+                callback.onError(it) 
+            }
     }
     
     /**
-     * Obtener aplicaciones por usuario
+     * Obtener postulaciones por usuario (para ver mis postulaciones)
      */
-    fun getApplicationsByUser(userEmail: String, callback: Callback<List<Applicant>>) {
+    fun getApplicationsByUserId(userId: String, callback: Callback<List<Application>>) {
+        Log.d("FirestoreService", "Getting applications for user: $userId")
         db.collection(APPLICATIONS_COLLECTION)
-            .whereEqualTo("email", userEmail)
-            .orderBy("applicationDate", Query.Direction.DESCENDING)
+            .whereEqualTo("applicantId", userId)
+            .orderBy("appliedAt", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val applications = querySnapshot.toObjects(Applicant::class.java)
+                val applications = mutableListOf<Application>()
+                for (document in querySnapshot.documents) {
+                    try {
+                        val application = document.toObject(Application::class.java)
+                        application?.let { applications.add(it) }
+                    } catch (e: Exception) {
+                        Log.w("FirestoreService", "Failed to deserialize application document ${document.id}: ${e.message}")
+                    }
+                }
+                Log.d("FirestoreService", "Found ${applications.size} applications for user")
                 callback.onSuccess(applications)
             }
-            .addOnFailureListener { callback.onError(it) }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "Error getting applications for user", it)
+                callback.onError(it) 
+            }
     }
     
     /**
-     * Actualizar estado de aplicación
+     * Actualizar estado de postulación
      */
-    fun updateApplicationStatus(applicationId: String, status: ApplicationStatus, callback: VoidCallback) {
+    fun updateJobApplicationStatus(applicationId: String, status: ApplicationStatus, callback: VoidCallback) {
+        Log.d("FirestoreService", "Updating application $applicationId status to $status")
         db.collection(APPLICATIONS_COLLECTION)
             .document(applicationId)
-            .update("status", status.name)
-            .addOnSuccessListener { callback.onSuccess() }
-            .addOnFailureListener { callback.onError(it) }
-    }
-    
-    /**
-     * Verificar si el usuario ya aplicó a un trabajo
-     */
-    fun checkUserAppliedToJob(userEmail: String, jobId: String, callback: ExistsCallback) {
-        db.collection(APPLICATIONS_COLLECTION)
-            .whereEqualTo("email", userEmail)
-            .whereEqualTo("jobId", jobId)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                callback.onSuccess(!querySnapshot.isEmpty)
+            .update("status", status)
+            .addOnSuccessListener { 
+                Log.d("FirestoreService", "Application status updated successfully")
+                callback.onSuccess() 
             }
-            .addOnFailureListener { callback.onError(it) }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "Error updating application status", it)
+                callback.onError(it) 
+            }
     }
     
     /**
-     * Contar aplicaciones por trabajo
+     * Contar postulaciones por trabajo
      */
-    fun countApplicationsByJob(jobId: String, callback: CountCallback) {
+    fun countApplicationsByJobId(jobId: String, callback: (Int) -> Unit) {
         db.collection(APPLICATIONS_COLLECTION)
             .whereEqualTo("jobId", jobId)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                callback.onSuccess(querySnapshot.size())
+                callback(querySnapshot.size())
             }
-            .addOnFailureListener { callback.onError(it) }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "Error counting applications", it)
+                callback(0) 
+            }
+    }
+    
+    /**
+     * Verificar si un usuario ya postuló a un trabajo
+     */
+    fun hasUserAppliedToJob(userId: String, jobId: String, callback: (Boolean) -> Unit) {
+        db.collection(APPLICATIONS_COLLECTION)
+            .whereEqualTo("applicantId", userId)
+            .whereEqualTo("jobId", jobId)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                callback(!querySnapshot.isEmpty)
+            }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "Error checking if user applied", it)
+                callback(false) 
+            }
     }
     
     // ================================
@@ -1291,9 +1484,8 @@ class FirestoreService {
             query = query.whereEqualTo("employmentType", it)
         }
         
-        companyName?.let {
-            query = query.whereEqualTo("companyName", it)
-        }
+        // Nota: companyName no está disponible directamente en el modelo Job simplificado
+        // Para buscar por compañía se debe usar getJobsByCompany(companyId)
         
         postedSince?.let {
             query = query.whereGreaterThanOrEqualTo("postedDate", it)
@@ -1315,7 +1507,7 @@ class FirestoreService {
                 
                 experienceLevel?.let { level ->
                     jobs = jobs.filter { job ->
-                        job.description.contains(level, ignoreCase = true) ||
+                        job.aboutJob.contains(level, ignoreCase = true) ||
                         job.requirements.any { it.contains(level, ignoreCase = true) }
                     }
                 }
@@ -1406,15 +1598,16 @@ class FirestoreService {
                     return
                 }
                 
-                // Buscar trabajos similares por categoría y empresa
+                // Buscar trabajos similares por compañía
                 db.collection(JOBS_COLLECTION)
                     .whereEqualTo("status", JobStatus.ACTIVE.name)
-                    .whereEqualTo("companyName", job.companyName)
+                    .whereEqualTo("companyId", job.companyId)
                     .whereNotEqualTo("id", jobId) // Excluir el trabajo actual
                     .limit(limit.toLong())
                     .get()
                     .addOnSuccessListener { querySnapshot ->
                         val similarJobs = querySnapshot.toObjects(Job::class.java)
+                            .sortedByDescending { it.createdAt }
                         callback.onSuccess(similarJobs)
                     }
                     .addOnFailureListener { callback.onError(it) }
@@ -1473,18 +1666,29 @@ class FirestoreService {
             }
             .addOnFailureListener { callback.onError(it) }
         
-        // Top empresas con más trabajos
+        // Top empresas con más trabajos (usando companyId)
         db.collection(JOBS_COLLECTION)
             .whereEqualTo("status", JobStatus.ACTIVE.name)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val jobs = querySnapshot.toObjects(Job::class.java)
-                stats.topCompanies = jobs.groupBy { it.companyName }
-                    .mapValues { it.value.size }
-                    .toList()
+                val companyJobCounts = mutableMapOf<String, Int>()
+                
+                // Contar trabajos por companyId
+                jobs.groupBy { it.companyId }
+                    .forEach { (companyId, jobsList) ->
+                        if (companyId.isNotEmpty()) {
+                            companyJobCounts[companyId] = jobsList.size
+                        }
+                    }
+                
+                // Convertir IDs de compañía a nombres (esto sería ideal hacerlo de forma asíncrona)
+                // Por ahora dejamos los IDs
+                stats.topCompanies = companyJobCounts.toList()
                     .sortedByDescending { it.second }
                     .take(10)
                     .toMap()
+                    
                 pendingRequests--
                 if (pendingRequests == 0) callback.onSuccess(stats)
             }
@@ -1525,5 +1729,154 @@ class FirestoreService {
                     .addOnFailureListener { callback.onError(it) }
             }
             .addOnFailureListener { callback.onError(it) }
+    }
+    
+    // ================================
+    // MÉTODOS HELPER PARA MODELOS ACTUALIZADOS
+    // ================================
+    
+    /**
+     * Obtener información completa de trabajo con datos de la compañía
+     */
+    fun getJobWithCompanyInfo(jobId: String, callback: Callback<Pair<Job?, Company?>>) {
+        getJobById(jobId, object : Callback<Job?> {
+            override fun onSuccess(job: Job?) {
+                if (job != null && job.companyId.isNotEmpty()) {
+                    getCompanyById(job.companyId, object : Callback<Company?> {
+                        override fun onSuccess(company: Company?) {
+                            callback.onSuccess(Pair(job, company))
+                        }
+                        
+                        override fun onError(exception: Exception) {
+                            // Devolver job sin compañía en caso de error
+                            callback.onSuccess(Pair(job, null))
+                        }
+                    })
+                } else {
+                    callback.onSuccess(Pair(job, null))
+                }
+            }
+            
+            override fun onError(exception: Exception) {
+                callback.onError(exception)
+            }
+        })
+    }
+    
+    /**
+     * Obtener usuario y perfil juntos
+     */
+    fun getUserWithProfile(userId: String, callback: Callback<Pair<User?, UserProfile?>>) {
+        var user: User? = null
+        var profile: UserProfile? = null
+        var requestsCompleted = 0
+        
+        getUserById(userId, object : Callback<User?> {
+            override fun onSuccess(result: User?) {
+                user = result
+                requestsCompleted++
+                if (requestsCompleted == 2) {
+                    callback.onSuccess(Pair(user, profile))
+                }
+            }
+            
+            override fun onError(exception: Exception) {
+                requestsCompleted++
+                if (requestsCompleted == 2) {
+                    callback.onSuccess(Pair(user, profile))
+                }
+            }
+        })
+        
+        getUserProfile(userId, object : Callback<UserProfile?> {
+            override fun onSuccess(result: UserProfile?) {
+                profile = result
+                requestsCompleted++
+                if (requestsCompleted == 2) {
+                    callback.onSuccess(Pair(user, profile))
+                }
+            }
+            
+            override fun onError(exception: Exception) {
+                requestsCompleted++
+                if (requestsCompleted == 2) {
+                    callback.onSuccess(Pair(user, profile))
+                }
+            }
+        })
+    }
+    
+    /**
+     * Buscar trabajos por múltiples compañías
+     */
+    fun getJobsByCompanies(companyIds: List<String>, callback: Callback<List<Job>>) {
+        if (companyIds.isEmpty()) {
+            callback.onSuccess(emptyList())
+            return
+        }
+        
+        // Firestore limita las consultas "in" a 10 elementos
+        val chunks = companyIds.chunked(10)
+        val allJobs = mutableListOf<Job>()
+        var pendingRequests = chunks.size
+        
+        chunks.forEach { chunk ->
+            db.collection(JOBS_COLLECTION)
+                .whereIn("companyId", chunk)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    val jobs = querySnapshot.toObjects(Job::class.java)
+                    allJobs.addAll(jobs)
+                    pendingRequests--
+                    
+                    if (pendingRequests == 0) {
+                        val sortedJobs = allJobs.sortedByDescending { it.createdAt }
+                        callback.onSuccess(sortedJobs)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("FirestoreService", "Error getting jobs for company chunk", exception)
+                    pendingRequests--
+                    
+                    if (pendingRequests == 0) {
+                        val sortedJobs = allJobs.sortedByDescending { it.createdAt }
+                        callback.onSuccess(sortedJobs)
+                    }
+                }
+        }
+    }
+    
+    /**
+     * Verificar si un usuario es propietario de una compañía
+     */
+    fun isUserCompanyOwner(userId: String, companyId: String, callback: (Boolean) -> Unit) {
+        getCompanyById(companyId, object : Callback<Company?> {
+            override fun onSuccess(company: Company?) {
+                callback(company?.ownerId == userId)
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("FirestoreService", "Error checking company ownership", exception)
+                callback(false)
+            }
+        })
+    }
+    
+    /**
+     * Crear trabajo con validación de propietario de compañía
+     */
+    fun createJobWithValidation(job: Job, ownerId: String, callback: Callback<String>) {
+        if (job.companyId.isEmpty()) {
+            callback.onError(Exception("CompanyId es requerido"))
+            return
+        }
+        
+        isUserCompanyOwner(ownerId, job.companyId) { isOwner ->
+            if (isOwner) {
+                createJob(job, callback)
+            } else {
+                callback.onError(Exception("No tienes permisos para crear trabajos para esta compañía"))
+            }
+        }
     }
 }

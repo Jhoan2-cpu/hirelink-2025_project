@@ -79,7 +79,7 @@ class JobRegisterViewModel : ViewModel() {
     }
 
     /**
-     * Registra un nuevo trabajo con todos los campos del formulario
+     * Registra un nuevo trabajo con los campos del modelo simplificado
      */
     fun registerJob(
         title: String,
@@ -110,10 +110,9 @@ class JobRegisterViewModel : ViewModel() {
             return
         }
 
-        // Validar campos
+        // Validar campos requeridos
         val validationResult = validateJobData(
-            title, aboutJob, skills, vacancies, 
-            phone, email, aboutCompany
+            title, aboutJob, skills, vacancies
         )
         if (validationResult.isNotEmpty()) {
             _validationErrors.value = validationResult
@@ -125,41 +124,24 @@ class JobRegisterViewModel : ViewModel() {
         _errorMessage.value = ""
         _validationErrors.value = emptyList()
 
-        // Crear objeto Job con todos los campos
+        // Crear objeto Job con campos del modelo simplificado
         val currentTime = System.currentTimeMillis()
         val job = Job(
             id = "", // Se generará automáticamente
             title = title.trim(),
-            companyName = company.name,
-            companyLogo = company.logoUrl,
-            location = selectedLocation.trim(),
             modality = modality.trim(),
             salary = offerSalary.trim(),
-            description = aboutJob.trim(),
             requirements = parseRequirements(skills),
             postedDate = formatDate(currentTime),
             vacancies = vacancies,
             employmentType = employmentType.trim(),
-            bookmarked = false,
-            applied = false,
             status = JobStatus.ACTIVE,
-            ownerId = currentUser.uid,
             companyId = company.id,
             createdAt = currentTime,
             updatedAt = currentTime,
-            applicationsCount = 0,
-            viewsCount = 0,
-            // Campos adicionales
-            aboutCompany = aboutCompany.trim(),
             aboutJob = aboutJob.trim(),
-            skills = skills.trim(),
             deadline = deadline.trim(),
-            offerSalary = offerSalary.trim(),
-            companyPhone = phone.trim(),
-            companyEmail = email.trim(),
-            companyWebsite = website.trim(),
-            imageUrl = imageUrl,
-            selectedLocation = selectedLocation.trim()
+            offerSalary = offerSalary.trim()
         )
 
         // Registrar en Firestore
@@ -185,10 +167,7 @@ class JobRegisterViewModel : ViewModel() {
         title: String,
         aboutJob: String,
         skills: String,
-        vacancies: Int,
-        phone: String,
-        email: String,
-        aboutCompany: String
+        vacancies: Int
     ): List<String> {
         val errors = mutableListOf<String>()
 
@@ -204,24 +183,12 @@ class JobRegisterViewModel : ViewModel() {
             errors.add("La descripción debe tener al menos 20 caracteres")
         }
 
-        if (aboutCompany.isBlank()) {
-            errors.add("La descripción de la empresa es requerida")
-        }
-
         if (skills.isBlank()) {
             errors.add("Los requisitos son requeridos")
         }
 
         if (vacancies <= 0) {
             errors.add("El número de vacantes debe ser mayor a 0")
-        }
-
-        if (phone.isNotBlank() && phone.length < 9) {
-            errors.add("El teléfono debe tener al menos 9 dígitos")
-        }
-
-        if (email.isNotBlank() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            errors.add("El email no tiene un formato válido")
         }
 
         return errors

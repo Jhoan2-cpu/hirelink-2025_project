@@ -3,18 +3,18 @@ package com.example.hirelink_2025.models
 //2: DETALLE
 data class Company(
     val id: String = "",
-    val name: String = "",//1
-    val type: String = "", //1 Industry type
-    val description: String = "",//1
-    val size: CompanySize = CompanySize.SMALL,
-    val foundedYear: Int = 0,//1
-    val address: String = "",//1
-    val city: String = "",//1
-    val country: String = "",//1
-    val phone: String = "",//1
-    val email: String = "",//1
-    val website: String = "",//1
-    val logoUrl: String = "",//1
+    val name: String = "",//1 2
+    val type: String = "", //1 2 Industry type
+    val description: String = "",//1 2
+    val size: CompanySize = CompanySize.SMALL, //1 2
+    val foundedYear: Int = 0,//1 2
+    val address: String = "",//1 2
+    val city: String = "",//1 2
+    val country: String = "",//1 2
+    val phone: String = "",//1 2
+    val email: String = "",//1 2
+    val website: String = "",//1 2
+    val logoUrl: String = "",//1 2
     val ownerId: String = "", // User ID who owns this company
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()

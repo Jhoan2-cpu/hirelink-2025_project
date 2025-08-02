@@ -116,7 +116,7 @@ class ProfileEditFragment : Fragment() {
     
     private fun loadUserData(user: User) {
         with(binding) {
-            userName.text = user.name
+            userName.text = user.fullName
             emailInput.setText(user.email)
             phoneInput.setText(user.phone ?: "")
             

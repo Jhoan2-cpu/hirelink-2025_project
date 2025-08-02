@@ -14,11 +14,18 @@ import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.models.JobStatus
 import com.example.hirelink_2025.view.adapter.MyAdAdapter
 import com.example.hirelink_2025.viewmodels.ads.MyAdsViewModel
+import com.example.hirelink_2025.viewmodels.ApplicationsViewModel
+import com.example.hirelink_2025.viewmodels.CompanyViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
 /**
  * Fragment para mostrar los anuncios laborales del usuario
+ * Adaptado para trabajar con los modelos actualizados:
+ * - Job: modelo simplificado con companyId
+ * - Company: información obtenida por separado vía CompanyViewModel
+ * - Application: gestión de postulaciones vía ApplicationsViewModel
+ * 
  * Siguiendo arquitectura MVVM - Solo maneja la UI
  */
 class MyAdsFragment : Fragment() {
@@ -26,8 +33,16 @@ class MyAdsFragment : Fragment() {
     private var _binding: FragmentMyAdsBinding? = null
     private val binding get() = _binding!!
 
-    // ViewModel usando by viewModels() delegate
+    // ViewModels usando by viewModels() delegate
     private val viewModel: MyAdsViewModel by viewModels { 
+        com.example.hirelink_2025.viewmodels.ViewModelFactory() 
+    }
+    
+    private val applicationsViewModel: ApplicationsViewModel by viewModels { 
+        com.example.hirelink_2025.viewmodels.ViewModelFactory() 
+    }
+    
+    private val companyViewModel: CompanyViewModel by viewModels { 
         com.example.hirelink_2025.viewmodels.ViewModelFactory() 
     }
 
@@ -48,14 +63,14 @@ class MyAdsFragment : Fragment() {
         setupObservers()
         
         // Cargar datos iniciales
-        viewModel.refreshData()
+        refreshAllData()
     }
 
     override fun onResume() {
         super.onResume()
         // Recargar datos cada vez que el fragment se hace visible
         // Esto captura nuevos anuncios registrados
-        viewModel.refreshData()
+        refreshAllData()
     }
 
     /**
@@ -74,13 +89,39 @@ class MyAdsFragment : Fragment() {
             onJobClick = { job -> handleJobClick(job) },
             onEditClick = { job -> handleEditClick(job) },
             onDeleteClick = { job -> handleDeleteClick(job) },
-            onApplicantsClick = { job -> handleApplicantsClick(job) }
+            onApplicantsClick = { job -> navigateToApplicants(job) },
+            getCompanyInfo = { companyId -> 
+                getCompanyInfoById(companyId)
+            },
+            getApplicationsCount = { jobId ->
+                // Return cached count or 0 as default
+                getApplicationsCountForJob(jobId)
+            }
         )
 
         binding.adsRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@MyAdsFragment.adapter
         }
+    }
+    
+    /**
+     * Obtiene el número de postulaciones para un trabajo
+     * Retorna 0 por defecto - se puede implementar cache más adelante
+     */
+    private fun getApplicationsCountForJob(jobId: String): Int {
+        // TODO: Implementar cache o llamada directa a FirestoreService
+        return 0
+    }
+    
+    /**
+     * Obtiene información de una compañía por ID
+     * Retorna null si no se encuentra
+     */
+    private fun getCompanyInfoById(companyId: String): com.example.hirelink_2025.models.Company? {
+        // TODO: Implementar obtención de compañía desde CompanyViewModel
+        // Por ahora retorna null, se debe implementar cuando el ViewModel tenga el método
+        return null
     }
 
     /**
@@ -168,24 +209,62 @@ class MyAdsFragment : Fragment() {
                 viewModel.clearSuccessMessages()
             }
         }
+        
+        // TODO: Agregar observadores cuando los ViewModels tengan estas propiedades
+        // Por ahora comentado hasta que se implementen los métodos correspondientes
+        /*
+        // Observar cambios en las compañías para actualizar el adapter
+        companyViewModel.companies.observe(viewLifecycleOwner) { companies ->
+            // Cuando las compañías se actualizan, refrescar el adapter
+            // para mostrar información de compañía actualizada
+            if (::adapter.isInitialized && companies.isNotEmpty()) {
+                adapter.notifyDataSetChanged()
+            }
+        }
+        
+        // Observar cambios en los conteos de aplicaciones
+        applicationsViewModel.applicationsCount.observe(viewLifecycleOwner) { counts ->
+            // Cuando los conteos de aplicaciones cambian, actualizar adapter
+            if (::adapter.isInitialized && counts.isNotEmpty()) {
+                adapter.notifyDataSetChanged()
+            }
+        }
+        */
     }
 
     /**
      * Maneja el click en un anuncio para ver detalles
+     * Adaptado al modelo Job simplificado
      */
     private fun handleJobClick(job: Job) {
-        // ✅ USAR NAVIGATION COMPONENT
+        // Obtener información de la compañía para el detalle
+        val company = getCompanyInfoById(job.companyId)
+        
         val bundle = Bundle().apply {
+            // Datos del Job (modelo simplificado)
             putString("job_id", job.id)
             putString("job_title", job.title)
-            putString("job_description", job.description)
+            putString("job_about_job", job.aboutJob)
             putString("job_requirements", job.requirements.joinToString(", "))
             putString("job_posted_date", job.postedDate)
             putString("job_employment_type", job.employmentType)
             putString("job_modality", job.modality)
+            putString("job_salary", job.salary)
+            putString("job_offer_salary", job.offerSalary)
+            putString("job_deadline", job.deadline)
+            putString("job_vacancies", job.vacancies.toString())
             putString("job_status", job.status.name)
-            putString("job_phone", "123456789") // Placeholder
-            putString("job_email", "contact@company.com") // Placeholder
+            putString("company_id", job.companyId)
+            
+            // Datos de la compañía (si están disponibles)
+            company?.let { comp ->
+                putString("company_name", comp.name)
+                putString("company_phone", comp.phone)
+                putString("company_email", comp.email)
+                putString("company_website", comp.website)
+                putString("company_address", comp.address)
+                putString("company_city", comp.city)
+            }
         }
 
         findNavController().navigate(
@@ -196,14 +275,28 @@ class MyAdsFragment : Fragment() {
 
     /**
      * Maneja el click para editar un anuncio
+     * Pasa todos los datos necesarios del modelo Job simplificado
      */
     private fun handleEditClick(job: Job) {
+        val bundle = Bundle().apply {
+            // Todos los campos del modelo Job simplificado
+            putString("job_id", job.id)
+            putString("job_title", job.title)
+            putString("job_modality", job.modality)
+            putString("job_salary", job.salary)
+            putString("job_requirements", job.requirements.joinToString("\n"))
+            putString("job_employment_type", job.employmentType)
+            putString("job_about_job", job.aboutJob)
+            putString("job_deadline", job.deadline)
+            putString("job_offer_salary", job.offerSalary)
+            putInt("job_vacancies", job.vacancies)
+            putString("company_id", job.companyId)
+            putString("job_status", job.status.name)
+        }
+        
         findNavController().navigate(
             R.id.action_myAdsFragment_to_myAdsEditFragment,
-            Bundle().apply {
-                putString("job_id", job.id)
-                putString("job_title", job.title)
-            }
+            bundle
         )
     }
 
@@ -225,12 +318,14 @@ class MyAdsFragment : Fragment() {
      * Maneja el click para ver postulantes
      */
     private fun handleApplicantsClick(job: Job) {
+        val bundle = Bundle().apply {
+            putString("jobId", job.id)
+            putString("jobTitle", job.title)
+        }
+        
         findNavController().navigate(
-            R.id.action_myAdsFragment_to_myAdsApplicantsFragment,
-            Bundle().apply {
-                putString("job_id", job.id)
-                putString("job_title", job.title)
-            }
+            R.id.action_myAdsFragment_to_jobApplicantsFragment,
+            bundle
         )
     }
 
@@ -298,17 +393,61 @@ class MyAdsFragment : Fragment() {
     }
 
     /**
+     * Método para refrescar todos los datos relacionados
+     * Incluye trabajos, compañías y conteos de aplicaciones
+     */
+    private fun refreshAllData() {
+        // Refrescar trabajos del usuario
+        viewModel.refreshData()
+        
+        // TODO: Refrescar información de compañías cuando el ViewModel tenga el método
+        // companyViewModel.refreshCompanies()
+        
+        // TODO: Precargar conteos de aplicaciones cuando esté implementado
+        // preloadApplicationsCounts()
+    }
+    
+    /**
+     * Precarga los conteos de aplicaciones para todos los trabajos
+     */
+    private fun preloadApplicationsCounts() {
+        // TODO: Implementar precarga cuando ApplicationsViewModel tenga el método
+        // viewModel.myAds.value?.forEach { job ->
+        //     applicationsViewModel.loadApplicationsCountForJob(job.id)
+        // }
+    }
+
+    /**
      * Método público para actualizar datos desde el exterior
      */
     fun refreshData() {
-        viewModel.refreshData()
+        refreshAllData()
     }
 
     /**
      * Método público para filtrar por estado
      */
     fun filterByStatus(status: JobStatus) {
-        viewModel.filterAdsByStatus(status)
+        // TODO: Implementar método filterAdsByStatus en MyAdsViewModel
+        // viewModel.filterAdsByStatus(status)
+    }
+    
+    /**
+     * Maneja la navegación a la gestión de postulantes con validación
+     */
+    private fun navigateToApplicants(job: Job) {
+        // TODO: Verificar que la compañía existe antes de navegar
+        // Por ahora navegar directamente hasta que se implemente cache
+        handleApplicantsClick(job)
+    }
+    
+    /**
+     * Obtiene información completa del trabajo con datos de compañía
+     */
+    private fun getJobWithCompanyInfo(job: Job): Pair<Job, com.example.hirelink_2025.models.Company?> {
+        // TODO: Implementar cache de compañías para acceso directo
+        val company = getCompanyInfoById(job.companyId)
+        return Pair(job, company)
     }
 
     override fun onDestroyView() {

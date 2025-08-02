@@ -95,7 +95,7 @@ class MyAdsEditFragment : Fragment() {
 
         // Por ahora, mapear aboutJobEditText a description del ViewModel existente
         binding.aboutJobEditText.doOnTextChanged { text, _, _, _ ->
-            viewModel.updateDescription(text.toString())
+            viewModel.updateAboutJob(text.toString())
         }
 
         // Configurar dropdown de modalidad
@@ -217,7 +217,7 @@ class MyAdsEditFragment : Fragment() {
             }
         }
 
-        viewModel.description.observe(viewLifecycleOwner) { description ->
+        viewModel.aboutJob.observe(viewLifecycleOwner) { description ->
             if (binding.aboutJobEditText.text.toString() != description) {
                 binding.aboutJobEditText.setText(description)
             }
@@ -234,7 +234,7 @@ class MyAdsEditFragment : Fragment() {
             binding.titleInputLayout.error = error
         }
 
-        viewModel.descriptionError.observe(viewLifecycleOwner) { error ->
+        viewModel.aboutJobError.observe(viewLifecycleOwner) { error ->
             binding.aboutJobInputLayout.error = error
         }
 

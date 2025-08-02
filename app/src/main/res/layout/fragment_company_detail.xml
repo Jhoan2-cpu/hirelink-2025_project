@@ -117,15 +117,6 @@
                         tools:text="75 empleados" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/activeJobsChip"
-                        style="@style/Widget.Material3.Chip.Assist"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:chipIcon="@drawable/ic_work_small"
-                        app:chipIconSize="16dp"
-                        tools:text="3 empleos activos" />
-
-                    <com.google.android.material.chip.Chip
                         android:id="@+id/foundedYearChip"
                         style="@style/Widget.Material3.Chip.Assist"
                         android:layout_width="wrap_content"

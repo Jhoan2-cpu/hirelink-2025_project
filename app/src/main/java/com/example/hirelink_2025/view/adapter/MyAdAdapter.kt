@@ -9,16 +9,20 @@ import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.ItemMyAdCardBinding
 import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.models.JobStatus
+import com.example.hirelink_2025.models.Company
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
- * Adapter para MyAds corregido
- * Versión simplificada que funciona con el JobStatus actual
+ * Adapter para MyAds adaptado al modelo Job simplificado
  */
 class MyAdAdapter(
     private val onJobClick: (Job) -> Unit,
     private val onEditClick: (Job) -> Unit,
     private val onDeleteClick: (Job) -> Unit,
-    private val onApplicantsClick: (Job) -> Unit
+    private val onApplicantsClick: (Job) -> Unit,
+    private val getCompanyInfo: (String) -> Company?, // Función para obtener info de empresa
+    private val getApplicationsCount: (String) -> Int  // Función para obtener número de postulaciones
 ) : ListAdapter<Job, MyAdAdapter.JobViewHolder>(JobDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JobViewHolder {
@@ -39,20 +43,26 @@ class MyAdAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(job: Job) = with(binding) {
-            // Información básica
+            // Información básica del trabajo
             jobTitle.text = job.title
-            companyName.text = job.companyName
-            location.text = job.location
-            postedDate.text = job.postedDate
-            salary.text = job.salary
+            salary.text = if (job.salary.isNotEmpty()) job.salary else job.offerSalary.ifEmpty { "Salario no especificado" }
+            
+            // Obtener información de la empresa
+            val company = getCompanyInfo(job.companyId)
+            companyName.text = company?.name ?: "Empresa no encontrada"
+            location.text = if (company != null) "${company.city}, ${company.country}" else "Ubicación no disponible"
+            
+            // Formatear fecha de publicación
+            postedDate.text = formatDate(job.createdAt)
 
-            // Estado del trabajo - Versión simplificada
+            // Estado del trabajo
             statusText.text = getStatusText(job.status)
             statusText.setTextColor(getStatusColor(job.status))
             statusText.setBackgroundResource(getStatusBackground(job.status))
 
-            // Estadísticas usando los campos reales del modelo
-            applicantsCount.text = "${job.applicationsCount} postulantes"
+            // Número de postulaciones
+            val applicationsCount = getApplicationsCount(job.id)
+            applicantsCount.text = "$applicationsCount postulantes"
 
             // Configurar visibilidad de botones basada en el estado
             setupButtonsVisibility(job)
@@ -62,6 +72,21 @@ class MyAdAdapter(
             editButton.setOnClickListener { onEditClick(job) }
             applicantsButton.setOnClickListener { onApplicantsClick(job) }
             deleteButton.setOnClickListener { onDeleteClick(job) }
+        }
+        
+        private fun formatDate(timestamp: Long): String {
+            val now = System.currentTimeMillis()
+            val diff = now - timestamp
+            
+            return when {
+                diff < 24 * 60 * 60 * 1000 -> "Hoy"
+                diff < 2 * 24 * 60 * 60 * 1000 -> "Ayer"
+                diff < 7 * 24 * 60 * 60 * 1000 -> "${diff / (24 * 60 * 60 * 1000)} días"
+                else -> {
+                    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    sdf.format(Date(timestamp))
+                }
+            }
         }
 
         private fun getStatusText(status: JobStatus): String {

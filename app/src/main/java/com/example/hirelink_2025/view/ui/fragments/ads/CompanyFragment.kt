@@ -215,10 +215,12 @@ class CompanyFragment : Fragment() {
     }
     
     private fun navigateToCompanyDetail(company: Company) {
+        Log.d("CompanyFragment", "Navigating to company detail. Company ID: '${company.id}', Company Name: '${company.name}'")
         viewModel.selectCompany(company)
         val bundle = Bundle().apply {
             putString("companyId", company.id)
         }
+        Log.d("CompanyFragment", "Bundle created with companyId: '${company.id}'")
         findNavController().navigate(R.id.action_companyFragment_to_companyDetailFragment, bundle)
     }
     

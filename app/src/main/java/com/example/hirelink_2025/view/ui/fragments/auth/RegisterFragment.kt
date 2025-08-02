@@ -134,7 +134,7 @@ class RegisterFragment : Fragment() {
 
         // Register success
         if (state.isRegisterSuccess) {
-            val userName = state.user?.name ?: "Usuario"
+            val userName = state.user?.fullName ?: "Usuario"
             AuthUtils.showSuccessMessage(requireContext(), "¡Bienvenido $userName! Cuenta creada exitosamente")
             
             // Navegar a MainActivity a través de AuthActivity (similar al login)

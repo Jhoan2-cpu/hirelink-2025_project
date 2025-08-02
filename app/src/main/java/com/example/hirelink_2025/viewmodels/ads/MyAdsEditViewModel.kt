@@ -27,27 +27,23 @@ class MyAdsEditViewModel : ViewModel() {
     private val _title = MutableLiveData<String>()
     val title: LiveData<String> = _title
 
-    private val _description = MutableLiveData<String>()
-    val description: LiveData<String> = _description
+    private val _aboutJob = MutableLiveData<String>()
+    val aboutJob: LiveData<String> = _aboutJob
 
     private val _modality = MutableLiveData<String>()
     val modality: LiveData<String> = _modality
 
-    private val _location = MutableLiveData<String>()
-    val location: LiveData<String> = _location
 
     // Estados de validación
     private val _titleError = MutableLiveData<String?>()
     val titleError: LiveData<String?> = _titleError
 
-    private val _descriptionError = MutableLiveData<String?>()
-    val descriptionError: LiveData<String?> = _descriptionError
+    private val _aboutJobError = MutableLiveData<String?>()
+    val aboutJobError: LiveData<String?> = _aboutJobError
 
     private val _modalityError = MutableLiveData<String?>()
     val modalityError: LiveData<String?> = _modalityError
 
-    private val _locationError = MutableLiveData<String?>()
-    val locationError: LiveData<String?> = _locationError
 
     // Estados de UI
     private val _isLoading = MutableLiveData<Boolean>()
@@ -115,9 +111,8 @@ class MyAdsEditViewModel : ViewModel() {
      */
     private fun populateFields(job: Job) {
         _title.value = job.title
-        _description.value = job.description
+        _aboutJob.value = job.aboutJob
         _modality.value = job.modality
-        _location.value = job.location
         validateForm()
     }
 
@@ -131,11 +126,11 @@ class MyAdsEditViewModel : ViewModel() {
     }
 
     /**
-     * Actualiza la descripción
+     * Actualiza la descripción del trabajo
      */
-    fun updateDescription(newDescription: String) {
-        _description.value = newDescription
-        validateDescription(newDescription)
+    fun updateAboutJob(newAboutJob: String) {
+        _aboutJob.value = newAboutJob
+        validateAboutJob(newAboutJob)
         validateForm()
     }
 
@@ -148,14 +143,6 @@ class MyAdsEditViewModel : ViewModel() {
         validateForm()
     }
 
-    /**
-     * Actualiza la ubicación
-     */
-    fun updateLocation(newLocation: String) {
-        _location.value = newLocation
-        validateLocation(newLocation)
-        validateForm()
-    }
 
     /**
      * Valida el título
@@ -170,13 +157,13 @@ class MyAdsEditViewModel : ViewModel() {
     }
 
     /**
-     * Valida la descripción
+     * Valida la descripción del trabajo
      */
-    private fun validateDescription(description: String) {
-        _descriptionError.value = when {
-            !description.isValidString() -> "La descripción es obligatoria"
-            description.length < 20 -> "La descripción debe tener al menos 20 caracteres"
-            description.length > 1000 -> "La descripción no puede tener más de 1000 caracteres"
+    private fun validateAboutJob(aboutJob: String) {
+        _aboutJobError.value = when {
+            !aboutJob.isValidString() -> "La descripción del trabajo es obligatoria"
+            aboutJob.length < 20 -> "La descripción debe tener al menos 20 caracteres"
+            aboutJob.length > 1000 -> "La descripción no puede tener más de 1000 caracteres"
             else -> null
         }
     }
@@ -193,28 +180,16 @@ class MyAdsEditViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Valida la ubicación
-     */
-    private fun validateLocation(location: String) {
-        _locationError.value = when {
-            !location.isValidString() -> "La ubicación es obligatoria"
-            location.length < 3 -> "La ubicación debe tener al menos 3 caracteres"
-            location.length > 100 -> "La ubicación no puede tener más de 100 caracteres"
-            else -> null
-        }
-    }
 
     /**
      * Valida todo el formulario
      */
     private fun validateForm() {
         val titleValid = _titleError.value.isNullOrEmpty()
-        val descriptionValid = _descriptionError.value.isNullOrEmpty()
+        val aboutJobValid = _aboutJobError.value.isNullOrEmpty()
         val modalityValid = _modalityError.value.isNullOrEmpty()
-        val locationValid = _locationError.value.isNullOrEmpty()
 
-        _isFormValid.value = titleValid && descriptionValid && modalityValid && locationValid
+        _isFormValid.value = titleValid && aboutJobValid && modalityValid
     }
 
     /**
@@ -239,9 +214,9 @@ class MyAdsEditViewModel : ViewModel() {
             try {
                 val updatedJob = currentJob.copy(
                     title = _title.value ?: "",
-                    description = _description.value ?: "",
+                    aboutJob = _aboutJob.value ?: "",
                     modality = _modality.value ?: "",
-                    location = _location.value ?: ""
+                    updatedAt = System.currentTimeMillis()
                 )
 
                 val success = repository.updateJob(updatedJob)
@@ -278,7 +253,7 @@ class MyAdsEditViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val success = repository.updateAdStatus(currentJob.id, newStatus)
+                val success = repository.updateJobStatus(currentJob.id, newStatus)
                 if (success) {
                     _currentJob.value = currentJob.copy(status = newStatus)
                     _saveSuccess.value = "Estado cambiado a ${newStatus.getDisplayText()}"
@@ -316,15 +291,15 @@ class MyAdsEditViewModel : ViewModel() {
                 // Guardar cambios primero
                 val updatedJob = currentJob.copy(
                     title = _title.value ?: "",
-                    description = _description.value ?: "",
+                    aboutJob = _aboutJob.value ?: "",
                     modality = _modality.value ?: "",
-                    location = _location.value ?: ""
+                    updatedAt = System.currentTimeMillis()
                 )
 
                 val saveSuccess = repository.updateJob(updatedJob)
                 if (saveSuccess) {
                     // Cambiar estado a ACTIVE
-                    val statusSuccess = repository.updateAdStatus(currentJob.id, JobStatus.ACTIVE)
+                    val statusSuccess = repository.updateJobStatus(currentJob.id, JobStatus.ACTIVE)
                     if (statusSuccess) {
                         _currentJob.value = updatedJob.copy(status = JobStatus.ACTIVE)
                         _saveSuccess.value = "Anuncio publicado exitosamente"
@@ -377,9 +352,8 @@ class MyAdsEditViewModel : ViewModel() {
     fun hasUnsavedChanges(): Boolean {
         val currentJob = _currentJob.value ?: return false
         return currentJob.title != _title.value ||
-                currentJob.description != _description.value ||
-                currentJob.modality != _modality.value ||
-                currentJob.location != _location.value
+                currentJob.aboutJob != _aboutJob.value ||
+                currentJob.modality != _modality.value
     }
 
     /**
@@ -408,9 +382,8 @@ class MyAdsEditViewModel : ViewModel() {
      */
     fun validateAllFields() {
         _title.value?.let { validateTitle(it) }
-        _description.value?.let { validateDescription(it) }
+        _aboutJob.value?.let { validateAboutJob(it) }
         _modality.value?.let { validateModality(it) }
-        _location.value?.let { validateLocation(it) }
         validateForm()
     }
 }

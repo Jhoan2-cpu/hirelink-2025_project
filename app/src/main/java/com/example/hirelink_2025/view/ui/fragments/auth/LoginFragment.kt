@@ -130,7 +130,7 @@ class LoginFragment : Fragment() {
 
         // Login success
         if (state.isLoginSuccess) {
-            val userName = state.user?.name ?: "Usuario"
+            val userName = state.user?.fullName ?: "Usuario"
             AuthUtils.showSuccessMessage(requireContext(), "¡Bienvenido $userName!")
             
             // Navegar a MainActivity a través de AuthActivity

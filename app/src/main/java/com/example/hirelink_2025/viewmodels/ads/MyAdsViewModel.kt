@@ -105,8 +105,12 @@ class MyAdsViewModel : ViewModel() {
         stats["closed"] = ads.count { it.status == JobStatus.CLOSED }
         stats["draft"] = ads.count { it.status == JobStatus.DRAFT }
         stats["paused"] = ads.count { it.status == JobStatus.PAUSED }
-        stats["totalViews"] = ads.sumOf { it.viewsCount }
-        stats["totalApplications"] = ads.sumOf { it.applicationsCount }
+        // Using placeholders for views and applications since they're not in the simplified Job model
+        // These could be replaced with actual data from a separate analytics service if needed
+        stats["totalViews"] = 0 // Placeholder: views data not available in current Job model
+        stats["totalApplications"] = 0 // Placeholder: applications data not available in current Job model
+        // Alternative: Use vacancies as a rough indicator of job activity
+        stats["totalVacancies"] = ads.sumOf { it.vacancies }
         
         _adsStats.value = stats
     }

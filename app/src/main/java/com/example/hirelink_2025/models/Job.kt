@@ -4,6 +4,26 @@ package com.example.hirelink_2025.models
 data class Job(
     val id: String = "",
     val title: String = "",
+    val modality: String = "",
+    val salary: String = "",
+    val requirements: List<String> = emptyList(),
+    val postedDate: String = "",
+    val vacancies: Int = 0,
+    val employmentType: String = "",
+    val status: JobStatus = JobStatus.ACTIVE,
+    val companyId: String = "",//
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
+    val aboutJob: String = "",
+    val deadline: String = "",
+    val offerSalary: String = "",
+)
+
+
+/*
+data class Job(
+    val id: String = "",
+    val title: String = "",
     val companyName: String = "",//--
     val companyLogo: String? = null,//--
     val location: String = "",//--
@@ -35,3 +55,5 @@ data class Job(
     val imageUrl: String? = null,//--
     val selectedLocation: String = ""//--
 )
+
+*/

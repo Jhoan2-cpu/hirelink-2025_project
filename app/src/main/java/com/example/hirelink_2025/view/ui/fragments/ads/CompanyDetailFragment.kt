@@ -43,7 +43,7 @@ class CompanyDetailFragment : Fragment() {
     private lateinit var companyEmail: TextView
     private lateinit var companyWebsite: TextView
     private lateinit var employeeCountChip: Chip
-    private lateinit var activeJobsChip: Chip
+    // private lateinit var activeJobsChip: Chip // TODO: Implement or remove this feature
     private lateinit var foundedYearChip: Chip
     private lateinit var phoneLayout: LinearLayout
     private lateinit var emailLayout: LinearLayout
@@ -88,7 +88,6 @@ class CompanyDetailFragment : Fragment() {
         companyEmail = view.findViewById(R.id.companyEmail)
         companyWebsite = view.findViewById(R.id.companyWebsite)
         employeeCountChip = view.findViewById(R.id.employeeCountChip)
-        activeJobsChip = view.findViewById(R.id.activeJobsChip)
         foundedYearChip = view.findViewById(R.id.foundedYearChip)
         phoneLayout = view.findViewById(R.id.phoneLayout)
         emailLayout = view.findViewById(R.id.emailLayout)
@@ -189,11 +188,13 @@ class CompanyDetailFragment : Fragment() {
         
         // Obtener ID de la compañía desde argumentos
         val companyId = arguments?.getString("companyId") ?: ""
+        Log.d("CompanyDetailFragment", "Received companyId from arguments: '$companyId'")
+        
         if (companyId.isNotEmpty()) {
             Log.d("CompanyDetailFragment", "Loading company: $companyId")
             loadCompanyById(companyId)
         } else {
-            Log.e("CompanyDetailFragment", "No company ID provided")
+            Log.e("CompanyDetailFragment", "No company ID provided in arguments")
             showError("ID de compañía no encontrado")
             findNavController().navigateUp()
         }
@@ -204,7 +205,13 @@ class CompanyDetailFragment : Fragment() {
             if (company != null) {
                 Log.d("CompanyDetailFragment", "Company loaded: ${company.name}")
                 currentCompany = company
-                displayCompanyData(company)
+                try {
+                    displayCompanyData(company)
+                } catch (e: Exception) {
+                    Log.e("CompanyDetailFragment", "Error displaying company data: ${e.message}")
+                    showError("Error al mostrar los datos de la compañía")
+                    findNavController().navigateUp()
+                }
             } else {
                 Log.e("CompanyDetailFragment", "Company not found")
                 showError("Compañía no encontrada")
@@ -259,8 +266,8 @@ class CompanyDetailFragment : Fragment() {
         employeeCountChip.text = employeeText
         
         // TODO: Get active jobs count from Firestore or remove this feature
-        val jobsText = "Jobs: N/A"
-        activeJobsChip.text = jobsText
+        // val jobsText = "Jobs: N/A"
+        // activeJobsChip.text = jobsText
         
         if (company.foundedYear > 0) {
             foundedYearChip.text = "Fundada en ${company.foundedYear}"

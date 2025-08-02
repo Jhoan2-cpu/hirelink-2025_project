@@ -184,7 +184,7 @@ class ProfileFragment : Fragment() {
 
     private fun updateUserBasicInfo(user: User) {
         with(binding) {
-            userName.text = user.name
+            userName.text = user.fullName
             userEmail.text = user.email
             userPhone.text = user.phone ?: "No especificado"
             
