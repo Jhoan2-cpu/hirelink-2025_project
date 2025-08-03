@@ -51,6 +51,7 @@ class JobApplicantsFragment : Fragment() {
     
     private var currentJob: Job? = null
     private var jobId: String? = null
+    private var currentJobTitle: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,11 +97,13 @@ class JobApplicantsFragment : Fragment() {
             },
             onApplicantClick = { application ->
                 Log.d("JobApplicantsFragment", "View applicant profile: ${application.applicantId}")
-                // TODO: Navigate to applicant profile
-                Toast.makeText(requireContext(), "Ver perfil del postulante (próximamente)", Toast.LENGTH_SHORT).show()
+                navigateToApplicantProfile(application.applicantId)
             },
             getUserInfo = { userId ->
                 applicationsViewModel.getUserInfo(userId)
+            },
+            getUserProfile = { userId ->
+                applicationsViewModel.getUserProfile(userId)
             }
         )
         
@@ -158,12 +161,34 @@ class JobApplicantsFragment : Fragment() {
                         }
                     }
                 }
+                
+                // Observar cache de usuarios para actualizar UI
+                launch {
+                    applicationsViewModel.usersCache.collect { usersCache ->
+                        if (usersCache.isNotEmpty()) {
+                            Log.d("JobApplicantsFragment", "Users cache updated: ${usersCache.size} users")
+                            applicationsAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+                
+                // Observar cache de perfiles para actualizar UI
+                launch {
+                    applicationsViewModel.userProfilesCache.collect { profilesCache ->
+                        if (profilesCache.isNotEmpty()) {
+                            Log.d("JobApplicantsFragment", "Profiles cache updated: ${profilesCache.size} profiles")
+                            applicationsAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
             }
         }
     }
     
     private fun getJobIdAndLoadData() {
         jobId = arguments?.getString("jobId")
+        currentJobTitle = arguments?.getString("jobTitle")
+        
         if (jobId != null) {
             Log.d("JobApplicantsFragment", "Loading applicants for job: $jobId")
             applicationsViewModel.loadApplicationsForJob(jobId!!)
@@ -176,10 +201,70 @@ class JobApplicantsFragment : Fragment() {
     }
     
     private fun loadJobInfo(jobId: String) {
-        // TODO: Implementar método para obtener información del trabajo
-        // Por ahora usamos valores por defecto
-        jobTitle.text = "Cargando..."
-        companyName.text = "Cargando empresa..."
+        // Mostrar título del trabajo desde argumentos
+        jobTitle.text = currentJobTitle ?: "Cargando..."
+        
+        // Cargar información completa del trabajo desde Firestore
+        val firestoreService = com.example.hirelink_2025.network.FirestoreService()
+        firestoreService.getJobById(jobId, object : com.example.hirelink_2025.network.Callback<Job?> {
+            override fun onSuccess(job: Job?) {
+                if (job != null) {
+                    currentJob = job
+                    jobTitle.text = job.title
+                    updateJobStatus(job.status)
+                    
+                    // Cargar información de la empresa
+                    if (job.companyId.isNotEmpty()) {
+                        loadCompanyInfo(job.companyId)
+                    } else {
+                        companyName.text = "Empresa no especificada"
+                    }
+                } else {
+                    Log.w("JobApplicantsFragment", "Job not found")
+                    jobTitle.text = currentJobTitle ?: "Trabajo no encontrado"
+                    companyName.text = "Empresa no disponible"
+                }
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("JobApplicantsFragment", "Error loading job info", exception)
+                jobTitle.text = currentJobTitle ?: "Error al cargar"
+                companyName.text = "Error al cargar empresa"
+            }
+        })
+    }
+    
+    private fun loadCompanyInfo(companyId: String) {
+        companyViewModel.getCompanyById(companyId) { company ->
+            if (company != null) {
+                companyName.text = company.name
+            } else {
+                companyName.text = "Empresa no encontrada"
+            }
+        }
+    }
+    
+    private fun updateJobStatus(status: com.example.hirelink_2025.models.JobStatus) {
+        val statusText = when (status) {
+            com.example.hirelink_2025.models.JobStatus.ACTIVE -> "Activo"
+            com.example.hirelink_2025.models.JobStatus.CLOSED -> "Cerrado"
+            com.example.hirelink_2025.models.JobStatus.DRAFT -> "Borrador"
+            com.example.hirelink_2025.models.JobStatus.PAUSED -> "Pausado"
+            else -> status.name
+        }
+        
+        statusChip.text = statusText
+        
+        // Actualizar color del chip según el estado
+        val chipColor = when (status) {
+            com.example.hirelink_2025.models.JobStatus.ACTIVE -> R.color.success
+            com.example.hirelink_2025.models.JobStatus.CLOSED -> R.color.error
+            com.example.hirelink_2025.models.JobStatus.DRAFT -> R.color.warning
+            com.example.hirelink_2025.models.JobStatus.PAUSED -> R.color.text_secondary
+            else -> R.color.text_secondary
+        }
+        
+        statusChip.setChipBackgroundColorResource(chipColor)
     }
     
     private fun updateUI(applications: List<Application>) {
@@ -233,9 +318,44 @@ class JobApplicantsFragment : Fragment() {
         applicationsViewModel.updateApplicationStatus(application.applicationId, newStatus) { success ->
             if (success) {
                 Log.d("JobApplicantsFragment", "Application status updated successfully")
+                // Refrescar la lista para mostrar el cambio inmediatamente
+                jobId?.let { id ->
+                    applicationsViewModel.loadApplicationsForJob(id)
+                }
             } else {
                 Log.e("JobApplicantsFragment", "Failed to update application status")
             }
+        }
+    }
+    
+    private fun navigateToApplicantProfile(applicantId: String) {
+        // Buscar la application correspondiente para pasar el applicationId
+        val application = applicationsViewModel.applications.value.find { it.applicantId == applicantId }
+        
+        val bundle = Bundle().apply {
+            putString("userId", applicantId)
+            putString("applicantId", applicantId)
+            application?.let {
+                putString("applicationId", it.applicationId)
+                putString("jobId", it.jobId)
+            }
+        }
+        
+        try {
+            findNavController().navigate(
+                R.id.applicantProfileFragment,
+                bundle
+            )
+        } catch (e: Exception) {
+            Log.e("JobApplicantsFragment", "Error navigating to applicant profile", e)
+            // Fallback: mostrar información básica
+            val user = applicationsViewModel.getUserInfo(applicantId)
+            val message = if (user != null) {
+                "Postulante: ${user.name}\nEmail: ${user.email}"
+            } else {
+                "Información del postulante no disponible"
+            }
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
         }
     }
 }

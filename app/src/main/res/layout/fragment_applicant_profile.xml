@@ -351,12 +351,11 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Cover Letter Card -->
+            <!-- Additional Information Card -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/coverLetterCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_extra_large"
+                android:layout_marginBottom="80dp"
                 app:cardCornerRadius="@dimen/radius_large"
                 app:cardElevation="@dimen/card_elevation"
                 app:cardBackgroundColor="@color/surface">
@@ -371,9 +370,9 @@
                         style="@style/TextAppearance.HireLink.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Carta de Presentación"
+                        android:text="Información Adicional"
                         android:textColor="@color/primary"
-                        android:drawableStart="@drawable/ic_description"
+                        android:drawableStart="@drawable/ic_info"
                         android:drawableTint="@color/primary"
                         android:drawablePadding="@dimen/margin_small"
                         android:gravity="center_vertical" />
@@ -385,14 +384,40 @@
                         android:layout_marginBottom="@dimen/margin_medium"
                         android:background="@color/divider" />
 
+                    <!-- Location -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/margin_small">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginEnd="@dimen/margin_small"
+                            android:src="@drawable/ic_location"
+                            app:tint="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/applicantLocation"
+                            style="@style/TextAppearance.HireLink.Body"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_primary"
+                            tools:text="Lima, Perú" />
+
+                    </LinearLayout>
+
+                    <!-- Bio -->
                     <TextView
-                        android:id="@+id/coverLetter"
+                        android:id="@+id/applicantBio"
                         style="@style/TextAppearance.HireLink.Body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="4dp"
                         android:textColor="@color/text_primary"
-                        tools:text="Estimado equipo de reclutamiento, me dirijo a ustedes con gran interés en la posición de Desarrollador Android. Mi experiencia de 5 años y mi pasión por el desarrollo móvil me convierten en un candidato ideal para este rol." />
+                        tools:text="Desarrollador apasionado por crear soluciones innovadoras..." />
 
                 </LinearLayout>
 
@@ -410,7 +435,15 @@
         android:background="@color/surface"
         android:elevation="8dp"
         android:orientation="vertical"
-        android:padding="@dimen/margin_medium">
+        android:padding="10dp"
+        >
+
+        <!-- Línea separadora -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginBottom="@dimen/margin_medium" />
 
         <!-- Primary Actions -->
         <LinearLayout
@@ -422,7 +455,7 @@
                 android:id="@+id/acceptButton"
                 style="@style/Widget.HireLink.Button"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:text="Aceptar"
@@ -436,7 +469,7 @@
                 android:id="@+id/rejectButton"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_weight="1"
                 android:layout_marginStart="@dimen/margin_small"
                 android:text="Rechazar"
@@ -450,21 +483,6 @@
 
         </LinearLayout>
 
-        <!-- Contact Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/contactButton"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="Contactar por Email"
-            android:textSize="@dimen/text_size_medium"
-            android:textColor="@color/secondary"
-            app:icon="@drawable/ic_email"
-            app:iconGravity="textStart"
-            app:iconTint="@color/secondary"
-            app:strokeColor="@color/secondary"
-            app:cornerRadius="@dimen/radius_large" />
 
     </LinearLayout>
 

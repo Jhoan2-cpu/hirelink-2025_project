@@ -312,7 +312,6 @@ class MyAdsApplicantsFragment : Fragment() {
                 putString("application_date", formatDate(application.appliedAt))
                 putString("application_status", application.status.name)
                 putString("job_id", application.jobId)
-                putString("cover_letter", application.coverLetter)
             }
 
             findNavController().navigate(
@@ -361,7 +360,6 @@ class MyAdsApplicantsFragment : Fragment() {
         Teléfono: ${user.phone}
         Fecha de aplicación: ${formatDate(application.appliedAt)}
         Estado: ${application.status.name}
-        Carta de presentación: ${application.coverLetter}
         """.trimIndent()
     }
 

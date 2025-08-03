@@ -107,11 +107,10 @@ class MyAdsFragment : Fragment() {
     
     /**
      * Obtiene el número de postulaciones para un trabajo
-     * Retorna 0 por defecto - se puede implementar cache más adelante
+     * Usa el ViewModel para obtener el conteo cacheado
      */
     private fun getApplicationsCountForJob(jobId: String): Int {
-        // TODO: Implementar cache o llamada directa a FirestoreService
-        return 0
+        return viewModel.getApplicationsCount(jobId)
     }
     
     // Cache de compañías para acceso rápido
@@ -206,6 +205,14 @@ class MyAdsFragment : Fragment() {
             if (message.isNotEmpty()) {
                 showErrorMessage(message)
                 viewModel.clearErrorMessage()
+            }
+        }
+
+        // Observar conteo de postulaciones
+        viewModel.applicationsCount.observe(viewLifecycleOwner) { counts ->
+            // Actualizar adapter cuando cambien los conteos
+            if (::adapter.isInitialized) {
+                adapter.notifyDataSetChanged()
             }
         }
 

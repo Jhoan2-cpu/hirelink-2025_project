@@ -20,13 +20,14 @@ import java.util.*
  * Adapter para mostrar la lista de postulaciones usando los modelos actualizados:
  * - Application: datos de la postulación (jobId, applicantId, status, etc.)
  * - User: información básica del usuario (fullName, email, etc.)
- * Simplificado para trabajar solo con User básico
+ * - UserProfile: información adicional del perfil
  */
 class ApplicationsAdapter(
     private val onAcceptClick: (Application) -> Unit,
     private val onRejectClick: (Application) -> Unit,
     private val onApplicantClick: (Application) -> Unit,
-    private val getUserInfo: (String) -> User?
+    private val getUserInfo: (String) -> User?,
+    private val getUserProfile: (String) -> com.example.hirelink_2025.models.UserProfile? = { null }
 ) : ListAdapter<Application, ApplicationsAdapter.ApplicationViewHolder>(ApplicationDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicationViewHolder {
@@ -58,23 +59,54 @@ class ApplicationsAdapter(
         private val viewProfileButton: MaterialButton = itemView.findViewById(R.id.viewProfileButton)
 
         fun bind(application: Application) {
-            // Obtener información del usuario
+            // Obtener información del usuario y perfil
             val user = getUserInfo(application.applicantId)
+            val userProfile = getUserProfile(application.applicantId)
 
             // Información básica del postulante
             applicantName.text = user?.name ?: "Nombre no disponible"
-            applicantProfession.text = "Postulante" // Valor por defecto, ya que no tenemos profession en User
             
-            // Experiencia - usar cover letter como información adicional
-            val experienceText = if (application.coverLetter.isNotEmpty()) {
-                "Ver carta de presentación"
+            // Usar información del perfil si está disponible
+            if (userProfile != null) {
+                applicantProfession.text = userProfile.profession?.ifEmpty { 
+                    "Profesión no especificada" 
+                } ?: "Profesión no especificada"
+                
+                // Mostrar experiencia más detallada
+                if (userProfile.experience.isNotEmpty()) {
+                    val currentJob = userProfile.experience.find { it.isCurrent }
+                    applicantExperience.text = if (currentJob != null) {
+                        "Actual: ${currentJob.position} en ${currentJob.company}"
+                    } else {
+                        val lastJob = userProfile.experience.maxByOrNull { it.startDate }
+                        lastJob?.let { "${it.position} en ${it.company}" } ?: "${userProfile.experience.size} trabajos registrados"
+                    }
+                } else {
+                    applicantExperience.text = "Sin experiencia registrada"
+                }
+                
+                // Mostrar skills principales (máximo 3)
+                val skillsText = if (userProfile.skills.isNotEmpty()) {
+                    userProfile.skills.take(3).joinToString(", ")
+                } else {
+                    "Sin habilidades especificadas"
+                }
+                applicantSkills.text = skillsText
+                
+                // Mostrar ubicación si está disponible
+                if (userProfile.location.isNotEmpty()) {
+                    applicantExperience.text = "${applicantExperience.text} • ${userProfile.location}"
+                }
             } else {
-                "Sin carta de presentación"
+                // Fallback si no hay perfil - usar información básica
+                applicantProfession.text = "Postulante"
+                applicantExperience.text = "Email: ${user?.email ?: "No disponible"}"
+                applicantSkills.text = if (user?.phone?.isNotEmpty() == true) {
+                    "Teléfono: ${user.phone}"
+                } else {
+                    "Información de contacto no disponible"
+                }
             }
-            applicantExperience.text = experienceText
-            
-            // Mostrar email en lugar de skills ya que no tenemos skills en User básico
-            applicantSkills.text = user?.email ?: "Email no disponible"
 
             // Fecha de postulación
             applicationDate.text = "Aplicó el ${formatDate(application.appliedAt)}"
@@ -121,6 +153,8 @@ class ApplicationsAdapter(
                     rejectButton.isEnabled = true
                     acceptButton.alpha = 1.0f
                     rejectButton.alpha = 1.0f
+                    acceptButton.text = "Aceptar"
+                    rejectButton.text = "Rechazar"
                 }
                 ApplicationStatus.ACCEPTED -> {
                     acceptButton.visibility = View.VISIBLE
@@ -129,6 +163,10 @@ class ApplicationsAdapter(
                     rejectButton.isEnabled = true
                     acceptButton.alpha = 0.5f
                     rejectButton.alpha = 1.0f
+                    acceptButton.text = "Aceptado"
+                    rejectButton.text = "Rechazar"
+                    // Cambiar color del botón aceptado
+                    acceptButton.setBackgroundColor(itemView.context.getColor(R.color.success))
                 }
                 ApplicationStatus.REJECTED -> {
                     acceptButton.visibility = View.VISIBLE
@@ -137,8 +175,17 @@ class ApplicationsAdapter(
                     rejectButton.isEnabled = false
                     acceptButton.alpha = 1.0f
                     rejectButton.alpha = 0.5f
+                    acceptButton.text = "Aceptar"
+                    rejectButton.text = "Rechazado"
+                    // Cambiar color del botón rechazado
+                    rejectButton.setBackgroundColor(itemView.context.getColor(R.color.error))
                 }
             }
+            
+            // El botón "Ver Perfil" siempre está disponible
+            viewProfileButton.visibility = View.VISIBLE
+            viewProfileButton.isEnabled = true
+            viewProfileButton.alpha = 1.0f
         }
 
 

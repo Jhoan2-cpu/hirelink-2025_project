@@ -45,11 +45,14 @@ class JobDetailViewModel : ViewModel() {
                     // Cargar datos de la empresa si existe companyId
                     if (job.companyId.isNotEmpty()) {
                         loadCompanyData(job.companyId)
+                        // checkApplicationEligibility se llamará DESPUÉS de cargar la empresa
                     } else {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             company = null
                         )
+                        // Si no hay empresa, verificar elegibilidad inmediatamente
+                        checkApplicationEligibility(jobId)
                     }
                 } else {
                     _uiState.value = _uiState.value.copy(
@@ -77,6 +80,12 @@ class JobDetailViewModel : ViewModel() {
                     isLoading = false,
                     company = company
                 )
+                
+                // Verificar elegibilidad DESPUÉS de cargar la empresa
+                val jobId = _uiState.value.job?.id
+                if (jobId != null) {
+                    checkApplicationEligibility(jobId)
+                }
             }
 
             override fun onError(exception: Exception) {
@@ -84,6 +93,12 @@ class JobDetailViewModel : ViewModel() {
                     isLoading = false,
                     company = null
                 )
+                
+                // Verificar elegibilidad aunque falle la carga de empresa
+                val jobId = _uiState.value.job?.id
+                if (jobId != null) {
+                    checkApplicationEligibility(jobId)
+                }
             }
         })
     }
@@ -95,23 +110,99 @@ class JobDetailViewModel : ViewModel() {
         }
     }
 
-    fun applyToJob() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isApplying = true)
+    private fun checkApplicationEligibility(jobId: String) {
+        val currentUserId = firestoreService.getCurrentUserId()
+        if (currentUserId == null) {
+            _uiState.value = _uiState.value.copy(
+                canApply = false,
+                error = "Usuario no autenticado"
+            )
+            return
+        }
 
-            try {
-                kotlinx.coroutines.delay(1500)
+        val job = _uiState.value.job
+        val company = _uiState.value.company
+
+        // Verificar si el usuario es propietario de la empresa
+        if (company != null && company.ownerId == currentUserId) {
+            _uiState.value = _uiState.value.copy(
+                canApply = false,
+                isOwnerOfCompany = true
+            )
+            return
+        }
+
+        // Verificar si ya aplicó a este trabajo
+        firestoreService.hasUserAppliedToJob(currentUserId, jobId) { hasApplied ->
+            _uiState.value = _uiState.value.copy(
+                canApply = !hasApplied,
+                hasAlreadyApplied = hasApplied
+            )
+        }
+    }
+
+    fun applyToJob() {
+        val currentState = _uiState.value
+        
+        // Validaciones previas
+        if (!currentState.canApply) {
+            when {
+                currentState.isOwnerOfCompany -> {
+                    _uiState.value = currentState.copy(
+                        error = "No puedes aplicar a empleos de tu propia empresa"
+                    )
+                }
+                currentState.hasAlreadyApplied -> {
+                    _uiState.value = currentState.copy(
+                        error = "Ya has aplicado a este empleo"
+                    )
+                }
+                else -> {
+                    _uiState.value = currentState.copy(
+                        error = "No puedes aplicar a este empleo"
+                    )
+                }
+            }
+            return
+        }
+
+        val currentUserId = firestoreService.getCurrentUserId()
+        val jobId = currentState.job?.id
+
+        if (currentUserId == null || jobId == null) {
+            _uiState.value = currentState.copy(
+                error = "Error: Usuario o empleo no válido"
+            )
+            return
+        }
+
+        _uiState.value = currentState.copy(isApplying = true, error = null)
+
+        // Crear la aplicación
+        val application = Application(
+            jobId = jobId,
+            applicantId = currentUserId,
+            appliedAt = System.currentTimeMillis(),
+            status = ApplicationStatus.PENDING
+        )
+
+        firestoreService.createJobApplication(application, object : Callback<String> {
+            override fun onSuccess(applicationId: String) {
                 _uiState.value = _uiState.value.copy(
                     isApplying = false,
-                    applicationSuccess = true
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isApplying = false,
-                    error = "Error al aplicar: ${e.message}"
+                    applicationSuccess = true,
+                    canApply = false,
+                    hasAlreadyApplied = true
                 )
             }
-        }
+
+            override fun onError(exception: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isApplying = false,
+                    error = "Error al enviar la aplicación: ${exception.message}"
+                )
+            }
+        })
     }
 
     fun toggleBookmark() {

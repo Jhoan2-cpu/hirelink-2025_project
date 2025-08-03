@@ -46,6 +46,10 @@ class MyAdsViewModel : ViewModel() {
     private val _updateSuccess = MutableLiveData<String>()
     val updateSuccess: LiveData<String> = _updateSuccess
 
+    // Cache para conteo de postulaciones
+    private val _applicationsCount = MutableLiveData<Map<String, Int>>()
+    val applicationsCount: LiveData<Map<String, Int>> = _applicationsCount
+
     init {
         getCurrentUserAndLoadAds()
     }
@@ -85,6 +89,9 @@ class MyAdsViewModel : ViewModel() {
                 _isEmpty.value = result.isEmpty()
                 _isLoading.value = false
                 calculateStats(result)
+                
+                // Cargar conteo de postulaciones para cada job
+                loadApplicationsCounts(result)
             }
 
             override fun onError(exception: Exception) {
@@ -465,6 +472,52 @@ class MyAdsViewModel : ViewModel() {
             updateAdStatus(job, JobStatus.ACTIVE)
         } else {
             _errorMessage.value = "Solo se pueden renovar anuncios expirados"
+        }
+    }
+
+    /**
+     * Carga el conteo de postulaciones para todos los jobs
+     */
+    private fun loadApplicationsCounts(jobs: List<Job>) {
+        if (jobs.isEmpty()) {
+            _applicationsCount.value = emptyMap()
+            return
+        }
+
+        val counts = mutableMapOf<String, Int>()
+        var pendingRequests = jobs.size
+
+        jobs.forEach { job ->
+            firestoreService.countApplicationsByJobId(job.id) { count ->
+                synchronized(counts) {
+                    counts[job.id] = count
+                    pendingRequests--
+                    
+                    // Cuando todas las respuestas estén listas, actualizar LiveData
+                    if (pendingRequests == 0) {
+                        _applicationsCount.value = counts.toMap()
+                        Log.d("MyAdsViewModel", "Loaded applications counts: $counts")
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Obtiene el conteo de postulaciones para un job específico
+     */
+    fun getApplicationsCount(jobId: String): Int {
+        return _applicationsCount.value?.get(jobId) ?: 0
+    }
+
+    /**
+     * Refresca el conteo de postulaciones para un job específico
+     */
+    fun refreshApplicationsCount(jobId: String) {
+        firestoreService.countApplicationsByJobId(jobId) { count ->
+            val currentCounts = _applicationsCount.value?.toMutableMap() ?: mutableMapOf()
+            currentCounts[jobId] = count
+            _applicationsCount.value = currentCounts
         }
     }
 }

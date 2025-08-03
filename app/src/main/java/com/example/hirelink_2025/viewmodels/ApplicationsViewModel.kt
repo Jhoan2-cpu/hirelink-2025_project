@@ -35,7 +35,11 @@ class ApplicationsViewModel : ViewModel() {
 
     // Cache de información de usuarios y empresas
     private val _usersCache = MutableStateFlow<Map<String, User>>(emptyMap())
+    val usersCache: StateFlow<Map<String, User>> = _usersCache.asStateFlow()
+    
     private val _userProfilesCache = MutableStateFlow<Map<String, UserProfile>>(emptyMap())
+    val userProfilesCache: StateFlow<Map<String, UserProfile>> = _userProfilesCache.asStateFlow()
+    
     private val _companiesCache = MutableStateFlow<Map<String, Company>>(emptyMap())
 
     // Estado para operaciones

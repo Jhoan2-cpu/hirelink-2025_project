@@ -271,7 +271,6 @@ class MyAdsApplicantsViewModel(
                 jobId = jobId,
                 applicantId = "user1",
                 appliedAt = System.currentTimeMillis() - 86400000, // 1 día atrás
-                coverLetter = "Me interesa mucho esta posición porque...",
                 status = ApplicationStatus.PENDING
             ),
             Application(
@@ -279,7 +278,6 @@ class MyAdsApplicantsViewModel(
                 jobId = jobId,
                 applicantId = "user2",
                 appliedAt = System.currentTimeMillis() - 172800000, // 2 días atrás
-                coverLetter = "Mi experiencia en desarrollo frontend...",
                 status = ApplicationStatus.ACCEPTED,
                 reviewedAt = System.currentTimeMillis() - 86400000
             ),
@@ -288,7 +286,6 @@ class MyAdsApplicantsViewModel(
                 jobId = jobId,
                 applicantId = "user3",
                 appliedAt = System.currentTimeMillis() - 259200000, // 3 días atrás
-                coverLetter = "Creo que mi experiencia en backend...",
                 status = ApplicationStatus.REJECTED,
                 reviewedAt = System.currentTimeMillis() - 172800000
             )

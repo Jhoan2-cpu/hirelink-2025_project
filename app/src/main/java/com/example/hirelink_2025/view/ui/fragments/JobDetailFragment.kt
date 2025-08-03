@@ -185,8 +185,7 @@ class JobDetailFragment : Fragment(), OnMapReadyCallback {
         updateBookmarkButton(state.bookmarked)
 
         // Apply button
-        applyButton.isEnabled = !state.isApplying
-        applyButton.text = if (state.isApplying) "Aplicando..." else "Aplicar"
+        updateApplyButton(state)
 
         // Error handling
         state.error?.let { error ->
@@ -198,6 +197,12 @@ class JobDetailFragment : Fragment(), OnMapReadyCallback {
         if (state.applicationSuccess) {
             Toast.makeText(requireContext(), "¡Aplicación enviada exitosamente!", Toast.LENGTH_LONG).show()
             viewModel.clearApplicationSuccess()
+            
+            // Navegar de vuelta a los resultados de búsqueda después de un breve delay
+            viewLifecycleOwner.lifecycleScope.launch {
+                kotlinx.coroutines.delay(1500)
+                findNavController().navigateUp()
+            }
         }
     }
 
@@ -405,11 +410,42 @@ class JobDetailFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun updateApplyButton(state: JobDetailUiState) {
+        when {
+            state.isApplying -> {
+                applyButton.isEnabled = false
+                applyButton.text = "Aplicando..."
+            }
+            state.isOwnerOfCompany -> {
+                applyButton.isEnabled = false
+                applyButton.text = "No puedes aplicar (Tu empresa)"
+            }
+            state.hasAlreadyApplied -> {
+                applyButton.isEnabled = false
+                applyButton.text = "Ya aplicaste"
+            }
+            !state.canApply -> {
+                applyButton.isEnabled = false
+                applyButton.text = "No disponible"
+            }
+            else -> {
+                applyButton.isEnabled = true
+                applyButton.text = "Aplicar"
+            }
+        }
+    }
+
     private fun updateBookmarkButton(bookmarked: Boolean) {
         val iconRes = if (bookmarked) {
             R.drawable.ic_bookmark_filled
         } else {
             R.drawable.ic_bookmark_border
+        }
+
+        try {
+            // bookmarkButton.setImageResource(iconRes) // Comentado ya que no hay bookmarkButton en el layout actual
+        } catch (e: Exception) {
+            // bookmarkButton.setImageResource(android.R.drawable.ic_menu_save)
         }
     }
 

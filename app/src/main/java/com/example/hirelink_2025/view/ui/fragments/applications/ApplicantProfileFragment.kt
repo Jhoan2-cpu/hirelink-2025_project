@@ -3,6 +3,7 @@ package com.example.hirelink_2025.view.ui.fragments.applications
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,12 +14,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.hirelink_2025.R
+import com.example.hirelink_2025.models.Application
 import com.example.hirelink_2025.models.ApplicationStatus
+import com.example.hirelink_2025.models.User
+import com.example.hirelink_2025.models.UserProfile
+import com.example.hirelink_2025.viewmodels.ApplicationsViewModel
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import kotlinx.coroutines.launch
 
 class ApplicantProfileFragment : Fragment() {
 
@@ -44,31 +54,24 @@ class ApplicantProfileFragment : Fragment() {
     private lateinit var applicantExperience: TextView
     private lateinit var skillsChipGroup: ChipGroup
     
-    // Cover Letter
-    private lateinit var coverLetter: TextView
+    // Additional Information
+    private lateinit var applicantLocation: TextView
+    private lateinit var applicantBio: TextView
     
     // Action Buttons
     private lateinit var acceptButton: MaterialButton
     private lateinit var rejectButton: MaterialButton
-    private lateinit var contactButton: MaterialButton
 
-    // Applicant data
-    private var applicantData: ApplicantData? = null
+    // ViewModels
+    private val applicationsViewModel: ApplicationsViewModel by viewModels { ViewModelFactory() }
     
-    data class ApplicantData(
-        val id: String = "",
-        val name: String = "",
-        val email: String = "",
-        val phone: String = "",
-        val profession: String = "",
-        val experience: String = "",
-        val skills: List<String> = emptyList(),
-        val applicationDate: String = "",
-        val status: ApplicationStatus = ApplicationStatus.PENDING,
-        val profileImage: String = "",
-        val jobId: String = "",
-        val coverLetterText: String = ""
-    )
+    // Data
+    private var userId: String? = null
+    private var applicationId: String? = null
+    private var jobId: String? = null
+    private var currentUser: User? = null
+    private var currentUserProfile: UserProfile? = null
+    private var currentApplication: Application? = null
 
 
     override fun onCreateView(
@@ -83,9 +86,13 @@ class ApplicantProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         
         initViews(view)
-        getApplicantDataFromArguments()
+        getArgumentsData()
+        setupObservers()
         setupClickListeners()
-        displayApplicantData()
+        loadUserData()
+        
+        // Inicializar búsqueda de Application
+        findCurrentApplication()
     }
     
     private fun initViews(view: View) {
@@ -111,75 +118,204 @@ class ApplicantProfileFragment : Fragment() {
         applicantExperience = view.findViewById(R.id.applicantExperience)
         skillsChipGroup = view.findViewById(R.id.skillsChipGroup)
         
-        // Cover Letter
-        coverLetter = view.findViewById(R.id.coverLetter)
+        // Additional Information
+        applicantLocation = view.findViewById(R.id.applicantLocation)
+        applicantBio = view.findViewById(R.id.applicantBio)
         
         // Action Buttons
         acceptButton = view.findViewById(R.id.acceptButton)
         rejectButton = view.findViewById(R.id.rejectButton)
-        contactButton = view.findViewById(R.id.contactButton)
     }
     
-    private fun getApplicantDataFromArguments() {
-        // For now, we create static data regardless of arguments
-        // Later this will be replaced with dynamic data from arguments
+    private fun getArgumentsData() {
+        userId = arguments?.getString("userId") ?: arguments?.getString("applicantId")
+        applicationId = arguments?.getString("applicationId")
+        jobId = arguments?.getString("jobId")
         
-        applicantData = ApplicantData(
-            id = "static_user_001",
-            name = "Juan Carlos Pérez",
-            email = "juan.perez@email.com",
-            phone = "+51 987654321",
-            profession = "Desarrollador Android Senior",
-            experience = "5 años de experiencia",
-            skills = listOf("Kotlin", "Android", "MVVM", "Clean Architecture", "Git", "Firebase", "Room", "Retrofit"),
-            applicationDate = "16/01/2025",
-            status = ApplicationStatus.PENDING,
-            profileImage = "",
-            jobId = "job_001",
-            coverLetterText = "Carta de presentación estática"
-        )
+        Log.d("ApplicantProfileFragment", "User ID: $userId, Application ID: $applicationId, Job ID: $jobId")
     }
-
-    private fun displayApplicantData() {
-        // Display static data regardless of arguments received
+    
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Observar cache de usuarios
+            applicationsViewModel.usersCache.collect { usersCache ->
+                userId?.let { id ->
+                    usersCache[id]?.let { user ->
+                        currentUser = user
+                        updateUI()
+                    }
+                }
+            }
+        }
         
-        // Profile header - Always show static data
-        applicantName.text = "Juan Carlos Pérez"
-        applicantProfession.text = "Desarrollador Android Senior"
-        experienceYears.text = "5 años de experiencia"
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Observar cache de perfiles
+            applicationsViewModel.userProfilesCache.collect { profilesCache ->
+                userId?.let { id ->
+                    profilesCache[id]?.let { profile ->
+                        currentUserProfile = profile
+                        updateUI()
+                    }
+                }
+            }
+        }
         
-        // Status - Always show as pending
-        updateStatusAppearance(ApplicationStatus.PENDING)
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Observar aplicaciones para obtener el estado actual
+            applicationsViewModel.applications.collect { applications ->
+                Log.d("ApplicantProfileFragment", "Applications updated: ${applications.size}")
+                
+                val application = if (applicationId != null) {
+                    // Buscar por applicationId si está disponible
+                    applications.find { it.applicationId == applicationId }
+                } else {
+                    // Buscar por userId y jobId como fallback
+                    applications.find { it.applicantId == userId && it.jobId == jobId }
+                }
+                
+                Log.d("ApplicantProfileFragment", "Found application: ${application?.applicationId}, status: ${application?.status}")
+                
+                if (application != null && application != currentApplication) {
+                    currentApplication = application
+                    updateUI()
+                }
+            }
+        }
         
-        // Contact information - Static data
-        applicantEmail.text = "juan.perez@email.com"
-        applicantPhone.text = "+51 987654321"
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Observar operaciones
+            applicationsViewModel.operationResult.collect { result ->
+                result?.let {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                    applicationsViewModel.clearOperationResult()
+                }
+            }
+        }
+    }
+    
+    private fun loadUserData() {
+        userId?.let { id ->
+            // Cargar usuario y perfil desde FirestoreService
+            val firestoreService = com.example.hirelink_2025.network.FirestoreService()
+            
+            firestoreService.getUserById(id, object : com.example.hirelink_2025.network.Callback<User?> {
+                override fun onSuccess(user: User?) {
+                    currentUser = user
+                    updateUI()
+                }
+                
+                override fun onError(exception: Exception) {
+                    Log.e("ApplicantProfileFragment", "Error loading user", exception)
+                    Toast.makeText(requireContext(), "Error al cargar datos del usuario", Toast.LENGTH_SHORT).show()
+                }
+            })
+            
+            firestoreService.getUserProfile(id, object : com.example.hirelink_2025.network.Callback<UserProfile?> {
+                override fun onSuccess(profile: UserProfile?) {
+                    currentUserProfile = profile
+                    updateUI()
+                }
+                
+                override fun onError(exception: Exception) {
+                    Log.e("ApplicantProfileFragment", "Error loading user profile", exception)
+                }
+            })
+        }
         
-        // Experience - Static description
-        applicantExperience.text = "5 años de experiencia en desarrollo móvil con especialización en Android. He trabajado en equipos ágiles desarrollando aplicaciones nativas utilizando las mejores prácticas de la industria."
+        // Cargar applications del job para obtener el estado correcto
+        jobId?.let { jId ->
+            Log.d("ApplicantProfileFragment", "Loading applications for job: $jId")
+            applicationsViewModel.loadApplicationsForJob(jId)
+        }
+    }
+    
+    private fun updateUI() {
+        val user = currentUser
+        val profile = currentUserProfile
         
-        // Skills - Static skills list
-        val staticSkills = listOf("Kotlin", "Android", "MVVM", "Clean Architecture", "Git", "Firebase", "Room", "Retrofit")
-        setupSkillsChips(staticSkills)
+        if (user == null) return
         
-        // Cover letter - Static content
-        coverLetter.text = "Estimado equipo de reclutamiento,\n\nMe dirijo a ustedes con gran interés en la posición de Desarrollador Android. Mi experiencia de 5 años en el desarrollo de aplicaciones móviles, combinada con mi pasión por la tecnología y la innovación, me convierten en un candidato ideal para este rol.\n\nDurante mi carrera, he trabajado con tecnologías como Kotlin, Java, y he implementado arquitecturas modernas como MVVM y Clean Architecture. Estoy siempre dispuesto a aprender nuevas tecnologías y contribuir al crecimiento del equipo.\n\nEspero tener la oportunidad de discutir cómo mis habilidades pueden contribuir al éxito de su empresa.\n\nSaludos cordiales,\nJuan Carlos Pérez"
+        // Profile header
+        applicantName.text = user.name
+        applicantProfession.text = profile?.profession?.ifEmpty { "Profesión no especificada" } ?: "Profesión no especificada"
         
-        // Action buttons - Always show as pending status
-        setupActionButtons(ApplicationStatus.PENDING)
+        // Experience years - basado en experiencia laboral
+        if (profile?.experience?.isNotEmpty() == true) {
+            experienceYears.text = "${profile.experience.size} trabajos registrados"
+        } else {
+            experienceYears.text = "Sin experiencia registrada"
+        }
+        
+        // Status - usar estado real de la application
+        val currentStatus = currentApplication?.status ?: ApplicationStatus.PENDING
+        Log.d("ApplicantProfileFragment", "Updating UI with status: $currentStatus")
+        updateStatusAppearance(currentStatus)
+        
+        // Contact information
+        applicantEmail.text = user.email
+        applicantPhone.text = user.phone?.ifEmpty { "No disponible" } ?: "No disponible"
+        
+        // Experience description
+        if (profile?.experience?.isNotEmpty() == true) {
+            val experienceText = StringBuilder()
+            profile.experience.take(3).forEach { exp ->
+                experienceText.append("• ${exp.position} en ${exp.company}")
+                if (exp.isCurrent) experienceText.append(" (Actual)")
+                experienceText.append("\n")
+            }
+            applicantExperience.text = experienceText.toString().trim()
+        } else {
+            applicantExperience.text = "Sin experiencia registrada"
+        }
+        
+        // Skills
+        setupSkillsChips(profile?.skills ?: emptyList())
+        
+        // Additional information
+        applicantLocation.text = profile?.location?.ifEmpty { "Ubicación no especificada" } ?: "Ubicación no especificada"
+        applicantBio.text = profile?.bio?.ifEmpty { "Sin biografía disponible" } ?: "Sin biografía disponible"
+        
+        // Load profile image
+        loadProfileImage(user.profileImageUrl)
+        
+        // Action buttons - usar estado real de la application
+        val actionStatus = currentApplication?.status ?: ApplicationStatus.PENDING
+        setupActionButtons(actionStatus)
+    }
+    
+    private fun loadProfileImage(imageUrl: String?) {
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_person)
+                .error(R.drawable.ic_person)
+                .circleCrop()
+                .into(applicantPhoto)
+        } else {
+            applicantPhoto.setImageResource(R.drawable.ic_person)
+        }
     }
     
     private fun setupSkillsChips(skills: List<String>) {
         skillsChipGroup.removeAllViews()
         
-        val skillsToShow = if (skills.isNotEmpty()) skills else listOf("Kotlin", "Android", "MVVM", "Clean Architecture", "Git", "Firebase")
+        if (skills.isEmpty()) {
+            val chip = Chip(requireContext())
+            chip.text = "Sin habilidades registradas"
+            chip.isClickable = false
+            chip.setChipBackgroundColorResource(R.color.surface_variant)
+            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_hint))
+            chip.textSize = 14f
+            skillsChipGroup.addView(chip)
+            return
+        }
         
-        skillsToShow.forEach { skill ->
+        skills.forEach { skill ->
             val chip = Chip(requireContext())
             chip.text = skill
             chip.isClickable = false
-            chip.setChipBackgroundColorResource(R.color.surface_variant)
-            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
+            chip.setChipBackgroundColorResource(R.color.primary)
+            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
             chip.textSize = 14f
             skillsChipGroup.addView(chip)
         }
@@ -248,13 +384,9 @@ class ApplicantProfileFragment : Fragment() {
             showRejectDialog()
         }
 
-        contactButton.setOnClickListener {
-            contactApplicant()
-        }
-
         // Contact click listeners
         emailLayout.setOnClickListener {
-            contactApplicant()
+            contactApplicantByEmail()
         }
 
         phoneLayout.setOnClickListener {
@@ -263,14 +395,23 @@ class ApplicantProfileFragment : Fragment() {
     }
 
     private fun shareApplicantProfile() {
+        val user = currentUser
+        val profile = currentUserProfile
+        
+        if (user == null) {
+            Toast.makeText(requireContext(), "Datos no disponibles para compartir", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
         val shareText = """
             Perfil de postulante - HireLink:
             
-            Nombre: Juan Carlos Pérez
-            Profesión: Desarrollador Android Senior
-            Experiencia: 5 años de experiencia
-            Email: juan.perez@email.com
-            Teléfono: +51 987654321
+            Nombre: ${user.name}
+            Profesión: ${profile?.profession ?: "No especificada"}
+            Email: ${user.email}
+            Teléfono: ${user.phone ?: "No disponible"}
+            Ubicación: ${profile?.location ?: "No especificada"}
+            Experiencia: ${if (profile?.experience?.isNotEmpty() == true) "${profile.experience.size} trabajos registrados" else "Sin experiencia registrada"}
             Estado: Pendiente
             
             Enviado desde HireLink
@@ -280,7 +421,7 @@ class ApplicantProfileFragment : Fragment() {
             action = Intent.ACTION_SEND
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, shareText)
-            putExtra(Intent.EXTRA_SUBJECT, "Perfil de Juan Carlos Pérez")
+            putExtra(Intent.EXTRA_SUBJECT, "Perfil de ${user.name}")
         }
 
         try {
@@ -291,43 +432,72 @@ class ApplicantProfileFragment : Fragment() {
     }
     
     private fun showAcceptDialog() {
+        val userName = currentUser?.name ?: "este postulante"
         AlertDialog.Builder(requireContext())
             .setTitle("Aceptar postulante")
-            .setMessage("¿Quieres aceptar a Juan Carlos Pérez para este trabajo?")
+            .setMessage("¿Quieres aceptar a $userName para este trabajo?")
             .setPositiveButton("Sí, aceptar") { _, _ ->
-                Toast.makeText(requireContext(), "Juan Carlos Pérez ha sido aceptado", Toast.LENGTH_LONG).show()
-                
-                // Update UI to show accepted status
-                updateStatusAppearance(ApplicationStatus.ACCEPTED)
-                setupActionButtons(ApplicationStatus.ACCEPTED)
+                updateApplicationStatus(ApplicationStatus.ACCEPTED)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
     private fun showRejectDialog() {
+        val userName = currentUser?.name ?: "este postulante"
         AlertDialog.Builder(requireContext())
             .setTitle("Rechazar postulante")
-            .setMessage("¿Quieres rechazar a Juan Carlos Pérez?")
+            .setMessage("¿Quieres rechazar a $userName?")
             .setPositiveButton("Sí, rechazar") { _, _ ->
-                Toast.makeText(requireContext(), "Juan Carlos Pérez ha sido rechazado", Toast.LENGTH_SHORT).show()
-                
-                // Update UI to show rejected status
-                updateStatusAppearance(ApplicationStatus.REJECTED)
-                setupActionButtons(ApplicationStatus.REJECTED)
+                updateApplicationStatus(ApplicationStatus.REJECTED)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
+    
+    private fun updateApplicationStatus(newStatus: ApplicationStatus) {
+        val appId = applicationId
+        if (appId == null) {
+            Toast.makeText(requireContext(), "Error: ID de postulación no disponible", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        val userName = currentUser?.name ?: "el postulante"
+        
+        applicationsViewModel.updateApplicationStatus(appId, newStatus) { success ->
+            if (success) {
+                // Actualizar la application local
+                currentApplication = currentApplication?.copy(status = newStatus)
+                
+                // Actualizar UI
+                updateStatusAppearance(newStatus)
+                setupActionButtons(newStatus)
+                
+                val statusText = when (newStatus) {
+                    ApplicationStatus.ACCEPTED -> "aceptado"
+                    ApplicationStatus.REJECTED -> "rechazado"
+                    else -> "actualizado"
+                }
+                Toast.makeText(requireContext(), "$userName ha sido $statusText", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(requireContext(), "Error al actualizar el estado", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
-    private fun contactApplicant() {
-        // Static email contact
-        val email = "juan.perez@email.com"
+    private fun contactApplicantByEmail() {
+        val email = currentUser?.email
+        val userName = currentUser?.name ?: "postulante"
+        
+        if (email.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Email no disponible", Toast.LENGTH_SHORT).show()
+            return
+        }
         
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:$email")
             putExtra(Intent.EXTRA_SUBJECT, "Respuesta a tu aplicación")
-            putExtra(Intent.EXTRA_TEXT, "Hola Juan Carlos,\n\nGracias por tu interés en nuestra empresa.\n\n")
+            putExtra(Intent.EXTRA_TEXT, "Hola $userName,\n\nGracias por tu interés en nuestra empresa.\n\n")
         }
 
         try {
@@ -338,8 +508,12 @@ class ApplicantProfileFragment : Fragment() {
     }
 
     private fun callApplicant() {
-        // Static phone contact
-        val phone = "+51 987654321"
+        val phone = currentUser?.phone
+        
+        if (phone.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Teléfono no disponible", Toast.LENGTH_SHORT).show()
+            return
+        }
         
         val intent = Intent(Intent.ACTION_DIAL).apply {
             data = Uri.parse("tel:$phone")
@@ -349,6 +523,27 @@ class ApplicantProfileFragment : Fragment() {
             startActivity(intent)
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "No se pudo abrir el marcador", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun findCurrentApplication() {
+        // Buscar inmediatamente en el cache de applications disponible
+        val currentApplications = applicationsViewModel.applications.value
+        
+        val application = if (applicationId != null) {
+            // Buscar por applicationId si está disponible
+            currentApplications.find { it.applicationId == applicationId }
+        } else {
+            // Buscar por userId y jobId como fallback
+            currentApplications.find { it.applicantId == userId && it.jobId == jobId }
+        }
+        
+        if (application != null) {
+            Log.d("ApplicantProfileFragment", "Found application in cache: ${application.applicationId}, status: ${application.status}")
+            currentApplication = application
+            updateUI()
+        } else {
+            Log.d("ApplicantProfileFragment", "Application not found in cache, waiting for observer...")
         }
     }
 
