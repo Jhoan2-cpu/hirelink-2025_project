@@ -1,5 +1,7 @@
 package com.example.hirelink_2025.view.ui.fragments
 
+import com.google.android.gms.maps.MapView
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,22 +22,30 @@ import com.bumptech.glide.Glide
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.models.Company
+import com.example.hirelink_2025.utils.LocationUtils
 import com.example.hirelink_2025.view.ui.MapFragment
 import com.example.hirelink_2025.viewmodels.JobDetailUiState
 import com.example.hirelink_2025.viewmodels.JobDetailViewModel
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.text.clear
 
-class JobDetailFragment : Fragment() {
+// ✅ Cambiar la declaración de la clase:
+class JobDetailFragment : Fragment(), OnMapReadyCallback {
 
     private val viewModel: JobDetailViewModel by viewModels()
 
     // Views
     private lateinit var progressBar: ProgressBar
     private lateinit var backButton: ImageButton
-    private lateinit var bookmarkButton: ImageButton
     private lateinit var titleText: TextView
     private lateinit var companyText: TextView
     private lateinit var locationText: TextView
@@ -55,6 +65,12 @@ class JobDetailFragment : Fragment() {
     private lateinit var vacanciesText: TextView
     private lateinit var mapContainer: View
 
+    // ✅ AGREGAR nuevas views para el mapa
+    private lateinit var mapView: MapView
+    private lateinit var mapLoadingContainer: View
+    private lateinit var loadingText: TextView
+    private var googleMap: GoogleMap? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,6 +86,10 @@ class JobDetailFragment : Fragment() {
         setupClickListeners()
         observeViewModel()
 
+        // ✅ INICIALIZAR mapa
+        setupMapView(savedInstanceState)
+
+
         // Obtener jobId del Bundle (temporal hasta que Safe Args funcione)
         val jobId = arguments?.getString("jobId") ?: ""
         if (jobId.isNotEmpty()) {
@@ -83,7 +103,6 @@ class JobDetailFragment : Fragment() {
     private fun initViews(view: View) {
         progressBar = view.findViewById(R.id.progressBar)
         backButton = view.findViewById(R.id.backButton)
-        bookmarkButton = view.findViewById(R.id.bookmarkButton)
         titleText = view.findViewById(R.id.titleText)
         companyText = view.findViewById(R.id.companyText)
         locationText = view.findViewById(R.id.locationText)
@@ -105,18 +124,32 @@ class JobDetailFragment : Fragment() {
             postedDateText = view.findViewById(R.id.postedDateText)
             vacanciesText = view.findViewById(R.id.vacanciesText)
             mapContainer = view.findViewById(R.id.mapContainer)
+
+            // ✅ AGREGAR nuevas views del mapa
+            mapView = view.findViewById(R.id.mapView)
+            mapLoadingContainer = view.findViewById(R.id.mapLoadingContainer)
+            loadingText = view.findViewById(R.id.loadingText)
+
         } catch (e: Exception) {
             // Views opcionales, si no existen no hay problema
+        }
+    }
+
+
+    // ✅ AGREGAR método para configurar el mapa
+    private fun setupMapView(savedInstanceState: Bundle?) {
+        try {
+            mapView.onCreate(savedInstanceState)
+            mapView.onResume()
+            mapView.getMapAsync(this)
+        } catch (e: Exception) {
+            // MapView no existe en el layout
         }
     }
 
     private fun setupClickListeners() {
         backButton.setOnClickListener {
             findNavController().navigateUp()
-        }
-
-        bookmarkButton.setOnClickListener {
-            viewModel.toggleBookmark()
         }
 
         applyButton.setOnClickListener {
@@ -143,6 +176,11 @@ class JobDetailFragment : Fragment() {
             populateJobData(job, state.company)
         }
 
+        // ✅ AGREGAR manejo del mapa cuando se cargan los datos de la empresa
+        state.company?.let { company ->
+            showCompanyLocationOnMap(company)
+        }
+
         // Bookmark button
         updateBookmarkButton(state.bookmarked)
 
@@ -160,6 +198,88 @@ class JobDetailFragment : Fragment() {
         if (state.applicationSuccess) {
             Toast.makeText(requireContext(), "¡Aplicación enviada exitosamente!", Toast.LENGTH_LONG).show()
             viewModel.clearApplicationSuccess()
+        }
+    }
+
+
+    // ✅ AGREGAR método para mostrar ubicación en el mapa
+    private fun showCompanyLocationOnMap(company: Company) {
+        try {
+            val coordinates = LocationUtils.extractCoordinates(company.ubication)
+
+            coordinates?.let { (latitude, longitude) ->
+                googleMap?.let { map ->
+                    val location = LatLng(latitude, longitude)
+
+                    map.clear()
+                    map.addMarker(
+                        MarkerOptions()
+                            .position(location)
+                            .title(company.name)
+                            .snippet(company.address)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    )
+
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
+
+                    // Ocultar loading del mapa
+                    mapLoadingContainer.visibility = View.GONE
+                }
+            } ?: run {
+                // No hay coordenadas válidas
+                showNoLocationMessage()
+            }
+        } catch (e: Exception) {
+            // Mapa no disponible
+            showNoLocationMessage()
+        }
+    }
+
+
+    private fun showNoLocationMessage() {
+        try {
+            mapLoadingContainer.visibility = View.VISIBLE
+            loadingText.text = "Ubicación no disponible"
+        } catch (e: Exception) {
+            // Views del mapa no existen
+        }
+    }
+
+
+    // ✅ AGREGAR lifecycle methods para el mapa
+    override fun onResume() {
+        super.onResume()
+        try {
+            mapView.onResume()
+        } catch (e: Exception) {
+            // MapView no existe
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        try {
+            mapView.onPause()
+        } catch (e: Exception) {
+            // MapView no existe
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            mapView.onDestroy()
+        } catch (e: Exception) {
+            // MapView no existe
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        try {
+            mapView.onSaveInstanceState(outState)
+        } catch (e: Exception) {
+            // MapView no existe
         }
     }
 
@@ -291,11 +411,24 @@ class JobDetailFragment : Fragment() {
         } else {
             R.drawable.ic_bookmark_border
         }
+    }
 
-        try {
-            bookmarkButton.setImageResource(iconRes)
-        } catch (e: Exception) {
-            bookmarkButton.setImageResource(android.R.drawable.ic_menu_save)
+    // ✅ AGREGAR este método después de setupMapView:
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+        setupMapStyle()
+
+        // Si ya hay datos de empresa cargados, mostrar ubicación
+        viewModel.uiState.value.company?.let { company ->
+            showCompanyLocationOnMap(company)
+        }
+    }
+
+    private fun setupMapStyle() {
+        googleMap?.apply {
+            uiSettings.isZoomControlsEnabled = true
+            uiSettings.isMapToolbarEnabled = false
+            uiSettings.isMyLocationButtonEnabled = false
         }
     }
 }
