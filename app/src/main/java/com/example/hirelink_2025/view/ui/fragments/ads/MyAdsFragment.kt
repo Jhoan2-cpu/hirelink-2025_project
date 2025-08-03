@@ -114,14 +114,29 @@ class MyAdsFragment : Fragment() {
         return 0
     }
     
+    // Cache de compañías para acceso rápido
+    private val companiesCache = mutableMapOf<String, com.example.hirelink_2025.models.Company>()
+
     /**
      * Obtiene información de una compañía por ID
-     * Retorna null si no se encuentra
+     * Usa cache local y carga desde ViewModel si es necesario
      */
     private fun getCompanyInfoById(companyId: String): com.example.hirelink_2025.models.Company? {
-        // TODO: Implementar obtención de compañía desde CompanyViewModel
-        // Por ahora retorna null, se debe implementar cuando el ViewModel tenga el método
-        return null
+        // Primero buscar en cache
+        companiesCache[companyId]?.let { return it }
+        
+        // Si no está en cache, cargar desde CompanyViewModel
+        companyViewModel.getCompanyById(companyId) { company ->
+            company?.let {
+                companiesCache[companyId] = it
+                // Actualizar adapter después de cargar la compañía
+                if (::adapter.isInitialized) {
+                    adapter.notifyDataSetChanged()
+                }
+            }
+        }
+        
+        return companiesCache[companyId]
     }
 
     /**

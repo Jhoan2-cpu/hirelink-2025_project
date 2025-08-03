@@ -8,6 +8,7 @@ data class Company(
     val description: String = "",//1 2
     val size: CompanySize = CompanySize.SMALL, //1 2
     val foundedYear: Int = 0,//1 2
+    val ubication: String = "",
     val address: String = "",//1 2
     val city: String = "",//1 2
     val country: String = "",//1 2
@@ -17,7 +18,10 @@ data class Company(
     val logoUrl: String = "",//1 2
     val ownerId: String = "", // User ID who owns this company
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
+    // Campos adicionales para compatibilidad con Firestore existente
+    val employeeCount: Int = 0, // Ignorado pero evita warnings
+    val activeJobsCount: Int = 0 // Ignorado pero evita warnings
 )
 //val employeeCount: Int = 0,//NO HAY
 //val activeJobsCount: Int = 0,//NO HAY

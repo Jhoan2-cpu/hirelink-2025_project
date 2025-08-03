@@ -11,7 +11,6 @@ import com.example.hirelink_2025.R
 import com.example.hirelink_2025.models.Application
 import com.example.hirelink_2025.models.ApplicationStatus
 import com.example.hirelink_2025.models.User
-import com.example.hirelink_2025.models.UserProfile
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import java.text.SimpleDateFormat
@@ -21,14 +20,13 @@ import java.util.*
  * Adapter para mostrar la lista de postulaciones usando los modelos actualizados:
  * - Application: datos de la postulación (jobId, applicantId, status, etc.)
  * - User: información básica del usuario (fullName, email, etc.)
- * - UserProfile: perfil completo (profession, skills, experience, etc.)
+ * Simplificado para trabajar solo con User básico
  */
 class ApplicationsAdapter(
     private val onAcceptClick: (Application) -> Unit,
     private val onRejectClick: (Application) -> Unit,
     private val onApplicantClick: (Application) -> Unit,
-    private val getUserInfo: (String) -> User?,
-    private val getUserProfile: (String) -> UserProfile?
+    private val getUserInfo: (String) -> User?
 ) : ListAdapter<Application, ApplicationsAdapter.ApplicationViewHolder>(ApplicationDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicationViewHolder {
@@ -62,29 +60,21 @@ class ApplicationsAdapter(
         fun bind(application: Application) {
             // Obtener información del usuario
             val user = getUserInfo(application.applicantId)
-            val userProfile = getUserProfile(application.applicantId)
-
-            // Verificar si los datos están completos (opcional: para debugging)
-            if (!isUserDataComplete(user, userProfile)) {
-                android.util.Log.w("ApplicationsAdapter", 
-                    "Incomplete user data for applicant: ${application.applicantId}")
-            }
 
             // Información básica del postulante
-            applicantName.text = user?.fullName ?: "Nombre no disponible"
-            applicantProfession.text = userProfile?.profession ?: "Profesión no especificada"
+            applicantName.text = user?.name ?: "Nombre no disponible"
+            applicantProfession.text = "Postulante" // Valor por defecto, ya que no tenemos profession en User
             
-            // Experiencia (mostrar años de experiencia total)
-            val experienceText = if (userProfile?.experience?.isNotEmpty() == true) {
-                val totalYears = calculateExperienceYears(userProfile.experience)
-                if (totalYears > 0) "$totalYears años de experiencia" else "Experiencia no especificada"
+            // Experiencia - usar cover letter como información adicional
+            val experienceText = if (application.coverLetter.isNotEmpty()) {
+                "Ver carta de presentación"
             } else {
-                "Sin experiencia registrada"
+                "Sin carta de presentación"
             }
             applicantExperience.text = experienceText
             
-            // Habilidades (usar método helper para obtener resumen)
-            applicantSkills.text = getRelevantSkills(userProfile?.skills ?: emptyList())
+            // Mostrar email en lugar de skills ya que no tenemos skills en User básico
+            applicantSkills.text = user?.email ?: "Email no disponible"
 
             // Fecha de postulación
             applicationDate.text = "Aplicó el ${formatDate(application.appliedAt)}"
@@ -151,50 +141,6 @@ class ApplicationsAdapter(
             }
         }
 
-        /**
-         * Calcula los años totales de experiencia basado en la lista de trabajos
-         */
-        private fun calculateExperienceYears(experiences: List<com.example.hirelink_2025.models.WorkExperience>): Int {
-            var totalMonths = 0
-            
-            experiences.forEach { experience ->
-                try {
-                    val startYear = experience.startDate.substringBefore("-").toIntOrNull() ?: 0
-                    val endYear = if (experience.isCurrent || experience.endDate.isEmpty()) {
-                        java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-                    } else {
-                        experience.endDate.substringBefore("-").toIntOrNull() ?: startYear
-                    }
-                    
-                    if (startYear > 0 && endYear >= startYear) {
-                        totalMonths += (endYear - startYear) * 12
-                    }
-                } catch (e: Exception) {
-                    // Si hay error parseando las fechas, ignorar esta experiencia
-                }
-            }
-            
-            return totalMonths / 12
-        }
-        
-        /**
-         * Verifica si el usuario tiene información completa
-         */
-        private fun isUserDataComplete(user: User?, userProfile: UserProfile?): Boolean {
-            return user != null && userProfile != null && 
-                   user.fullName.isNotEmpty() && userProfile.profession?.isNotEmpty() == true
-        }
-        
-        /**
-         * Obtiene un resumen de habilidades relevantes (máximo 3 habilidades)
-         */
-        private fun getRelevantSkills(skills: List<String>): String {
-            return when {
-                skills.isEmpty() -> "Sin habilidades registradas"
-                skills.size <= 3 -> skills.joinToString(", ")
-                else -> "${skills.take(3).joinToString(", ")} y ${skills.size - 3} más"
-            }
-        }
 
         private fun formatDate(timestamp: Long): String {
             val now = System.currentTimeMillis()

@@ -95,10 +95,10 @@ class AcceptedApplicantsFragment : Fragment() {
      */
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
-            // Observar aplicantes aceptados
-            viewModel.acceptedApplicants.collect { applicants ->
-                updateApplicantsList(applicants)
-                updateEmptyState(applicants.isEmpty())
+            // Observar aplicaciones aceptadas
+            viewModel.acceptedApplications.collect { applications ->
+                updateApplicationsList(applications)
+                updateEmptyState(applications.isEmpty())
             }
         }
 
@@ -115,10 +115,12 @@ class AcceptedApplicantsFragment : Fragment() {
     }
 
     /**
-     * Actualizar lista (UI)
+     * Actualizar lista de aplicaciones (UI)
      */
-    private fun updateApplicantsList(applicants: List<Applicant>) {
-        applicantAdapter.submitList(applicants)
+    private fun updateApplicationsList(applications: List<com.example.hirelink_2025.models.Application>) {
+        // Mostrar lista de applications vacía por ahora, hasta migrar completamente
+        // TODO: Implementar ApplicationsAdapter cuando se complete la migración
+        applicantAdapter.submitList(emptyList())
     }
 
     /**
@@ -149,18 +151,15 @@ class AcceptedApplicantsFragment : Fragment() {
         Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
     }
 
-    // Acciones delegadas al ViewModel (MVVM)
+    // Acciones delegadas al ViewModel (MVVM) - Placeholder hasta migración completa
     private fun onRejectClick(applicant: Applicant) {
-        viewModel.rejectApplicant(applicant.id)
+        // TODO: Migrar a usar Application cuando se complete la transición
+        android.util.Log.d("AcceptedApplicants", "Reject applicant: ${applicant.name}")
     }
 
     private fun onViewProfileClick(applicant: Applicant) {
-        // Navegación delegada al Fragment padre
-        var parentFrag = parentFragment
-        while (parentFrag != null && parentFrag !is MyAdsApplicantsFragment) {
-            parentFrag = parentFrag.parentFragment
-        }
-        (parentFrag as? MyAdsApplicantsFragment)?.navigateToApplicantProfile(applicant)
+        // TODO: Migrar a usar Application cuando se complete la transición
+        android.util.Log.d("AcceptedApplicants", "View profile: ${applicant.name}")
     }
 
     override fun onDestroyView() {

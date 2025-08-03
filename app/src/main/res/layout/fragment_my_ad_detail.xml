@@ -437,37 +437,6 @@
                     app:backgroundTint="@color/primary"
                     app:cornerRadius="@dimen/radius_large" />
 
-                <!-- Edit Job Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/editJobButton"
-                    style="@style/Widget.HireLink.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:minHeight="@dimen/button_height"
-                    android:text="Editar anuncio"
-                    android:textSize="@dimen/text_size_medium"
-                    android:textColor="@color/secondary"
-                    app:icon="@drawable/ic_edit"
-                    app:iconGravity="textStart"
-                    app:iconTint="@color/secondary"
-                    app:strokeColor="@color/secondary" />
-
-                <!-- Delete Job Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/deleteJobButton"
-                    style="@style/Widget.HireLink.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="@dimen/button_height"
-                    android:text="Eliminar anuncio"
-                    android:textSize="@dimen/text_size_medium"
-                    android:textColor="@color/error"
-                    app:icon="@drawable/ic_delete"
-                    app:iconGravity="textStart"
-                    app:iconTint="@color/error"
-                    app:strokeColor="@color/error" />
-
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

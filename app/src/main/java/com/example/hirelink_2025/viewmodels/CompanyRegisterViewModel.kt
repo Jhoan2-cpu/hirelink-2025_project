@@ -42,6 +42,7 @@ class CompanyRegisterViewModel : ViewModel() {
         size: String,
         foundedYear: Int,
         address: String,
+        ubication: String,
         city: String,
         country: String,
         email: String,
@@ -54,7 +55,7 @@ class CompanyRegisterViewModel : ViewModel() {
         
         // Validar campos
         val validationResult = validateCompanyData(
-            name, type, description, address, city, email, phone, website
+            name, type, description, address, ubication, city, email, phone, website
         )
         
         if (validationResult !is ValidationResult.Success) {
@@ -96,8 +97,8 @@ class CompanyRegisterViewModel : ViewModel() {
             storageService.uploadTemporaryCompanyLogo(logoUri, object : Callback<String> {
                 override fun onSuccess(logoUrl: String) {
                     Log.d("CompanyRegisterViewModel", "Logo uploaded successfully: $logoUrl")
-                    createCompanyWithLogo(name, type, description, size, foundedYear, 
-                                        address, city, country, email, phone, website, 
+                    createCompanyWithLogo(name, type, description, size, foundedYear,
+                                        address, ubication, city, country, email, phone, website,
                                         logoUrl, ownerId)
                 }
 
@@ -112,7 +113,7 @@ class CompanyRegisterViewModel : ViewModel() {
         } else {
             // Sin logo, crear compañía directamente
             createCompanyWithLogo(name, type, description, size, foundedYear, 
-                                address, city, country, email, phone, website, 
+                                address, ubication, city, country, email, phone, website,
                                 "", ownerId)
         }
 
@@ -128,6 +129,7 @@ class CompanyRegisterViewModel : ViewModel() {
         size: String,
         foundedYear: Int,
         address: String,
+        ubication: String,
         city: String,
         country: String,
         email: String,
@@ -147,6 +149,7 @@ class CompanyRegisterViewModel : ViewModel() {
             size = parseCompanySize(size),
             foundedYear = foundedYear,
             address = address.trim(),
+            ubication = ubication.trim(),
             city = city.trim(),
             country = country.trim(),
             email = email.trim(),
@@ -189,6 +192,7 @@ class CompanyRegisterViewModel : ViewModel() {
         type: String,
         description: String,
         address: String,
+        ubication: String,
         city: String,
         email: String,
         phone: String,
@@ -217,21 +221,38 @@ class CompanyRegisterViewModel : ViewModel() {
             errors.add("La dirección es requerida")
         }
 
+        if (ubication.isBlank()) {
+            errors.add("La ubicación es requerida")
+        }
+
         if (city.isBlank()) {
             errors.add("La ciudad es requerida")
         }
 
         // Validaciones de formato
-        if (email.isNotBlank() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            errors.add("El formato del email es inválido")
+        // Email: Si no está vacío, validar formato
+        if (email.isNotBlank()) {
+            Log.d("CompanyValidation", "Validando email: '$email'")
+            val trimmedEmail = email.trim()
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
+                errors.add("El formato del email es inválido")
+            }
         }
 
-        if (phone.isNotBlank() && !isValidPhone(phone)) {
-            errors.add("El formato del teléfono es inválido")
+        // Teléfono: Si no está vacío, validar formato
+        if (phone.isNotBlank()) {
+            val trimmedPhone = phone.trim()
+            if (!isValidPhone(trimmedPhone)) {
+                errors.add("El formato del teléfono es inválido")
+            }
         }
 
-        if (website.isNotBlank() && !isValidWebsite(website)) {
-            errors.add("El formato del sitio web es inválido")
+        // Website: Si no está vacío, validar formato
+        if (website.isNotBlank()) {
+            val trimmedWebsite = website.trim()
+            if (!isValidWebsite(trimmedWebsite)) {
+                errors.add("El formato del sitio web es inválido")
+            }
         }
 
         return if (errors.isEmpty()) {
@@ -245,16 +266,28 @@ class CompanyRegisterViewModel : ViewModel() {
      * Validar formato de teléfono (básico)
      */
     private fun isValidPhone(phone: String): Boolean {
-        val cleanPhone = phone.replace("\\s".toRegex(), "").replace("-", "")
-        return cleanPhone.matches(Regex("^[+]?[0-9]{7,15}$"))
+        val cleanPhone = phone.replace("[^\\d+]".toRegex(), "") // Elimina todo excepto dígitos y el signo +
+        return cleanPhone.matches(Regex("^\\+?[0-9]{7,15}$"))
     }
+
 
     /**
      * Validar formato de website
      */
     private fun isValidWebsite(website: String): Boolean {
-        return android.util.Patterns.WEB_URL.matcher(website).matches() ||
-                website.matches(Regex("^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\\.[a-zA-Z]{2,}$"))
+        if (website.isBlank()) return false
+
+        val trimmedWebsite = website.trim().lowercase()
+
+        // Agregar https:// si no tiene protocolo
+        val urlToValidate = if (!trimmedWebsite.startsWith("http://") &&
+            !trimmedWebsite.startsWith("https://")) {
+            "https://$trimmedWebsite"
+        } else {
+            trimmedWebsite
+        }
+
+        return android.util.Patterns.WEB_URL.matcher(urlToValidate).matches()
     }
 
     /**

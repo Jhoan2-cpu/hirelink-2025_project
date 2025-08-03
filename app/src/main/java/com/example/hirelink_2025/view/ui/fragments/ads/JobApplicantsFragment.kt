@@ -101,9 +101,6 @@ class JobApplicantsFragment : Fragment() {
             },
             getUserInfo = { userId ->
                 applicationsViewModel.getUserInfo(userId)
-            },
-            getUserProfile = { userId ->
-                applicationsViewModel.getUserProfile(userId)
             }
         )
         
@@ -220,7 +217,7 @@ class JobApplicantsFragment : Fragment() {
         }
         
         val user = applicationsViewModel.getUserInfo(application.applicantId)
-        val applicantName = user?.fullName ?: "este postulante"
+        val applicantName = user?.name ?: "este postulante"
         
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Confirmar acción")

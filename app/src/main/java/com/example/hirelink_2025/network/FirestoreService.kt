@@ -144,7 +144,7 @@ class FirestoreService {
                 if (document.exists()) {
                     try {
                         val user = document.toObject(User::class.java)
-                        Log.d("FirestoreService", "User found: ${user?.fullName}")
+                        Log.d("FirestoreService", "User found: ${user?.name}")
                         callback.onSuccess(user)
                     } catch (e: Exception) {
                         Log.w("FirestoreService", "Failed to deserialize user document $userId: ${e.message}")
@@ -263,10 +263,36 @@ class FirestoreService {
             "LARGE" -> CompanySize.LARGE
             "ENTERPRISE" -> CompanySize.ENTERPRISE
             // Casos legacy que pueden estar en la base de datos
-            "1-10", "10-100" -> CompanySize.SMALL  // Corregir valores inválidos
+            "1-10", "10-100" -> CompanySize.SMALL
+            "11-50" -> CompanySize.SMALL
+            "51-200" -> CompanySize.MEDIUM
+            "201-1000" -> CompanySize.LARGE
+            "1000+" -> CompanySize.ENTERPRISE
+            // Valores específicos legacy encontrados en logs
+            "10-100", "21", "23", "34", "213" -> {
+                val numericSize = sizeString.toIntOrNull()
+                when {
+                    numericSize != null && numericSize <= 10 -> CompanySize.STARTUP
+                    numericSize != null && numericSize <= 50 -> CompanySize.SMALL  
+                    numericSize != null && numericSize <= 200 -> CompanySize.MEDIUM
+                    numericSize != null && numericSize <= 1000 -> CompanySize.LARGE
+                    else -> CompanySize.SMALL
+                }
+            }
             else -> {
-                Log.w("FirestoreService", "Unknown company size '$sizeString', defaulting to SMALL")
-                CompanySize.SMALL
+                // Para valores como "213", "34", "21", "23" detectados en logs
+                val numericSize = sizeString.toIntOrNull()
+                when {
+                    numericSize == null -> {
+                        Log.w("FirestoreService", "Unknown company size '$sizeString', defaulting to SMALL")
+                        CompanySize.SMALL
+                    }
+                    numericSize <= 10 -> CompanySize.STARTUP
+                    numericSize <= 50 -> CompanySize.SMALL
+                    numericSize <= 200 -> CompanySize.MEDIUM
+                    numericSize <= 1000 -> CompanySize.LARGE
+                    else -> CompanySize.ENTERPRISE
+                }
             }
         }
         
@@ -286,7 +312,9 @@ class FirestoreService {
             logoUrl = getString("logoUrl"),
             ownerId = getString("ownerId"),
             createdAt = getLong("createdAt"),
-            updatedAt = getLong("updatedAt")
+            updatedAt = getLong("updatedAt"),
+            employeeCount = getInt("employeeCount"),
+            activeJobsCount = getInt("activeJobsCount")
         )
     }
     
@@ -777,7 +805,6 @@ class FirestoreService {
         Log.d("FirestoreService", "Getting applications for job: $jobId")
         db.collection(APPLICATIONS_COLLECTION)
             .whereEqualTo("jobId", jobId)
-            .orderBy("appliedAt", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val applications = mutableListOf<Application>()
@@ -789,12 +816,38 @@ class FirestoreService {
                         Log.w("FirestoreService", "Failed to deserialize application document ${document.id}: ${e.message}")
                     }
                 }
-                Log.d("FirestoreService", "Found ${applications.size} applications for job")
-                callback.onSuccess(applications)
+                // Ordenar por fecha de postulación (más recientes primero)
+                val sortedApplications = applications.sortedByDescending { it.appliedAt }
+                Log.d("FirestoreService", "Found ${sortedApplications.size} applications for job")
+                callback.onSuccess(sortedApplications)
             }
             .addOnFailureListener { 
                 Log.e("FirestoreService", "Error getting applications for job", it)
                 callback.onError(it) 
+            }
+    }
+
+    /**
+     * Actualizar el estado de una aplicación
+     */
+    fun updateApplicationStatus(applicationId: String, newStatus: ApplicationStatus, callback: (Boolean) -> Unit) {
+        Log.d("FirestoreService", "Updating application $applicationId to status $newStatus")
+        
+        val updates = mapOf(
+            "status" to newStatus,
+            "reviewedAt" to System.currentTimeMillis()
+        )
+        
+        db.collection(APPLICATIONS_COLLECTION)
+            .document(applicationId)
+            .update(updates)
+            .addOnSuccessListener {
+                Log.d("FirestoreService", "Application status updated successfully")
+                callback(true)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirestoreService", "Error updating application status", exception)
+                callback(false)
             }
     }
     

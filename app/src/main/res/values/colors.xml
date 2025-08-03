@@ -85,4 +85,9 @@
 
     <!-- Launcher Icon -->
     <color name="ic_launcher_background">#1ABC9C</color>
+    
+    <!-- Additional Colors -->
+    <color name="icon_tint">#5F6368</color>
+    <color name="border_color">#E8EAED</color>
+    <color name="info_color">#3498DB</color>
 </resources>

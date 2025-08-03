@@ -24,7 +24,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(MyAdsApplicantsViewModel::class.java) -> {
-                MyAdsApplicantsViewModel(applicantsRepository) as T
+                MyAdsApplicantsViewModel() as T
             }
             modelClass.isAssignableFrom(MyAdsViewModel::class.java) -> {
                 MyAdsViewModel() as T

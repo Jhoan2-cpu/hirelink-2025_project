@@ -30,7 +30,7 @@ class CompanyAdapter(
         //val activeJobsChip: Chip = itemView.findViewById(R.id.activeJobsChip)
         val editCompanyButton: MaterialButton = itemView.findViewById(R.id.editCompanyButton)
         val deleteCompanyButton: MaterialButton = itemView.findViewById(R.id.deleteCompanyButton)
-        val menuButton: MaterialButton = itemView.findViewById(R.id.menuButton)
+        //val menuButton: MaterialButton = itemView.findViewById(R.id.menuButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CompanyViewHolder {
@@ -65,11 +65,7 @@ class CompanyAdapter(
             companyCard.setOnClickListener { onItemClick(company) }
             editCompanyButton.setOnClickListener { onEditClick(company) }
             deleteCompanyButton.setOnClickListener { onDeleteClick(company) }
-            
-            // Menu button can be used for additional options
-            menuButton.setOnClickListener {
-                // TODO: Show popup menu with additional options
-            }
+
             
             // Cargar logo de la compañía
             loadCompanyLogo(company.logoUrl, holder.companyLogo)

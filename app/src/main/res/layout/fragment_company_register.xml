@@ -207,8 +207,36 @@
                     android:layout_marginTop="@dimen/margin_small"
                     android:layout_marginBottom="@dimen/margin_medium"
                     android:background="@color/divider" />
+                <!-- Button to open map -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/openMapButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Seleccionar ubicación en el mapa"
+                    app:icon="@drawable/ic_location"
+                    app:iconGravity="textStart"
+                    android:layout_marginTop="8dp"/>
 
-                <!-- Address Input -->
+                <!-- Address Input  UBICATION-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ubicationInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Ubicación"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_location_on"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ubicationEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!--ADDRESS DIRECCIÓN-->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/addressInputLayout"
                     style="@style/Widget.HireLink.TextInputLayout"

@@ -82,34 +82,104 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/companyText">
 
-            <TextView
-                android:id="@+id/locationText"
-                android:layout_width="wrap_content"
+            <!-- Location and Posted Date Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/chip_background"
-                android:padding="8dp"
-                android:textSize="14sp"
-                tools:text="Lima, Perú" />
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/salaryText"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/locationText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/chip_background"
+                    android:drawableStart="@drawable/ic_location_small"
+                    android:drawablePadding="4dp"
+                    android:padding="8dp"
+                    android:textSize="14sp"
+                    tools:text="Lima, Perú" />
+
+                <TextView
+                    android:id="@+id/postedDateText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_background"
+                    android:drawableStart="@drawable/ic_calendar"
+                    android:drawablePadding="4dp"
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    tools:text="Publicado el 15 Ene 2025" />
+
+            </LinearLayout>
+
+            <!-- Salary and Vacancies Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/chip_background"
-                android:padding="8dp"
-                android:textSize="14sp"
-                tools:text="S/ 5000 - 7000" />
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/modalityText"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/salaryText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/chip_background"
+                    android:drawableStart="@drawable/ic_money"
+                    android:drawablePadding="4dp"
+                    android:padding="8dp"
+                    android:textSize="14sp"
+                    tools:text="S/ 5000 - 7000" />
+
+                <TextView
+                    android:id="@+id/vacanciesText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_background"
+                    android:drawableStart="@drawable/ic_people"
+                    android:drawablePadding="4dp"
+                    android:padding="8dp"
+                    android:textSize="14sp"
+                    tools:text="3 vacantes" />
+
+            </LinearLayout>
+
+            <!-- Modality and Employment Type Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/chip_background"
-                android:padding="8dp"
-                android:textSize="14sp"
-                tools:text="Remoto" />
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/modalityText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/chip_background"
+                    android:drawableStart="@drawable/ic_modality"
+                    android:drawablePadding="4dp"
+                    android:padding="8dp"
+                    android:textSize="14sp"
+                    tools:text="Remoto" />
+
+                <TextView
+                    android:id="@+id/employmentTypeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_background"
+                    android:drawableStart="@drawable/ic_work_small"
+                    android:drawablePadding="4dp"
+                    android:padding="8dp"
+                    android:textSize="14sp"
+                    tools:text="Tiempo completo" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -167,6 +237,198 @@
             app:layout_constraintTop_toBottomOf="@id/requirementsLabel"
             tools:text="• Kotlin\n• Android SDK\n• MVVM" />
 
+        <!-- Company Information Section -->
+        <LinearLayout
+            android:id="@+id/companyInfoContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/card_background"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/requirementsText">
+
+            <!-- Company Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/companyLogoImageView"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_placeholder_company"
+                    android:scaleType="centerCrop" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Acerca de la empresa"
+                        android:textColor="@color/primary_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Información de contacto y detalles"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Company Description -->
+            <TextView
+                android:id="@+id/companyDescriptionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:lineSpacingMultiplier="1.4"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                tools:text="Descripción de la empresa con información detallada sobre lo que hacen y su misión." />
+
+            <!-- Company Contact Info -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <!-- Phone -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_phone"
+                        android:tint="@color/icon_tint" />
+
+                    <TextView
+                        android:id="@+id/companyPhoneText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        tools:text="+57 301 234 5678" />
+
+                </LinearLayout>
+
+                <!-- Email -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_email"
+                        android:tint="@color/icon_tint" />
+
+                    <TextView
+                        android:id="@+id/companyEmailText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        tools:text="contacto@empresa.com" />
+
+                </LinearLayout>
+
+                <!-- Website -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_web"
+                        android:tint="@color/icon_tint" />
+
+                    <TextView
+                        android:id="@+id/companyWebsiteText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        tools:text="www.empresa.com" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Map Container (for future integration) -->
+        <LinearLayout
+            android:id="@+id/mapContainer"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/card_background"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/companyInfoContainer">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_location_on"
+                android:tint="@color/icon_tint" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ubicación de la empresa"
+                android:textColor="@color/primary_text"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Mapa próximamente disponible"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
         <!-- Apply Button -->
         <Button
             android:id="@+id/applyButton"
@@ -180,7 +442,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/requirementsText" />
+            app:layout_constraintTop_toBottomOf="@id/mapContainer" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

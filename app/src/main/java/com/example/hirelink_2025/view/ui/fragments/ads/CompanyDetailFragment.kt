@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -44,6 +45,7 @@ class CompanyDetailFragment : Fragment() {
     private lateinit var companyWebsite: TextView
     private lateinit var employeeCountChip: Chip
     // private lateinit var activeJobsChip: Chip // TODO: Implement or remove this feature
+    private lateinit var openMapButton: MaterialButton
     private lateinit var foundedYearChip: Chip
     private lateinit var phoneLayout: LinearLayout
     private lateinit var emailLayout: LinearLayout
@@ -95,6 +97,8 @@ class CompanyDetailFragment : Fragment() {
         editCompanyButton = view.findViewById(R.id.editCompanyButton)
         deleteCompanyButton = view.findViewById(R.id.deleteCompanyButton)
         progressIndicator = view.findViewById(R.id.progressIndicator)
+
+        openMapButton = view.findViewById(R.id.openMapButton)
     }
     
     private fun setupClickListeners() {
@@ -137,6 +141,18 @@ class CompanyDetailFragment : Fragment() {
                 confirmDeleteCompany(company)
             }
         }
+
+        // En setupClickListeners():
+        openMapButton.setOnClickListener {
+            currentCompany?.let { company ->
+                if (company.ubication.isNotBlank()) {
+                    openLocationInMaps(company)
+                } else {
+                    Toast.makeText(requireContext(), "La compañía no tiene ubicación registrada", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
     }
     
     private fun observeViewModel() {
@@ -247,7 +263,12 @@ class CompanyDetailFragment : Fragment() {
         } else {
             emailLayout.visibility = View.GONE
         }
-        
+        // Mostrar botón de mapa si hay dirección
+        if (company.address.isNotEmpty() && company.city.isNotEmpty() && company.country.isNotEmpty()) {
+            openMapButton.visibility = View.VISIBLE
+        } else {
+            openMapButton.visibility = View.GONE
+        }
         if (company.website.isNotEmpty()) {
             companyWebsite.text = company.website
             websiteLayout.visibility = View.VISIBLE
@@ -381,4 +402,96 @@ class CompanyDetailFragment : Fragment() {
             Toast.makeText(requireContext(), "No se pudo abrir el sitio web", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun openLocationInMaps(company: Company) {
+        // Prioridad 1: Usar coordenadas exactas si están disponibles
+        if (company.ubication.isNotBlank()) {
+            val coordinates = company.ubication.parseLatLng()
+            if (coordinates != null) {
+                val (lat, lng) = coordinates
+                if (lat != 0.0 || lng != 0.0) {
+                    navigateToMap(lat, lng, company.name)
+                    return
+                }
+            }
+        }
+        
+        // Prioridad 2: Usar direccón para abrir en Google Maps externo
+        if (company.address.isNotEmpty() && company.city.isNotEmpty()) {
+            openInExternalMaps(company)
+            return
+        }
+        
+        // Si no hay información suficiente
+        Toast.makeText(requireContext(), "La empresa no tiene ubicación registrada", Toast.LENGTH_SHORT).show()
+    }
+    
+    private fun navigateToMap(lat: Double, lng: Double, locationName: String) {
+        val args = bundleOf(
+            "latitude" to lat,
+            "longitude" to lng,
+            "locationName" to locationName
+        )
+
+        try {
+            findNavController().navigate(
+                R.id.action_companyDetailFragment_to_mapFragment,
+                args
+            )
+        } catch (e: Exception) {
+            Log.e("Navigation", "Error: ${e.message}")
+            Toast.makeText(requireContext(), "Error al abrir el mapa", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun openInExternalMaps(company: Company) {
+        try {
+            val address = buildString {
+                append(company.address)
+                if (company.city.isNotEmpty()) {
+                    append(", ${company.city}")
+                }
+                if (company.country.isNotEmpty()) {
+                    append(", ${company.country}")
+                }
+            }
+            
+            val encodedAddress = Uri.encode(address)
+            val gmmIntentUri = Uri.parse("geo:0,0?q=$encodedAddress")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            
+            if (mapIntent.resolveActivity(requireActivity().packageManager) != null) {
+                startActivity(mapIntent)
+            } else {
+                // Fallback: abrir en navegador web
+                val webUrl = "https://www.google.com/maps/search/?api=1&query=$encodedAddress"
+                val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(webUrl))
+                startActivity(webIntent)
+            }
+        } catch (e: Exception) {
+            Log.e("CompanyDetailFragment", "Error opening external maps", e)
+            Toast.makeText(requireContext(), "No se pudo abrir Google Maps", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    //MOVERLO A VIEWMODEL.
+    // Versión mejorada del parseo
+    fun String.parseLatLng(): Pair<Double, Double>? {
+        return try {
+            val pattern = "Lat:\\s*(-?\\d+\\.\\d+),\\s*Lng:\\s*(-?\\d+\\.\\d+)".toRegex()
+            val match = pattern.find(this.trim()) ?: return null
+
+            val (latStr, lngStr) = match.destructured
+            val lat = latStr.toDoubleOrNull()
+            val lng = lngStr.toDoubleOrNull()
+
+            if (lat != null && lng != null) lat to lng else null
+        } catch (e: Exception) {
+            Log.e("MapUtils", "Error parsing coordinates: ${e.message}")
+            null
+        }
+    }
+
 }

@@ -31,11 +31,13 @@ import com.google.android.material.textfield.TextInputLayout
 import android.widget.AutoCompleteTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.bumptech.glide.Glide
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class CompanyRegisterFragment : Fragment() {
-    
+    private var selectedLatLng: LatLng? = null
+
     private lateinit var toolbar: MaterialToolbar
     private lateinit var companyNameInputLayout: TextInputLayout
     private lateinit var companyNameEditText: TextInputEditText
@@ -47,6 +49,8 @@ class CompanyRegisterFragment : Fragment() {
     private lateinit var companySizeEditText: AutoCompleteTextView
     private lateinit var foundedYearInputLayout: TextInputLayout
     private lateinit var foundedYearEditText: TextInputEditText
+    private lateinit var ubicationInputLayout: TextInputLayout//NEW
+    private lateinit var ubicationEditText: TextInputEditText//NEW
     private lateinit var addressInputLayout: TextInputLayout
     private lateinit var addressEditText: TextInputEditText
     private lateinit var cityInputLayout: TextInputLayout
@@ -63,6 +67,7 @@ class CompanyRegisterFragment : Fragment() {
     private lateinit var logoPreviewImageView: ImageView
     private lateinit var registerCompanyButton: MaterialButton
     private lateinit var progressIndicator: CircularProgressIndicator
+    private lateinit var openMapButton: MaterialButton
     
     // ViewModel con factory
     private val viewModel: CompanyRegisterViewModel by viewModels { ViewModelFactory() }
@@ -98,9 +103,21 @@ class CompanyRegisterFragment : Fragment() {
         
         // Obtener usuario actual
         getCurrentUser()
+
+        val navBackStackEntry = findNavController().currentBackStackEntry
+        val savedStateHandle = navBackStackEntry?.savedStateHandle
+
+        savedStateHandle?.getLiveData<LatLng>("selected_location")
+            ?.observe(viewLifecycleOwner) { latLng ->
+                selectedLatLng = latLng
+                ubicationEditText.setText("Lat: ${latLng.latitude}, Lng: ${latLng.longitude}")
+            }
+
     }
     
     private fun initViews(view: View) {
+        openMapButton = view.findViewById(R.id.openMapButton)//Nuevo
+
         toolbar = view.findViewById(R.id.toolbar)
         companyNameInputLayout = view.findViewById(R.id.companyNameInputLayout)
         companyNameEditText = view.findViewById(R.id.companyNameEditText)
@@ -114,6 +131,8 @@ class CompanyRegisterFragment : Fragment() {
         foundedYearEditText = view.findViewById(R.id.foundedYearEditText)
         addressInputLayout = view.findViewById(R.id.addressInputLayout)
         addressEditText = view.findViewById(R.id.addressEditText)
+        ubicationInputLayout = view.findViewById(R.id.ubicationInputLayout)
+        ubicationEditText = view.findViewById(R.id.ubicationEditText)
         cityInputLayout = view.findViewById(R.id.cityInputLayout)
         cityEditText = view.findViewById(R.id.cityEditText)
         countryInputLayout = view.findViewById(R.id.countryInputLayout)
@@ -150,6 +169,12 @@ class CompanyRegisterFragment : Fragment() {
                 registerCompany()
             }
         }
+
+        openMapButton.setOnClickListener {
+            findNavController().navigate(R.id.mapPickerFragment)
+        }
+
+
     }
     
     private fun setupValidation() {
@@ -246,6 +271,9 @@ class CompanyRegisterFragment : Fragment() {
                 error.contains("dirección", ignoreCase = true) -> {
                     addressInputLayout.error = error
                 }
+                error.contains("ubicación", ignoreCase = true) -> {
+                    ubicationInputLayout.error = error
+                }
                 error.contains("ciudad", ignoreCase = true) -> {
                     cityInputLayout.error = error
                 }
@@ -336,17 +364,20 @@ class CompanyRegisterFragment : Fragment() {
     }
     
     private fun clearErrors() {
-        companyNameInputLayout.error = null
-        companyTypeInputLayout.error = null
-        companyDescriptionInputLayout.error = null
-        companySizeInputLayout.error = null
-        foundedYearInputLayout.error = null
-        addressInputLayout.error = null
-        cityInputLayout.error = null
-        countryInputLayout.error = null
-        phoneInputLayout.error = null
-        emailInputLayout.error = null
-        websiteInputLayout.error = null
+        listOf(
+            companyNameInputLayout,
+            companyTypeInputLayout,
+            companyDescriptionInputLayout,
+            companySizeInputLayout,
+            foundedYearInputLayout,
+            addressInputLayout,
+            ubicationInputLayout,
+            cityInputLayout,
+            countryInputLayout,
+            emailInputLayout,
+            phoneInputLayout,
+            websiteInputLayout
+        ).forEach { it.error = null }
     }
     
     private fun registerCompany() {
@@ -360,6 +391,7 @@ class CompanyRegisterFragment : Fragment() {
             val size = companySizeEditText.text.toString().trim().ifEmpty { "1-10" }
             val foundedYear = foundedYearEditText.text?.toString()?.toIntOrNull() ?: 0
             val address = addressEditText.text.toString().trim()
+            val ubication = selectedLatLng?.let { "Lat: ${it.latitude}, Lng: ${it.longitude}" } ?: ""
             val city = cityEditText.text.toString().trim()
             val country = countryEditText.text.toString().trim()
             val email = emailEditText.text.toString().trim()
@@ -374,6 +406,7 @@ class CompanyRegisterFragment : Fragment() {
                 size = size,
                 foundedYear = foundedYear,
                 address = address,
+                ubication = ubication,
                 city = city,
                 country = country,
                 email = email,

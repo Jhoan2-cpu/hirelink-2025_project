@@ -11,9 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentMyAdsApplicantsBinding
-import com.example.hirelink_2025.models.Applicant
+import com.example.hirelink_2025.models.Application
 import com.example.hirelink_2025.models.ApplicationStatus
-import com.example.hirelink_2025.view.adapter.ApplicantsAdapter
+import com.example.hirelink_2025.models.User
+import com.example.hirelink_2025.view.adapter.ApplicationsAdapter
 import com.example.hirelink_2025.view.adapter.ApplicantsPagerAdapter
 import com.example.hirelink_2025.viewmodels.ViewModelFactory
 import com.example.hirelink_2025.viewmodels.ads.MyAdsApplicantsViewModel
@@ -24,6 +25,8 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MyAdsApplicantsFragment : Fragment() {
 
@@ -31,13 +34,13 @@ class MyAdsApplicantsFragment : Fragment() {
     private val binding get() = _binding!!
 
     // ViewModel con Factory (MVVM)
-    private val viewModel: MyAdsApplicantsViewModel by viewModels {
+    val viewModel: MyAdsApplicantsViewModel by viewModels {
         ViewModelFactory()
     }
 
     // Adapters
     private lateinit var pagerAdapter: ApplicantsPagerAdapter
-    private lateinit var applicantsAdapter: ApplicantsAdapter
+    private lateinit var applicationsAdapter: ApplicationsAdapter
 
     // Variables del job
     private var jobId: String? = null
@@ -94,14 +97,14 @@ class MyAdsApplicantsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        applicantsAdapter = createApplicantsAdapter()
+        applicationsAdapter = createApplicationsAdapter()
 
         // Pasar el adapter a los fragments del ViewPager
         if (::pagerAdapter.isInitialized) {
-            pagerAdapter.setApplicantsAdapter(applicantsAdapter)
+            pagerAdapter.setApplicationsAdapter(applicationsAdapter)
         }
 
-        Log.d("MyAdsApplicants", "ApplicantsAdapter creado con callbacks para botones de acción")
+        Log.d("MyAdsApplicants", "ApplicationsAdapter creado con callbacks para botones de acción")
     }
 
     private fun setupTabLayout() {
@@ -109,7 +112,7 @@ class MyAdsApplicantsFragment : Fragment() {
             pagerAdapter = ApplicantsPagerAdapter(requireActivity(), id)
 
             // Pasar el adapter a los fragments del pager
-            pagerAdapter.setApplicantsAdapter(applicantsAdapter)
+            pagerAdapter.setApplicationsAdapter(applicationsAdapter)
 
             binding.applicantsViewPager?.adapter = pagerAdapter
 
@@ -127,37 +130,44 @@ class MyAdsApplicantsFragment : Fragment() {
         }
     }
 
-    private fun createApplicantsAdapter(): ApplicantsAdapter {
-        return ApplicantsAdapter(
-            onItemClicked = { applicant ->
-                // Click en toda la tarjeta → Ver perfil
-                navigateToApplicantProfile(applicant)
-            },
-            onAcceptClicked = { applicant ->
+    private fun createApplicationsAdapter(): ApplicationsAdapter {
+        return ApplicationsAdapter(
+            onAcceptClick = { application ->
                 // Click en botón Aceptar
-                handleAcceptApplicant(applicant)
+                handleAcceptApplication(application)
             },
-            onRejectClicked = { applicant ->
+            onRejectClick = { application ->
                 // Click en botón Rechazar
-                handleRejectApplicant(applicant)
+                handleRejectApplication(application)
+            },
+            onApplicantClick = { application ->
+                // Click en toda la tarjeta → Ver perfil del postulante
+                navigateToApplicantProfile(application)
+            },
+            getUserInfo = { userId ->
+                // Obtener información del usuario desde el ViewModel
+                viewModel.getUserById(userId)
             }
         )
     }
     /**
-     * Acepta a un postulante
+     * Acepta una aplicación
      */
-    internal fun handleAcceptApplicant(applicant: Applicant) {
+    internal fun handleAcceptApplication(application: Application) {
+        val user = viewModel.getUserById(application.applicantId)
+        val userName = user?.name ?: "el postulante"
+        
         AlertDialog.Builder(requireContext())
             .setTitle("Aceptar postulante")
-            .setMessage("¿Quieres aceptar a ${applicant.name} para este trabajo?")
+            .setMessage("¿Quieres aceptar a $userName para este trabajo?")
             .setPositiveButton("Sí, aceptar") { _, _ ->
                 // Actualizar estado a ACCEPTED
-                viewModel.updateApplicantStatus(applicant.id, ApplicationStatus.ACCEPTED)
+                viewModel.updateApplicationStatus(application.applicationId, ApplicationStatus.ACCEPTED)
 
                 // Mostrar confirmación
-                Snackbar.make(binding.root, "${applicant.name} ha sido aceptado", Snackbar.LENGTH_LONG)
+                Snackbar.make(binding.root, "$userName ha sido aceptado", Snackbar.LENGTH_LONG)
                     .setAction("Contactar") {
-                        contactApplicant(applicant)
+                        user?.let { contactApplicant(it) }
                     }
                     .show()
             }
@@ -166,18 +176,21 @@ class MyAdsApplicantsFragment : Fragment() {
     }
 
     /**
-     * Rechaza a un postulante
+     * Rechaza una aplicación
      */
-    internal fun handleRejectApplicant(applicant: Applicant) {
+    internal fun handleRejectApplication(application: Application) {
+        val user = viewModel.getUserById(application.applicantId)
+        val userName = user?.name ?: "el postulante"
+        
         AlertDialog.Builder(requireContext())
             .setTitle("Rechazar postulante")
-            .setMessage("¿Quieres rechazar a ${applicant.name}?")
+            .setMessage("¿Quieres rechazar a $userName?")
             .setPositiveButton("Sí, rechazar") { _, _ ->
                 // Actualizar estado a REJECTED
-                viewModel.updateApplicantStatus(applicant.id, ApplicationStatus.REJECTED)
+                viewModel.updateApplicationStatus(application.applicationId, ApplicationStatus.REJECTED)
 
                 // Mostrar confirmación
-                Snackbar.make(binding.root, "${applicant.name} ha sido rechazado", Snackbar.LENGTH_SHORT)
+                Snackbar.make(binding.root, "$userName ha sido rechazado", Snackbar.LENGTH_SHORT)
                     .show()
             }
             .setNegativeButton("Cancelar", null)
@@ -186,57 +199,46 @@ class MyAdsApplicantsFragment : Fragment() {
 
 
     private fun loadTestData() {
-        // Datos de prueba
-        val mockApplicants = listOf(
-            Applicant(
-                id = "1",
+        val currentJobId = jobId ?: "job123"
+        
+        // Crear datos de prueba para aplicaciones
+        val mockApplications = viewModel.createTestApplications(currentJobId)
+        
+        // Crear usuarios de prueba correspondientes
+        val mockUsers = mapOf(
+            "user1" to User(
+                id = "user1",
                 name = "Ana García",
                 email = "ana.garcia@email.com",
                 phone = "+34 666 123 456",
-                profession = "Desarrolladora Frontend",
-                experience = "3 años de experiencia en React y Vue.js",
-                skills = listOf("JavaScript", "React", "Vue.js", "CSS3", "HTML5"),
-                applicationDate = "15/01/2025",
-                status = ApplicationStatus.PENDING,
-                profileImage = null,
-                jobId = jobId ?: "job123",
-                coverLetter = "Me interesa mucho esta posición porque..."
+                createdAt = System.currentTimeMillis()
             ),
-            Applicant(
-                id = "2",
+            "user2" to User(
+                id = "user2", 
                 name = "Carlos Rodríguez",
                 email = "carlos.rodriguez@email.com",
                 phone = "+34 677 654 321",
-                profession = "Diseñador UX/UI",
-                experience = "5 años diseñando interfaces de usuario",
-                skills = listOf("Figma", "Adobe XD", "Sketch", "Prototyping"),
-                applicationDate = "14/01/2025",
-                status = ApplicationStatus.ACCEPTED,
-                profileImage = null,
-                jobId = jobId ?: "job123",
-                coverLetter = "Mi experiencia en diseño de interfaces..."
+                createdAt = System.currentTimeMillis()
             ),
-            Applicant(
-                id = "3",
+            "user3" to User(
+                id = "user3",
                 name = "María López",
                 email = "maria.lopez@email.com",
                 phone = "+34 688 987 654",
-                profession = "Backend Developer",
-                experience = "4 años con Java y Spring Boot",
-                skills = listOf("Java", "Spring Boot", "MySQL", "Docker"),
-                applicationDate = "13/01/2025",
-                status = ApplicationStatus.REJECTED,
-                profileImage = null,
-                jobId = jobId ?: "job123",
-                coverLetter = "Creo que mi experiencia en backend..."
+                createdAt = System.currentTimeMillis()
             )
         )
 
+        // Actualizar cache de usuarios en el ViewModel
+        mockUsers.forEach { (userId, user) ->
+            viewModel.updateUserCache(userId, user)
+        }
+
         // Actualizar adapter principal
-        applicantsAdapter.submitList(mockApplicants)
+        applicationsAdapter.submitList(mockApplications)
 
         // Notificar al ViewModel para que actualice los observables
-        viewModel.updateApplicantsList(mockApplicants)
+        viewModel.updateApplicationsList(mockApplications)
     }
 
     private fun setupObservers() {
@@ -257,13 +259,13 @@ class MyAdsApplicantsFragment : Fragment() {
 
     private fun observeApplicantCounts() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.pendingApplicants.collect { pendingList ->
+            viewModel.pendingApplications.collect { pendingList ->
                 updateTabBadge(1, pendingList.size)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.acceptedApplicants.collect { acceptedList ->
+            viewModel.acceptedApplications.collect { acceptedList ->
                 updateTabBadge(0, acceptedList.size)
             }
         }
@@ -296,23 +298,21 @@ class MyAdsApplicantsFragment : Fragment() {
             .show()
     }
 
-    internal fun navigateToApplicantProfile(applicant: Applicant) {
-        Log.d("MyAdsApplicants", "Navegando a perfil de: ${applicant.name}")
+    internal fun navigateToApplicantProfile(application: Application) {
+        val user = viewModel.getUserById(application.applicantId)
+        Log.d("MyAdsApplicants", "Navegando a perfil de: ${user?.name ?: "Usuario desconocido"}")
 
         try {
             val bundle = Bundle().apply {
-                putString("applicant_id", applicant.id)
-                putString("applicant_name", applicant.name)
-                putString("applicant_email", applicant.email ?: "")
-                putString("applicant_phone", applicant.phone ?: "")
-                putString("applicant_profession", applicant.profession)
-                putString("applicant_experience", applicant.experience)
-                putStringArrayList("applicant_skills", ArrayList(applicant.skills))
-                putString("application_date", applicant.applicationDate)
-                putString("application_status", applicant.status.name)
-                putString("profile_image", applicant.profileImage ?: "")
-                putString("job_id", applicant.jobId ?: jobId ?: "")
-                putString("cover_letter", applicant.coverLetter ?: "")
+                putString("application_id", application.applicationId)
+                putString("applicant_id", application.applicantId)
+                putString("applicant_name", user?.name ?: "")
+                putString("applicant_email", user?.email ?: "")
+                putString("applicant_phone", user?.phone ?: "")
+                putString("application_date", formatDate(application.appliedAt))
+                putString("application_status", application.status.name)
+                putString("job_id", application.jobId)
+                putString("cover_letter", application.coverLetter)
             }
 
             findNavController().navigate(
@@ -320,29 +320,31 @@ class MyAdsApplicantsFragment : Fragment() {
                 bundle
             )
             
-            Log.d("MyAdsApplicants", "Navegación exitosa al perfil de ${applicant.name}")
+            Log.d("MyAdsApplicants", "Navegación exitosa al perfil de ${user?.name}")
 
         } catch (e: Exception) {
             Log.e("MyAdsApplicants", "Error en navegación: ${e.message}")
             Toast.makeText(requireContext(), "Error al abrir perfil: ${e.message}", Toast.LENGTH_SHORT).show()
             // Fallback: mostrar información en un dialog
-            showApplicantDetailsDialog(applicant)
+            showApplicationDetailsDialog(application)
         }
     }
 
-    private fun showApplicantDetailsDialog(applicantId: String) {
-        val applicant = viewModel.getApplicantById(applicantId)
-        showApplicantDetailsDialog(applicant)
+    private fun formatDate(timestamp: Long): String {
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return sdf.format(Date(timestamp))
     }
 
-    private fun showApplicantDetailsDialog(applicant: Applicant?) {
-        if (applicant != null) {
+    private fun showApplicationDetailsDialog(application: Application) {
+        val user = viewModel.getUserById(application.applicantId)
+        
+        if (user != null) {
             val dialog = AlertDialog.Builder(requireContext())
-                .setTitle("Perfil de ${applicant.name}")
-                .setMessage(buildApplicantDetails(applicant))
+                .setTitle("Perfil de ${user.name}")
+                .setMessage(buildApplicationDetails(application, user))
                 .setPositiveButton("Cerrar") { dialog, _ -> dialog.dismiss() }
                 .setNeutralButton("Contactar") { _, _ ->
-                    contactApplicant(applicant)
+                    contactApplicant(user)
                 }
                 .create()
 
@@ -352,23 +354,22 @@ class MyAdsApplicantsFragment : Fragment() {
         }
     }
 
-    private fun buildApplicantDetails(applicant: Applicant): String {
+    private fun buildApplicationDetails(application: Application, user: User): String {
         return """
-        Profesión: ${applicant.profession}
-        Experiencia: ${applicant.experience}
-        Email: ${applicant.email}
-        Teléfono: ${applicant.phone}
-        Habilidades: ${applicant.skills.joinToString(", ")}
-        Fecha de aplicación: ${applicant.applicationDate}
-        Estado: ${applicant.status.name}
+        Nombre: ${user.name}
+        Email: ${user.email}
+        Teléfono: ${user.phone}
+        Fecha de aplicación: ${formatDate(application.appliedAt)}
+        Estado: ${application.status.name}
+        Carta de presentación: ${application.coverLetter}
         """.trimIndent()
     }
 
-    private fun contactApplicant(applicant: Applicant) {
+    private fun contactApplicant(user: User) {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:${applicant.email}")
+            data = Uri.parse("mailto:${user.email}")
             putExtra(Intent.EXTRA_SUBJECT, "Respuesta a tu aplicación - ${jobTitle ?: "Trabajo"}")
-            putExtra(Intent.EXTRA_TEXT, "Hola ${applicant.name},\n\n")
+            putExtra(Intent.EXTRA_TEXT, "Hola ${user.name},\n\n")
         }
 
         try {

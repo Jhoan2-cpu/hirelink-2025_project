@@ -2,6 +2,7 @@ package com.example.hirelink_2025.view.ui.fragments.ads
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -51,8 +52,6 @@ class MyAdsRegisterFragment : Fragment() {
     private lateinit var modalityDropdown: MaterialAutoCompleteTextView
     private lateinit var dateEditText: TextInputEditText
     private lateinit var positionEditText: TextInputEditText
-    private lateinit var uploadImageButton: MaterialButton
-    private lateinit var selectLocationButton: MaterialButton
     
     private lateinit var publishButton: MaterialButton
     
@@ -71,6 +70,8 @@ class MyAdsRegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        Log.d("MyAdsRegisterFragment", "Fragment created")
         
         initViews(view)
         setupClickListeners()
@@ -102,8 +103,6 @@ class MyAdsRegisterFragment : Fragment() {
         modalityDropdown = view.findViewById(R.id.modalityDropdown)
         dateEditText = view.findViewById(R.id.dateEditText)
         positionEditText = view.findViewById(R.id.positionEditText)
-        uploadImageButton = view.findViewById(R.id.uploadImageButton)
-        selectLocationButton = view.findViewById(R.id.selectLocationButton)
         
         publishButton = view.findViewById(R.id.publishButton)
     }
@@ -187,16 +186,6 @@ class MyAdsRegisterFragment : Fragment() {
         dateEditText.setOnClickListener {
             showDatePicker()
         }
-        
-        // Image upload (placeholder)
-        uploadImageButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Selección de imagen - Próximamente", Toast.LENGTH_SHORT).show()
-        }
-        
-        // Location selection (placeholder)
-        selectLocationButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Selección de ubicación - Próximamente", Toast.LENGTH_SHORT).show()
-        }
     }
     
     
@@ -267,6 +256,7 @@ class MyAdsRegisterFragment : Fragment() {
     
     
     private fun publishJobAd() {
+        Log.d("MyAdsRegisterFragment", "Publishing job ad")
         viewModel.clearErrors()
         
         // Obtener datos del formulario
@@ -286,6 +276,8 @@ class MyAdsRegisterFragment : Fragment() {
         val website = websiteEditText.text.toString()
         val selectedLocation = "Lima, Perú" // Por ahora fijo, luego se puede mejorar
         
+        Log.d("MyAdsRegisterFragment", "Job data - Title: $title, Vacancies: $vacancies, Modality: $modality")
+        
         viewModel.registerJob(
             title = title,
             aboutCompany = aboutCompany,
@@ -299,8 +291,7 @@ class MyAdsRegisterFragment : Fragment() {
             phone = phone,
             email = email,
             website = website,
-            selectedLocation = selectedLocation,
-            imageUrl = null // Por ahora null, luego se puede agregar upload de imagen
+            selectedLocation = selectedLocation
         )
     }
 }

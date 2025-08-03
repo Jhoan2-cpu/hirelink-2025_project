@@ -391,12 +391,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_medium"
-                        android:hint="LinkedIn URL"
+                        android:hint="Social URL"
                         app:startIconDrawable="@drawable/ic_link"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/linkedinInput"
+                            android:id="@+id/socialInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textUri" />

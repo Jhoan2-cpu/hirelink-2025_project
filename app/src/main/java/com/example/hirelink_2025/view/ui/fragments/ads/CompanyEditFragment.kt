@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,15 +14,23 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.models.Company
 import com.example.hirelink_2025.models.CompanySize
+import com.example.hirelink_2025.viewmodels.CompanyViewModel
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class CompanyEditFragment : Fragment() {
@@ -54,9 +63,13 @@ class CompanyEditFragment : Fragment() {
     private lateinit var updateCompanyButton: MaterialButton
     private lateinit var discardChangesButton: MaterialButton
     
+    // ViewModel
+    private val viewModel: CompanyViewModel by viewModels { ViewModelFactory() }
+    
     private var currentCompany: Company? = null
     private var selectedLogoUri: Uri? = null
     private var originalCompany: Company? = null
+    private var currentUserId: String? = null
     
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -77,9 +90,12 @@ class CompanyEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        Log.d("CompanyEditFragment", "Fragment created")
+        
         initViews(view)
         setupClickListeners()
-        loadCompanyData()
+        setupObservers()
+        getCurrentUserAndLoadCompany()
     }
     
     private fun initViews(view: View) {
@@ -136,73 +152,87 @@ class CompanyEditFragment : Fragment() {
         }
     }
     
-    private fun loadCompanyData() {
-        // Get company ID from navigation arguments
-        val companyId = arguments?.getString("companyId") ?: ""
-        
-        // TODO: Load company from repository using companyId
-        // For now, get sample company data based on ID
-        currentCompany = getSampleCompany(companyId)
-        
-        // Keep a copy of original data for comparison
-        originalCompany = currentCompany?.copy()
-        
-        populateFields()
-    }
-    
-    private fun getSampleCompany(companyId: String): Company {
-        // Sample company data (replace with actual repository call)
-        return when (companyId) {
-            "1" -> Company(
-                id = "1",
-                name = "TechSolutions S.A.C.",
-                type = "Tecnología",
-                description = "Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras para el mercado peruano.",
-                size = com.example.hirelink_2025.models.CompanySize.MEDIUM,
-                foundedYear = 2020,
-                address = "Av. Javier Prado Este 123",
-                city = "Lima",
-                country = "Perú",
-                phone = "987654321",
-                email = "info@techsolutions.com",
-                website = "www.techsolutions.com",
-                logoUrl = "",
-                ownerId = "user1"
-            )
-            "2" -> Company(
-                id = "2",
-                name = "Innovate Corp",
-                type = "Consultoría",
-                description = "Consultoría especializada en transformación digital y gestión empresarial.",
-                size = com.example.hirelink_2025.models.CompanySize.SMALL,
-                foundedYear = 2018,
-                address = "Calle Los Incas 456",
-                city = "Arequipa",
-                country = "Perú",
-                phone = "123456789",
-                email = "contact@innovate.com",
-                website = "www.innovate.com",
-                logoUrl = "",
-                ownerId = "user1"
-            )
-            else -> Company(
-                id = companyId,
-                name = "Compañía de Ejemplo",
-                type = "General",
-                description = "Descripción de ejemplo",
-                size = com.example.hirelink_2025.models.CompanySize.STARTUP,
-                foundedYear = 2023,
-                address = "",
-                city = "Lima",
-                country = "Perú",
-                phone = "",
-                email = "",
-                website = "",
-                logoUrl = "",
-                ownerId = "user1"
-            )
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                
+                // Observar estado de operaciones
+                launch {
+                    viewModel.operationInProgress.collect { inProgress ->
+                        showLoading(inProgress)
+                    }
+                }
+                
+                // Observar errores
+                launch {
+                    viewModel.error.collect { error ->
+                        error?.let {
+                            Log.e("CompanyEditFragment", "Error: $it")
+                            showError(it)
+                            viewModel.clearError()
+                        }
+                    }
+                }
+                
+                // Observar resultados de operaciones
+                launch {
+                    viewModel.operationResult.collect { result ->
+                        result?.let {
+                            Log.d("CompanyEditFragment", "Operation result: $it")
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                            viewModel.clearOperationResult()
+                        }
+                    }
+                }
+            }
         }
     }
+    
+    private fun getCurrentUserAndLoadCompany() {
+        currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        
+        if (currentUserId == null) {
+            Log.w("CompanyEditFragment", "No authenticated user found")
+            showError("Usuario no autenticado")
+            findNavController().navigateUp()
+            return
+        }
+        
+        // Obtener ID de la compañía desde argumentos
+        val companyId = arguments?.getString("companyId") ?: ""
+        Log.d("CompanyEditFragment", "Received companyId from arguments: '$companyId'")
+        
+        if (companyId.isNotEmpty()) {
+            Log.d("CompanyEditFragment", "Loading company: $companyId")
+            loadCompanyById(companyId)
+        } else {
+            Log.e("CompanyEditFragment", "No company ID provided in arguments")
+            showError("ID de compañía no encontrado")
+            findNavController().navigateUp()
+        }
+    }
+    
+    private fun loadCompanyById(companyId: String) {
+        viewModel.getCompanyById(companyId) { company ->
+            if (company != null) {
+                Log.d("CompanyEditFragment", "Company loaded: ${company.name}")
+                currentCompany = company
+                originalCompany = company.copy()
+                try {
+                    populateFields()
+                } catch (e: Exception) {
+                    Log.e("CompanyEditFragment", "Error populating fields: ${e.message}")
+                    showError("Error al cargar los datos de la compañía")
+                    findNavController().navigateUp()
+                }
+            } else {
+                Log.e("CompanyEditFragment", "Company not found")
+                showError("Compañía no encontrada")
+                findNavController().navigateUp()
+            }
+        }
+    }
+    
     
     private fun populateFields() {
         currentCompany?.let { company ->
@@ -357,23 +387,17 @@ class CompanyEditFragment : Fragment() {
                 updatedAt = System.currentTimeMillis()
             )
             
-            // TODO: Update company in repository/database
-            saveUpdatedCompany(updatedCompany)
+            // Usar ViewModel para actualizar la compañía
+            Log.d("CompanyEditFragment", "Updating company: ${updatedCompany.name}")
+            viewModel.updateCompany(updatedCompany) { success ->
+                if (success) {
+                    Log.d("CompanyEditFragment", "Company updated successfully")
+                    findNavController().navigateUp()
+                } else {
+                    Log.e("CompanyEditFragment", "Failed to update company")
+                }
+            }
         }
-    }
-    
-    private fun saveUpdatedCompany(company: Company) {
-        // TODO: Implement actual update logic with repository
-        // For now, just show success message and navigate back
-        
-        showLoading(true)
-        
-        // Simulate network delay
-        view?.postDelayed({
-            showLoading(false)
-            Toast.makeText(requireContext(), "Compañía actualizada exitosamente", Toast.LENGTH_SHORT).show()
-            findNavController().navigateUp()
-        }, 1500)
     }
     
     private fun hasUnsavedChanges(): Boolean {
@@ -413,6 +437,10 @@ class CompanyEditFragment : Fragment() {
         loadingProgressBar.visibility = if (show) View.VISIBLE else View.GONE
         updateCompanyButton.isEnabled = !show
         discardChangesButton.isEnabled = !show
+    }
+    
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
     
     private fun convertStringToCompanySize(sizeText: String): CompanySize {

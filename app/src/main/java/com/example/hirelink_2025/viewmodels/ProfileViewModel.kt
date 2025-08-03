@@ -197,7 +197,7 @@ class ProfileViewModel(
             location = "",
             availability = "",
             salaryExpectation = "",
-            linkedinUrl = "",
+            socialNetworkUrl = "",
             portfolioUrl = "",
             lastUpdated = System.currentTimeMillis()
         )

@@ -137,9 +137,9 @@ class ProfileFragment : Fragment() {
         }
 
         binding.linkedinButton.setOnClickListener {
-            val linkedinUrl = viewModel.getCurrentUserProfile()?.linkedinUrl
-            if (!linkedinUrl.isNullOrBlank()) {
-                openUrl(linkedinUrl)
+            val socialNetworkUrl = viewModel.getCurrentUserProfile()?.socialNetworkUrl
+            if (!socialNetworkUrl.isNullOrBlank()) {
+                openUrl(socialNetworkUrl)
             }
         }
 
@@ -184,7 +184,7 @@ class ProfileFragment : Fragment() {
 
     private fun updateUserBasicInfo(user: User) {
         with(binding) {
-            userName.text = user.fullName
+            userName.text = user.name
             userEmail.text = user.email
             userPhone.text = user.phone ?: "No especificado"
             
@@ -214,9 +214,9 @@ class ProfileFragment : Fragment() {
             userSalaryExpectation.text = profile.salaryExpectation.ifBlank { "No especificado" }
 
             // LinkedIn y Portfolio
-            if (profile.linkedinUrl.isNotBlank()) {
+            if (profile.socialNetworkUrl.isNotBlank()) {
                 linkedinLayout.visibility = View.VISIBLE
-                userLinkedin.text = profile.linkedinUrl
+                userLinkedin.text = profile.socialNetworkUrl
             } else {
                 linkedinLayout.visibility = View.GONE
             }

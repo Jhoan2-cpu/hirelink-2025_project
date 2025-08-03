@@ -52,8 +52,8 @@ class ProfileEditFragment : Fragment() {
                         .load(uri)
                         .apply(
                             RequestOptions()
-                                .placeholder(R.drawable.profile_random)
-                                .error(R.drawable.profile_random)
+                                .placeholder(R.drawable.ic_profile)
+                                .error(R.drawable.ic_profile)
                                 .transform(CircleCrop())
                         )
                         .into(binding.profileImage)
@@ -116,7 +116,7 @@ class ProfileEditFragment : Fragment() {
     
     private fun loadUserData(user: User) {
         with(binding) {
-            userName.text = user.fullName
+            userName.text = user.name
             emailInput.setText(user.email)
             phoneInput.setText(user.phone ?: "")
             
@@ -138,7 +138,7 @@ class ProfileEditFragment : Fragment() {
             locationInput.setText(profile.location)
             availabilityInput.setText(profile.availability)
             salaryInput.setText(profile.salaryExpectation)
-            linkedinInput.setText(profile.linkedinUrl)
+            socialInput.setText(profile.socialNetworkUrl)
             portfolioInput.setText(profile.portfolioUrl)
         }
     }
@@ -182,7 +182,7 @@ class ProfileEditFragment : Fragment() {
         val email = binding.emailInput.text.toString().trim()
         val availability = binding.availabilityInput.text.toString().trim()
         val salary = binding.salaryInput.text.toString().trim()
-        val linkedin = binding.linkedinInput.text.toString().trim()
+        val social = binding.socialInput.text.toString().trim()
         val portfolio = binding.portfolioInput.text.toString().trim()
 
         // Validaciones básicas (solo campos requeridos)
@@ -212,7 +212,7 @@ class ProfileEditFragment : Fragment() {
         builder.setMessage("¿Estás seguro de que quieres guardar los cambios en tu perfil?")
 
         builder.setPositiveButton("Guardar") { _, _ ->
-            saveToViewModel(profession, bio, skills, languages, location, phone, email, availability, salary, linkedin, portfolio)
+            saveToViewModel(profession, bio, skills, languages, location, phone, email, availability, salary, social, portfolio)
         }
 
         builder.setNegativeButton("Continuar editando") { dialog, _ ->
@@ -232,7 +232,7 @@ class ProfileEditFragment : Fragment() {
         email: String, 
         availability: String, 
         salary: String, 
-        linkedin: String, 
+        social: String,
         portfolio: String
     ) {
         val currentUser = viewModel.getCurrentUser()
@@ -260,7 +260,7 @@ class ProfileEditFragment : Fragment() {
             location = location,
             availability = availability,
             salaryExpectation = salary,
-            linkedinUrl = linkedin,
+            socialNetworkUrl = social,
             portfolioUrl = portfolio,
             lastUpdated = System.currentTimeMillis()
         )

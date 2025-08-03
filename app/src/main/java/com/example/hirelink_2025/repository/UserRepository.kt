@@ -50,7 +50,7 @@ class UserRepository private constructor() {
         val userData = User(
             id = "", // Se asignará por Firebase Auth
             email = email.trim(),
-            fullName = name.trim(),
+            name = name.trim(),
             phone = phone?.trim(),
             profileImageUrl = null,
             active = true,

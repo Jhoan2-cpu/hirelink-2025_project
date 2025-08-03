@@ -11,7 +11,7 @@ data class UserProfile(
     val location: String = "",//1 2
     val availability: String = "", //1 2"Inmediato", "2 semanas", etc.
     val salaryExpectation: String = "",//1 2
-    val linkedinUrl: String = "",//1 2
+    val socialNetworkUrl: String = "",//1 2
     val portfolioUrl: String = "",//1 2
     val lastUpdated: Long = System.currentTimeMillis()//
 )

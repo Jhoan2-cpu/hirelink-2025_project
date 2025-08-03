@@ -10,6 +10,7 @@ data class Application(
     val appliedAt: Long = System.currentTimeMillis(),
     val coverLetter: String = "",
     val resumeUrl: String = "",
+    val reviewedAt: Long? = null,//opcional
     val status: ApplicationStatus = ApplicationStatus.PENDING
 )
 enum class ApplicationStatus {

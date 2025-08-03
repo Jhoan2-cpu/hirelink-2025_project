@@ -40,8 +40,9 @@ class MyAdsEditFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            jobId = it.getString(Constants.KEY_JOB_ID)
-            jobTitle = it.getString(Constants.KEY_JOB_TITLE)
+            jobId = it.getString("job_id")
+            jobTitle = it.getString("job_title")
+            android.util.Log.d("MyAdsEditFragment", "Received job_id: $jobId, job_title: $jobTitle")
         }
     }
 
@@ -83,19 +84,31 @@ class MyAdsEditFragment : Fragment() {
     }
 
     /**
-     * Configura los campos del formulario
+     * Configura los campos del formulario - Solo campos editables
      */
     private fun setupFormFields() {
         // Configurar listeners para validación en tiempo real
         
-        // Job Information Fields - Solo usar campos existentes en ViewModel por ahora
+        // Job Information Fields
         binding.titleEditText.doOnTextChanged { text, _, _, _ ->
             viewModel.updateTitle(text.toString())
         }
 
-        // Por ahora, mapear aboutJobEditText a description del ViewModel existente
         binding.aboutJobEditText.doOnTextChanged { text, _, _, _ ->
             viewModel.updateAboutJob(text.toString())
+        }
+
+        binding.skillsEditText.doOnTextChanged { text, _, _, _ ->
+            viewModel.updateRequirements(text.toString())
+        }
+
+        // Job Details Fields
+        binding.vacanciesEditText.doOnTextChanged { text, _, _, _ ->
+            viewModel.updateVacancies(text.toString())
+        }
+
+        binding.employmentTypeEditText.doOnTextChanged { text, _, _, _ ->
+            viewModel.updateEmploymentType(text.toString())
         }
 
         // Configurar dropdown de modalidad
@@ -104,60 +117,17 @@ class MyAdsEditFragment : Fragment() {
             viewModel.updateModality(selectedModality)
         }
 
-        // Configurar click listeners para campos de fecha y selección
-        binding.dateEditText.setOnClickListener {
+        // Salario
+        binding.salaryEditText.doOnTextChanged { text, _, _, _ ->
+            viewModel.updateSalary(text.toString())
+        }
+
+        // Fecha límite
+        binding.deadlineEditText.setOnClickListener {
             showDatePicker()
         }
-
-        binding.uploadImageButton.setOnClickListener {
-            showImagePicker()
-        }
-
-        binding.selectLocationButton.setOnClickListener {
-            showLocationPicker()
-        }
-
-        // Listeners para campos que serán implementados después
-        setupPlaceholderListeners()
     }
 
-    /**
-     * Configura listeners placeholder para campos nuevos
-     */
-    private fun setupPlaceholderListeners() {
-        // Estos campos mostrarán mensajes placeholder hasta que se implementen en el ViewModel
-        binding.aboutCompanyEditText.doOnTextChanged { _, _, _, _ ->
-            // TODO: Implementar en ViewModel
-        }
-
-        binding.skillsEditText.doOnTextChanged { _, _, _, _ ->
-            // TODO: Implementar en ViewModel
-        }
-
-        binding.vacanciesEditText.doOnTextChanged { _, _, _, _ ->
-            // TODO: Implementar en ViewModel
-        }
-
-        binding.employmentTypeEditText.doOnTextChanged { _, _, _, _ ->
-            // TODO: Implementar en ViewModel
-        }
-
-        binding.positionEditText.doOnTextChanged { _, _, _, _ ->
-            // TODO: Implementar en ViewModel
-        }
-
-        binding.phoneEditText.doOnTextChanged { _, _, _, _ ->
-            // TODO: Implementar en ViewModel
-        }
-
-        binding.emailEditText.doOnTextChanged { _, _, _, _ ->
-            // TODO: Implementar en ViewModel
-        }
-
-        binding.websiteEditText.doOnTextChanged { _, _, _, _ ->
-            // TODO: Implementar en ViewModel
-        }
-    }
 
     /**
      * Configura los listeners de clicks
@@ -197,6 +167,8 @@ class MyAdsEditFragment : Fragment() {
             mutableListOf<String>()
         )
         binding.modalityDropdown.setAdapter(modalityAdapter)
+
+        // El tipo de empleo es campo de texto libre, no necesita adapter
     }
 
     /**
@@ -210,7 +182,7 @@ class MyAdsEditFragment : Fragment() {
             }
         }
 
-        // Observar campos del formulario - Solo campos existentes en ViewModel
+        // Observar campos del formulario - Solo campos editables
         viewModel.title.observe(viewLifecycleOwner) { title ->
             if (binding.titleEditText.text.toString() != title) {
                 binding.titleEditText.setText(title)
@@ -223,13 +195,43 @@ class MyAdsEditFragment : Fragment() {
             }
         }
 
+        viewModel.requirements.observe(viewLifecycleOwner) { requirements ->
+            if (binding.skillsEditText.text.toString() != requirements) {
+                binding.skillsEditText.setText(requirements)
+            }
+        }
+
+        viewModel.vacancies.observe(viewLifecycleOwner) { vacancies ->
+            if (binding.vacanciesEditText.text.toString() != vacancies) {
+                binding.vacanciesEditText.setText(vacancies)
+            }
+        }
+
+        viewModel.employmentType.observe(viewLifecycleOwner) { employmentType ->
+            if (binding.employmentTypeEditText.text.toString() != employmentType) {
+                binding.employmentTypeEditText.setText(employmentType)
+            }
+        }
+
         viewModel.modality.observe(viewLifecycleOwner) { modality ->
             if (binding.modalityDropdown.text.toString() != modality) {
                 binding.modalityDropdown.setText(modality, false)
             }
         }
 
-        // Observar errores de validación - Solo campos existentes
+        viewModel.salary.observe(viewLifecycleOwner) { salary ->
+            if (binding.salaryEditText.text.toString() != salary) {
+                binding.salaryEditText.setText(salary)
+            }
+        }
+
+        viewModel.deadline.observe(viewLifecycleOwner) { deadline ->
+            if (binding.deadlineEditText.text.toString() != deadline) {
+                binding.deadlineEditText.setText(deadline)
+            }
+        }
+
+        // Observar errores de validación - Solo campos editables
         viewModel.titleError.observe(viewLifecycleOwner) { error ->
             binding.titleInputLayout.error = error
         }
@@ -238,8 +240,28 @@ class MyAdsEditFragment : Fragment() {
             binding.aboutJobInputLayout.error = error
         }
 
+        viewModel.requirementsError.observe(viewLifecycleOwner) { error ->
+            binding.skillsInputLayout.error = error
+        }
+
+        viewModel.vacanciesError.observe(viewLifecycleOwner) { error ->
+            binding.vacanciesInputLayout.error = error
+        }
+
+        viewModel.employmentTypeError.observe(viewLifecycleOwner) { error ->
+            binding.employmentTypeInputLayout.error = error
+        }
+
         viewModel.modalityError.observe(viewLifecycleOwner) { error ->
             binding.modalityInputLayout.error = error
+        }
+
+        viewModel.salaryError.observe(viewLifecycleOwner) { error ->
+            binding.salaryInputLayout.error = error
+        }
+
+        viewModel.deadlineError.observe(viewLifecycleOwner) { error ->
+            binding.deadlineInputLayout.error = error
         }
 
         // Observar validez del formulario
@@ -290,11 +312,61 @@ class MyAdsEditFragment : Fragment() {
      */
     private fun loadJob() {
         jobId?.let { id ->
+            android.util.Log.d("MyAdsEditFragment", "Loading job with ID: $id")
+            
+            // Primera opción: Intentar usar datos del Bundle
+            if (loadJobFromBundle()) {
+                android.util.Log.d("MyAdsEditFragment", "Loaded job from Bundle")
+                return
+            }
+            
+            // Segunda opción: Cargar desde Firestore
+            android.util.Log.d("MyAdsEditFragment", "Loading from Firestore")
             viewModel.loadJob(id)
         } ?: run {
+            android.util.Log.e("MyAdsEditFragment", "Job ID is null")
             showErrorSnackbar("Error: ID del anuncio no encontrado")
             findNavController().navigateUp()
         }
+    }
+    
+    /**
+     * Intenta cargar el Job desde los datos del Bundle - Solo campos editables
+     */
+    private fun loadJobFromBundle(): Boolean {
+        return arguments?.let { bundle ->
+            try {
+                val job = Job(
+                    id = bundle.getString("job_id") ?: return false,
+                    title = bundle.getString("job_title") ?: "",
+                    modality = bundle.getString("job_modality") ?: "",
+                    salary = bundle.getString("job_salary") ?: "",
+                    requirements = bundle.getString("job_requirements")?.split("\n")?.filter { it.isNotBlank() } ?: emptyList(),
+                    employmentType = bundle.getString("job_employment_type") ?: "",
+                    aboutJob = bundle.getString("job_about_job") ?: "",
+                    deadline = bundle.getString("job_deadline") ?: "",
+                    vacancies = bundle.getInt("job_vacancies", 0),
+                    companyId = bundle.getString("company_id") ?: "",
+                    status = try {
+                        JobStatus.valueOf(bundle.getString("job_status") ?: "ACTIVE")
+                    } catch (e: Exception) {
+                        JobStatus.ACTIVE
+                    },
+                    // Campos no editables con valores por defecto
+                    postedDate = "",
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = System.currentTimeMillis(),
+                    offerSalary = "" // No editable
+                )
+                
+                // Simular que el Job se cargó exitosamente
+                viewModel.setCurrentJob(job)
+                true
+            } catch (e: Exception) {
+                android.util.Log.e("MyAdsEditFragment", "Error loading from bundle: ${e.message}")
+                false
+            }
+        } ?: false
     }
 
     /**
@@ -326,29 +398,19 @@ class MyAdsEditFragment : Fragment() {
     }
 
     /**
-     * Actualiza el estado de carga
+     * Actualiza el estado de carga - Solo campos editables
      */
     private fun updateLoadingState(isLoading: Boolean) {
         binding.apply {
-            // Deshabilitar campos principales durante carga
+            // Deshabilitar campos editables durante carga
             titleEditText.isEnabled = !isLoading
             aboutJobEditText.isEnabled = !isLoading
-            modalityDropdown.isEnabled = !isLoading
-            
-            // Campos adicionales (funcionarán independientemente del ViewModel por ahora)
-            aboutCompanyEditText.isEnabled = !isLoading
             skillsEditText.isEnabled = !isLoading
             vacanciesEditText.isEnabled = !isLoading
             employmentTypeEditText.isEnabled = !isLoading
-            dateEditText.isEnabled = !isLoading
-            positionEditText.isEnabled = !isLoading
-            phoneEditText.isEnabled = !isLoading
-            emailEditText.isEnabled = !isLoading
-            websiteEditText.isEnabled = !isLoading
-            
-            // Media & Location
-            uploadImageButton.isEnabled = !isLoading
-            selectLocationButton.isEnabled = !isLoading
+            modalityDropdown.isEnabled = !isLoading
+            salaryEditText.isEnabled = !isLoading
+            deadlineEditText.isEnabled = !isLoading
 
             // Mostrar/ocultar indicador de carga
             loadingProgressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
@@ -397,30 +459,12 @@ class MyAdsEditFragment : Fragment() {
     }
 
     /**
-     * Muestra selector de fecha
+     * Muestra selector de fecha para deadline
      */
     private fun showDatePicker() {
-        // TODO: Implementar DatePickerDialog
+        // TODO: Implementar DatePickerDialog para deadline
         // Por ahora, mostrar un placeholder
-        showErrorSnackbar("Selector de fecha - Por implementar")
-    }
-
-    /**
-     * Muestra selector de imagen
-     */
-    private fun showImagePicker() {
-        // TODO: Implementar selector de imagen desde galería/cámara
-        // Por ahora, mostrar un placeholder
-        showErrorSnackbar("Selector de imagen - Por implementar")
-    }
-
-    /**
-     * Muestra selector de ubicación
-     */
-    private fun showLocationPicker() {
-        // TODO: Implementar selector de ubicación (mapa/lista)
-        // Por ahora, mostrar un placeholder
-        showErrorSnackbar("Selector de ubicación - Por implementar")
+        showErrorSnackbar("Selector de fecha límite - Por implementar")
     }
 
     /**

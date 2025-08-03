@@ -23,26 +23,56 @@ class MyAdsEditViewModel : ViewModel() {
     private val _currentJob = MutableLiveData<Job?>()
     val currentJob: LiveData<Job?> = _currentJob
 
-    // Estados de los campos del formulario
+    // Estados de los campos del formulario - Solo campos editables
     private val _title = MutableLiveData<String>()
     val title: LiveData<String> = _title
 
     private val _aboutJob = MutableLiveData<String>()
     val aboutJob: LiveData<String> = _aboutJob
 
+    private val _requirements = MutableLiveData<String>()
+    val requirements: LiveData<String> = _requirements
+
+    private val _vacancies = MutableLiveData<String>()
+    val vacancies: LiveData<String> = _vacancies
+
+    private val _employmentType = MutableLiveData<String>()
+    val employmentType: LiveData<String> = _employmentType
+
     private val _modality = MutableLiveData<String>()
     val modality: LiveData<String> = _modality
 
+    private val _deadline = MutableLiveData<String>()
+    val deadline: LiveData<String> = _deadline
 
-    // Estados de validación
+    private val _salary = MutableLiveData<String>()
+    val salary: LiveData<String> = _salary
+
+
+    // Estados de validación - Solo campos editables
     private val _titleError = MutableLiveData<String?>()
     val titleError: LiveData<String?> = _titleError
 
     private val _aboutJobError = MutableLiveData<String?>()
     val aboutJobError: LiveData<String?> = _aboutJobError
 
+    private val _requirementsError = MutableLiveData<String?>()
+    val requirementsError: LiveData<String?> = _requirementsError
+
+    private val _vacanciesError = MutableLiveData<String?>()
+    val vacanciesError: LiveData<String?> = _vacanciesError
+
+    private val _employmentTypeError = MutableLiveData<String?>()
+    val employmentTypeError: LiveData<String?> = _employmentTypeError
+
     private val _modalityError = MutableLiveData<String?>()
     val modalityError: LiveData<String?> = _modalityError
+
+    private val _deadlineError = MutableLiveData<String?>()
+    val deadlineError: LiveData<String?> = _deadlineError
+
+    private val _salaryError = MutableLiveData<String?>()
+    val salaryError: LiveData<String?> = _salaryError
 
 
     // Estados de UI
@@ -67,13 +97,13 @@ class MyAdsEditViewModel : ViewModel() {
     val modalityOptions: LiveData<List<String>> = _modalityOptions
 
     init {
-        initializeModalityOptions()
+        initializeDropdownOptions()
     }
 
     /**
-     * Inicializa las opciones de modalidad
+     * Inicializa las opciones de dropdowns
      */
-    private fun initializeModalityOptions() {
+    private fun initializeDropdownOptions() {
         _modalityOptions.value = listOf(
             "Presencial",
             "Remoto",
@@ -85,21 +115,24 @@ class MyAdsEditViewModel : ViewModel() {
      * Carga un job para editar
      */
     fun loadJob(jobId: String) {
+        android.util.Log.d("MyAdsEditViewModel", "Loading job with ID: $jobId")
         _isLoading.value = true
         _errorMessage.value = ""
 
         viewModelScope.launch {
             repository.getJobById(jobId)
                 .catch { exception ->
+                    android.util.Log.e("MyAdsEditViewModel", "Error loading job: ${exception.message}")
                     _isLoading.value = false
                     _errorMessage.value = "Error al cargar el anuncio: ${exception.message}"
                 }
                 .collect { job ->
+                    android.util.Log.d("MyAdsEditViewModel", "Job loaded: ${job?.id ?: "null"}")
                     _currentJob.value = job
                     if (job != null) {
                         populateFields(job)
                     } else {
-                        _errorMessage.value = "No se encontró el anuncio"
+                        _errorMessage.value = "No se encontró el anuncio con ID: $jobId"
                     }
                     _isLoading.value = false
                 }
@@ -107,12 +140,26 @@ class MyAdsEditViewModel : ViewModel() {
     }
 
     /**
-     * Llena los campos del formulario con los datos del job
+     * Establece el Job actual directamente (para datos del Bundle)
+     */
+    fun setCurrentJob(job: Job) {
+        android.util.Log.d("MyAdsEditViewModel", "Setting current job directly: ${job.id}")
+        _currentJob.value = job
+        populateFields(job)
+    }
+    
+    /**
+     * Llena los campos del formulario con los datos del job - Solo campos editables
      */
     private fun populateFields(job: Job) {
         _title.value = job.title
         _aboutJob.value = job.aboutJob
+        _requirements.value = job.requirements.joinToString("\n")
+        _vacancies.value = job.vacancies.toString()
+        _employmentType.value = job.employmentType
         _modality.value = job.modality
+        _deadline.value = job.deadline
+        _salary.value = job.salary
         validateForm()
     }
 
@@ -135,11 +182,56 @@ class MyAdsEditViewModel : ViewModel() {
     }
 
     /**
+     * Actualiza los requisitos
+     */
+    fun updateRequirements(newRequirements: String) {
+        _requirements.value = newRequirements
+        validateRequirements(newRequirements)
+        validateForm()
+    }
+
+    /**
+     * Actualiza las vacantes
+     */
+    fun updateVacancies(newVacancies: String) {
+        _vacancies.value = newVacancies
+        validateVacancies(newVacancies)
+        validateForm()
+    }
+
+    /**
+     * Actualiza el tipo de empleo
+     */
+    fun updateEmploymentType(newEmploymentType: String) {
+        _employmentType.value = newEmploymentType
+        validateEmploymentType(newEmploymentType)
+        validateForm()
+    }
+
+    /**
      * Actualiza la modalidad
      */
     fun updateModality(newModality: String) {
         _modality.value = newModality
         validateModality(newModality)
+        validateForm()
+    }
+
+    /**
+     * Actualiza la fecha límite
+     */
+    fun updateDeadline(newDeadline: String) {
+        _deadline.value = newDeadline
+        validateDeadline(newDeadline)
+        validateForm()
+    }
+
+    /**
+     * Actualiza el salario
+     */
+    fun updateSalary(newSalary: String) {
+        _salary.value = newSalary
+        validateSalary(newSalary)
         validateForm()
     }
 
@@ -169,6 +261,42 @@ class MyAdsEditViewModel : ViewModel() {
     }
 
     /**
+     * Valida los requisitos
+     */
+    private fun validateRequirements(requirements: String) {
+        _requirementsError.value = when {
+            !requirements.isValidString() -> "Los requisitos son obligatorios"
+            requirements.length < 10 -> "Los requisitos deben tener al menos 10 caracteres"
+            requirements.length > 500 -> "Los requisitos no pueden tener más de 500 caracteres"
+            else -> null
+        }
+    }
+
+    /**
+     * Valida las vacantes
+     */
+    private fun validateVacancies(vacancies: String) {
+        _vacanciesError.value = when {
+            !vacancies.isValidString() -> "El número de vacantes es obligatorio"
+            vacancies.toIntOrNull() == null -> "Debe ser un número válido"
+            vacancies.toInt() <= 0 -> "Debe ser mayor a 0"
+            vacancies.toInt() > 100 -> "No puede ser mayor a 100"
+            else -> null
+        }
+    }
+
+    /**
+     * Valida el tipo de empleo
+     */
+    private fun validateEmploymentType(employmentType: String) {
+        _employmentTypeError.value = when {
+            !employmentType.isValidString() -> "El tipo de empleo es obligatorio"
+            employmentType.length > 50 -> "El tipo de empleo no puede tener más de 50 caracteres"
+            else -> null
+        }
+    }
+
+    /**
      * Valida la modalidad
      */
     private fun validateModality(modality: String) {
@@ -180,16 +308,43 @@ class MyAdsEditViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Valida la fecha límite
+     */
+    private fun validateDeadline(deadline: String) {
+        _deadlineError.value = when {
+            deadline.isNotEmpty() && deadline.length < 8 -> "Formato de fecha inválido"
+            else -> null // Opcional
+        }
+    }
 
     /**
-     * Valida todo el formulario
+     * Valida el salario
+     */
+    private fun validateSalary(salary: String) {
+        _salaryError.value = when {
+            salary.isNotEmpty() && salary.length > 50 -> "El salario no puede tener más de 50 caracteres"
+            else -> null // Opcional
+        }
+    }
+
+
+    /**
+     * Valida todo el formulario - Solo campos editables
      */
     private fun validateForm() {
         val titleValid = _titleError.value.isNullOrEmpty()
         val aboutJobValid = _aboutJobError.value.isNullOrEmpty()
+        val requirementsValid = _requirementsError.value.isNullOrEmpty()
+        val vacanciesValid = _vacanciesError.value.isNullOrEmpty()
+        val employmentTypeValid = _employmentTypeError.value.isNullOrEmpty()
         val modalityValid = _modalityError.value.isNullOrEmpty()
+        val deadlineValid = _deadlineError.value.isNullOrEmpty()
+        val salaryValid = _salaryError.value.isNullOrEmpty()
 
-        _isFormValid.value = titleValid && aboutJobValid && modalityValid
+        _isFormValid.value = titleValid && aboutJobValid && requirementsValid && 
+                vacanciesValid && employmentTypeValid && modalityValid && 
+                deadlineValid && salaryValid
     }
 
     /**
@@ -215,7 +370,12 @@ class MyAdsEditViewModel : ViewModel() {
                 val updatedJob = currentJob.copy(
                     title = _title.value ?: "",
                     aboutJob = _aboutJob.value ?: "",
+                    requirements = _requirements.value?.split("\n")?.filter { it.isNotBlank() } ?: emptyList(),
+                    vacancies = _vacancies.value?.toIntOrNull() ?: 0,
+                    employmentType = _employmentType.value ?: "",
                     modality = _modality.value ?: "",
+                    deadline = _deadline.value ?: "",
+                    salary = _salary.value ?: "",
                     updatedAt = System.currentTimeMillis()
                 )
 
@@ -292,7 +452,12 @@ class MyAdsEditViewModel : ViewModel() {
                 val updatedJob = currentJob.copy(
                     title = _title.value ?: "",
                     aboutJob = _aboutJob.value ?: "",
+                    requirements = _requirements.value?.split("\n")?.filter { it.isNotBlank() } ?: emptyList(),
+                    vacancies = _vacancies.value?.toIntOrNull() ?: 0,
+                    employmentType = _employmentType.value ?: "",
                     modality = _modality.value ?: "",
+                    deadline = _deadline.value ?: "",
+                    salary = _salary.value ?: "",
                     updatedAt = System.currentTimeMillis()
                 )
 
@@ -347,13 +512,18 @@ class MyAdsEditViewModel : ViewModel() {
     }
 
     /**
-     * Verifica si hay cambios sin guardar
+     * Verifica si hay cambios sin guardar - Solo campos editables
      */
     fun hasUnsavedChanges(): Boolean {
         val currentJob = _currentJob.value ?: return false
         return currentJob.title != _title.value ||
                 currentJob.aboutJob != _aboutJob.value ||
-                currentJob.modality != _modality.value
+                currentJob.requirements.joinToString("\n") != _requirements.value ||
+                currentJob.vacancies.toString() != _vacancies.value ||
+                currentJob.employmentType != _employmentType.value ||
+                currentJob.modality != _modality.value ||
+                currentJob.deadline != _deadline.value ||
+                currentJob.salary != _salary.value
     }
 
     /**
@@ -378,12 +548,17 @@ class MyAdsEditViewModel : ViewModel() {
     }
 
     /**
-     * Valida todos los campos actuales
+     * Valida todos los campos actuales - Solo campos editables
      */
     fun validateAllFields() {
         _title.value?.let { validateTitle(it) }
         _aboutJob.value?.let { validateAboutJob(it) }
+        _requirements.value?.let { validateRequirements(it) }
+        _vacancies.value?.let { validateVacancies(it) }
+        _employmentType.value?.let { validateEmploymentType(it) }
         _modality.value?.let { validateModality(it) }
+        _deadline.value?.let { validateDeadline(it) }
+        _salary.value?.let { validateSalary(it) }
         validateForm()
     }
 }

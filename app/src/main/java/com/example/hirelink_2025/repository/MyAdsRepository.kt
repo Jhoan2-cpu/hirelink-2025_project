@@ -7,6 +7,7 @@ import com.example.hirelink_2025.network.Callback
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.CompletableDeferred
 
 /**
  * Repository para manejo de datos de anuncios laborales
@@ -168,22 +169,26 @@ class MyAdsRepository {
                 return@flow
             }
             
-            // Obtener de Firestore
+            // Usar CompletableDeferred para esperar el resultado de Firestore
+            val deferred = CompletableDeferred<Job?>()
+            
             firestoreService.getJobById(jobId, object : Callback<Job?> {
                 override fun onSuccess(result: Job?) {
                     result?.let { job ->
                         jobsCache[job.id] = job
                         lastCacheUpdate = System.currentTimeMillis()
                     }
+                    deferred.complete(result)
                 }
                 
                 override fun onError(exception: Exception) {
-                    // Manejar error
+                    deferred.complete(null)
                 }
             })
             
-            // Emitir desde cache o null
-            emit(jobsCache[jobId])
+            val job = deferred.await()
+            
+            emit(job)
             
         } catch (e: Exception) {
             emit(null)
@@ -201,12 +206,27 @@ class MyAdsRepository {
             val updatedJob = job.copy(updatedAt = System.currentTimeMillis())
             jobsCache[job.id] = updatedJob
             
-            // TODO: Actualizar en Firestore cuando esté implementado
-            // firestoreService.updateJob(updatedJob, callback)
+            // Usar CompletableDeferred para convertir callback a suspend function
+            val deferred = CompletableDeferred<Boolean>()
             
-            true
+            firestoreService.updateJob(updatedJob, object : com.example.hirelink_2025.network.VoidCallback {
+                override fun onSuccess() {
+                    android.util.Log.d("MyAdsRepository", "Job updated successfully in Firestore: ${updatedJob.id}")
+                    deferred.complete(true)
+                }
+                
+                override fun onError(exception: Exception) {
+                    android.util.Log.e("MyAdsRepository", "Error updating job in Firestore: ${exception.message}")
+                    // Revertir cache en caso de error
+                    jobsCache.remove(job.id)
+                    deferred.complete(false)
+                }
+            })
+            
+            deferred.await()
             
         } catch (e: Exception) {
+            android.util.Log.e("MyAdsRepository", "Exception in updateJob: ${e.message}")
             false
         }
     }

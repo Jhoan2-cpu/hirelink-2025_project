@@ -94,8 +94,7 @@ class JobRegisterViewModel : ViewModel() {
         phone: String,
         email: String,
         website: String,
-        selectedLocation: String = "Lima, Perú",
-        imageUrl: String? = null
+        selectedLocation: String = "Lima, Perú"
     ) {
         val currentUser = auth.currentUser
         val company = _selectedCompany.value

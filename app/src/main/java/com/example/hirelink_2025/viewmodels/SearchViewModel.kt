@@ -3,88 +3,349 @@ package com.example.hirelink_2025.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.hirelink_2025.models.Job
+import com.example.hirelink_2025.models.Company
 import com.example.hirelink_2025.models.JobStatus
 import com.example.hirelink_2025.network.Callback
 import com.example.hirelink_2025.network.FirestoreService
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 
+/**
+ * ViewModel para búsqueda de empleos siguiendo arquitectura MVVM
+ * Maneja la lógica de búsqueda flexible por tipo de empleo y ubicación
+ */
 class SearchViewModel : ViewModel() {
-    
+
     private val firestoreService = FirestoreService()
-    
-    private val _jobs = MutableLiveData<List<Job>>()
-    val jobs: LiveData<List<Job>> = _jobs
-    
+
+    // Campos de búsqueda
+    private val _jobTypeQuery = MutableLiveData<String>()
+    val jobTypeQuery: LiveData<String> = _jobTypeQuery
+
+    private val _locationQuery = MutableLiveData<String>()
+    val locationQuery: LiveData<String> = _locationQuery
+
+    // Estados de resultados
+    private val _searchResults = MutableLiveData<List<Job>>()
+    val searchResults: LiveData<List<Job>> = _searchResults
+
+    private val _companiesCache = MutableLiveData<Map<String, Company>>()
+    val companiesCache: LiveData<Map<String, Company>> = _companiesCache
+
+    // Estados de UI
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
-    
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> = _error
-    
+
+    private val _isSearching = MutableLiveData<Boolean>()
+    val isSearching: LiveData<Boolean> = _isSearching
+
+    private val _hasSearched = MutableLiveData<Boolean>()
+    val hasSearched: LiveData<Boolean> = _hasSearched
+
+    private val _isEmpty = MutableLiveData<Boolean>()
+    val isEmpty: LiveData<Boolean> = _isEmpty
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
+
+    private val _searchCount = MutableLiveData<Int>()
+    val searchCount: LiveData<Int> = _searchCount
+
     init {
-        loadAllJobs()
+        _hasSearched.value = false
+        _isEmpty.value = false
+        _searchCount.value = 0
+        _companiesCache.value = emptyMap()
     }
-    
-    fun loadAllJobs() {
-        _isLoading.value = true
-        _error.value = null
-        
-        // Usar FirebaseFirestore directamente para evitar problemas de índice
-        val db = FirebaseFirestore.getInstance()
-        db.collection(FirestoreService.JOBS_COLLECTION)
-            .whereEqualTo("status", JobStatus.ACTIVE.name)
-            .limit(50)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                _isLoading.value = false
-                val jobs = querySnapshot.toObjects(Job::class.java)
-                    .sortedByDescending { it.createdAt ?: 0L } // Ordenar por createdAt en el cliente
-                _jobs.value = jobs
-            }
-            .addOnFailureListener { exception ->
-                _isLoading.value = false
-                _error.value = "Error al cargar ofertas: ${exception.message}"
-            }
-    }
-    
+
     /**
-     * Search jobs by title. Location parameter is kept for compatibility but not used
-     * since location is now stored in Company.city and would require additional queries.
+     * Actualiza el campo de tipo de empleo
      */
-    fun searchJobs(title: String?, location: String? = null) {
-        _isLoading.value = true
-        _error.value = null
-        
-        val db = FirebaseFirestore.getInstance()
-        var query = db.collection(FirestoreService.JOBS_COLLECTION)
-            .whereEqualTo("status", JobStatus.ACTIVE.name)
-        
-        // Aplicar filtros básicos sin índice compuesto
-        title?.takeIf { it.isNotBlank() }?.let {
-            query = query.whereGreaterThanOrEqualTo("title", it)
-                .whereLessThanOrEqualTo("title", it + '\uf8ff')
-        }
-        
-        query.limit(50)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                _isLoading.value = false
-                var jobs = querySnapshot.toObjects(Job::class.java)
-                
-                // Note: Location filtering removed because Job model no longer has location field
-                // Location information is now stored in Company.city and would require additional query
-                
-                // Ordenar por fecha de creación en el cliente
-                _jobs.value = jobs.sortedByDescending { it.createdAt ?: 0L }
-            }
-            .addOnFailureListener { exception ->
-                _isLoading.value = false
-                _error.value = "Error en búsqueda: ${exception.message}"
-            }
+    fun updateJobType(jobType: String) {
+        _jobTypeQuery.value = jobType
     }
-    
-    fun clearError() {
-        _error.value = null
+
+    /**
+     * Actualiza el campo de ubicación
+     */
+    fun updateLocation(location: String) {
+        _locationQuery.value = location
+    }
+
+    /**
+     * Realiza búsqueda de empleos con parámetros flexibles
+     */
+    fun searchJobs() {
+        val jobType = _jobTypeQuery.value?.trim()
+        val location = _locationQuery.value?.trim()
+
+        // Validar que al menos un campo tenga contenido
+        if (jobType.isNullOrBlank() && location.isNullOrBlank()) {
+            _errorMessage.value = "Ingresa al menos un criterio de búsqueda"
+            return
+        }
+
+        _isLoading.value = true
+        _isSearching.value = true
+        _errorMessage.value = ""
+        _hasSearched.value = true
+
+        android.util.Log.d("SearchViewModel", "Searching jobs with jobType: '$jobType', location: '$location'")
+
+        searchJobsFlexible(jobType, location)
+    }
+
+    /**
+     * Búsqueda flexible de empleos por tipo y ubicación
+     */
+    private fun searchJobsFlexible(jobType: String?, location: String?) {
+        // Paso 1: Obtener todas las compañías que coincidan con la ubicación (si se especifica)
+        if (!location.isNullOrBlank()) {
+            searchByLocationAndJobType(location, jobType)
+        } else {
+            // Si no hay filtro de ubicación, buscar solo por tipo de empleo
+            searchByJobTypeOnly(jobType)
+        }
+    }
+
+    /**
+     * Buscar por ubicación y tipo de empleo
+     */
+    private fun searchByLocationAndJobType(location: String, jobType: String?) {
+        // Primero obtener compañías que coincidan con la ubicación
+        firestoreService.getAllCompanies(object : Callback<List<Company>> {
+            override fun onSuccess(companies: List<Company>) {
+                // Filtrar compañías por ubicación (address, city, country)
+                val matchingCompanies = companies.filter { company ->
+                    company.address.contains(location, ignoreCase = true) ||
+                    company.city.contains(location, ignoreCase = true) ||
+                    company.country.contains(location, ignoreCase = true)
+                }
+
+                android.util.Log.d("SearchViewModel", "Found ${matchingCompanies.size} companies matching location '$location'")
+
+                if (matchingCompanies.isNotEmpty()) {
+                    // Obtener jobs de estas compañías
+                    getJobsFromCompanies(matchingCompanies, jobType)
+                } else {
+                    // No hay compañías en esa ubicación
+                    _searchResults.value = emptyList()
+                    _searchCount.value = 0
+                    _isEmpty.value = true
+                    _isLoading.value = false
+                    _isSearching.value = false
+                }
+            }
+
+            override fun onError(exception: Exception) {
+                android.util.Log.e("SearchViewModel", "Error getting companies: ${exception.message}")
+                _isLoading.value = false
+                _isSearching.value = false
+                _errorMessage.value = "Error buscando compañías: ${exception.message}"
+            }
+        })
+    }
+
+    /**
+     * Buscar solo por tipo de empleo
+     */
+    private fun searchByJobTypeOnly(jobType: String?) {
+        if (jobType.isNullOrBlank()) {
+            _errorMessage.value = "Ingresa un criterio de búsqueda"
+            _isLoading.value = false
+            _isSearching.value = false
+            return
+        }
+
+        // Obtener todos los jobs activos y filtrar por tipo
+        firestoreService.getActiveJobs(100, object : Callback<List<Job>> {
+            override fun onSuccess(jobs: List<Job>) {
+                val filteredJobs = filterJobsByType(jobs, jobType)
+                processSearchResults(filteredJobs)
+            }
+
+            override fun onError(exception: Exception) {
+                android.util.Log.e("SearchViewModel", "Error getting jobs: ${exception.message}")
+                _isLoading.value = false
+                _isSearching.value = false
+                _errorMessage.value = "Error en la búsqueda: ${exception.message}"
+            }
+        })
+    }
+
+    /**
+     * Obtener jobs de las compañías especificadas y filtrar por tipo
+     */
+    private fun getJobsFromCompanies(companies: List<Company>, jobType: String?) {
+        val allJobs = mutableListOf<Job>()
+        var pendingRequests = companies.size
+
+        if (pendingRequests == 0) {
+            processSearchResults(emptyList())
+            return
+        }
+
+        companies.forEach { company ->
+            firestoreService.getJobsByCompany(company.id, object : Callback<List<Job>> {
+                override fun onSuccess(jobs: List<Job>) {
+                    // Filtrar solo jobs activos
+                    val activeJobs = jobs.filter { it.status == JobStatus.ACTIVE }
+                    
+                    // Filtrar por tipo de empleo si se especifica
+                    val filteredJobs = if (!jobType.isNullOrBlank()) {
+                        filterJobsByType(activeJobs, jobType)
+                    } else {
+                        activeJobs
+                    }
+                    
+                    allJobs.addAll(filteredJobs)
+                    pendingRequests--
+
+                    if (pendingRequests == 0) {
+                        processSearchResults(allJobs)
+                    }
+                }
+
+                override fun onError(exception: Exception) {
+                    android.util.Log.e("SearchViewModel", "Error getting jobs for company ${company.id}: ${exception.message}")
+                    pendingRequests--
+
+                    if (pendingRequests == 0) {
+                        processSearchResults(allJobs)
+                    }
+                }
+            })
+        }
+    }
+
+    /**
+     * Filtra jobs por tipo de empleo en title, modality o aboutJob
+     */
+    private fun filterJobsByType(jobs: List<Job>, jobType: String): List<Job> {
+        return jobs.filter { job ->
+            job.title.contains(jobType, ignoreCase = true) ||
+            job.modality.contains(jobType, ignoreCase = true) ||
+            job.aboutJob.contains(jobType, ignoreCase = true)
+        }
+    }
+
+    /**
+     * Procesa y muestra los resultados de búsqueda
+     */
+    private fun processSearchResults(jobs: List<Job>) {
+        // Ordenar por fecha de creación (más recientes primero)
+        val sortedJobs = jobs.sortedByDescending { it.createdAt }
+        
+        android.util.Log.d("SearchViewModel", "Search completed: ${sortedJobs.size} jobs found")
+        
+        _searchResults.value = sortedJobs
+        _searchCount.value = sortedJobs.size
+        _isEmpty.value = sortedJobs.isEmpty()
+        _isLoading.value = false
+        _isSearching.value = false
+
+        // Precargar información de compañías para los resultados
+        if (sortedJobs.isNotEmpty()) {
+            loadCompaniesForJobs(sortedJobs)
+        }
+    }
+
+    /**
+     * Precarga información de compañías para mostrar con los resultados
+     */
+    private fun loadCompaniesForJobs(jobs: List<Job>) {
+        val companyIds = jobs.map { it.companyId }.distinct().filter { it.isNotEmpty() }
+        
+        if (companyIds.isEmpty()) return
+
+        val companiesMap = mutableMapOf<String, Company>()
+        var pendingRequests = companyIds.size
+
+        companyIds.forEach { companyId ->
+            firestoreService.getCompanyById(companyId, object : Callback<Company?> {
+                override fun onSuccess(company: Company?) {
+                    company?.let { companiesMap[it.id] = it }
+                    pendingRequests--
+
+                    if (pendingRequests == 0) {
+                        _companiesCache.value = companiesMap
+                        android.util.Log.d("SearchViewModel", "Loaded ${companiesMap.size} companies for search results")
+                    }
+                }
+
+                override fun onError(exception: Exception) {
+                    android.util.Log.e("SearchViewModel", "Error loading company $companyId: ${exception.message}")
+                    pendingRequests--
+
+                    if (pendingRequests == 0) {
+                        _companiesCache.value = companiesMap
+                    }
+                }
+            })
+        }
+    }
+
+    /**
+     * Obtiene la compañía para un job específico
+     */
+    fun getCompanyForJob(job: Job): Company? {
+        return _companiesCache.value?.get(job.companyId)
+    }
+
+    /**
+     * Limpia los resultados de búsqueda
+     */
+    fun clearSearch() {
+        _searchResults.value = emptyList()
+        _searchCount.value = 0
+        _isEmpty.value = false
+        _hasSearched.value = false
+        _errorMessage.value = ""
+        _companiesCache.value = emptyMap()
+    }
+
+    /**
+     * Limpia solo los mensajes de error
+     */
+    fun clearErrorMessage() {
+        _errorMessage.value = ""
+    }
+
+    /**
+     * Verifica si se puede realizar búsqueda
+     */
+    fun canSearch(): Boolean {
+        val jobType = _jobTypeQuery.value?.trim()
+        val location = _locationQuery.value?.trim()
+        return !jobType.isNullOrBlank() || !location.isNullOrBlank()
+    }
+
+    /**
+     * Obtiene el resumen de la búsqueda actual
+     */
+    fun getSearchSummary(): String {
+        val jobType = _jobTypeQuery.value?.trim()
+        val location = _locationQuery.value?.trim()
+        
+        return when {
+            !jobType.isNullOrBlank() && !location.isNullOrBlank() -> 
+                "Búsqueda: '$jobType' en '$location'"
+            !jobType.isNullOrBlank() -> 
+                "Búsqueda: '$jobType'"
+            !location.isNullOrBlank() -> 
+                "Búsqueda en: '$location'"
+            else -> 
+                "Búsqueda vacía"
+        }
+    }
+
+    /**
+     * Recargar resultados (para refresh)
+     */
+    fun refreshResults() {
+        if (_hasSearched.value == true && canSearch()) {
+            searchJobs()
+        }
     }
 }

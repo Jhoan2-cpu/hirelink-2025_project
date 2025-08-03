@@ -155,52 +155,6 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Job Offers Title -->
-    <TextView
-        android:id="@+id/jobOffersTitle"
-        style="@style/TextAppearance.HireLink.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_large"
-        android:text="Ofertas laborales"
-        android:textColor="@color/text_primary"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchCard" />
-
-    <!-- Spacer for collapsed state -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/collapsedGuideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="80dp" />
-
-    <!-- Jobs RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/jobsRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/margin_medium"
-        android:paddingHorizontal="@dimen/margin_large"
-        android:paddingBottom="@dimen/margin_large"
-        android:clipToPadding="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/jobOffersTitle" />
-
-    <!-- Loading indicator -->
-    <ProgressBar
-        android:id="@+id/loadingProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/jobsRecyclerView"
-        app:layout_constraintEnd_toEndOf="@id/jobsRecyclerView"
-        app:layout_constraintStart_toStartOf="@id/jobsRecyclerView"
-        app:layout_constraintTop_toTopOf="@id/jobsRecyclerView" />
-
     <!-- Bottom decoration -->
     <View
         android:layout_width="0dp"

@@ -12,6 +12,7 @@ class ApplicantsPagerAdapter(
 ) : FragmentStateAdapter(activity) {
 
     private var applicantsAdapter: ApplicantsAdapter? = null
+    private var applicationsAdapter: ApplicationsAdapter? = null
     private val fragments = mutableListOf<Fragment>()
 
     override fun getItemCount(): Int = 2
@@ -32,12 +33,19 @@ class ApplicantsPagerAdapter(
                 is MyAdsPendingApplicantsFragment -> fragment.setApplicantsAdapter(adapter)
             }
         }
+        
+        applicationsAdapter?.let { adapter ->
+            when (fragment) {
+                is MyAdsAcceptedApplicantsFragment -> fragment.setApplicationsAdapter(adapter)
+                is MyAdsPendingApplicantsFragment -> fragment.setApplicationsAdapter(adapter)
+            }
+        }
 
         return fragment
     }
 
     /**
-     * Método para recibir el adapter del fragment PADRE
+     * Método para recibir el adapter del fragment PADRE (legacy)
      */
     fun setApplicantsAdapter(adapter: ApplicantsAdapter) {
         this.applicantsAdapter = adapter
@@ -51,6 +59,27 @@ class ApplicantsPagerAdapter(
                 }
                 is MyAdsPendingApplicantsFragment -> {
                     fragment.setApplicantsAdapter(adapter)
+                    fragment.updateFilteredList()
+                }
+            }
+        }
+    }
+
+    /**
+     * Método para recibir el adapter de aplicaciones actualizado
+     */
+    fun setApplicationsAdapter(adapter: ApplicationsAdapter) {
+        this.applicationsAdapter = adapter
+
+        // Pasar el adapter a fragments ya creados
+        fragments.forEach { fragment ->
+            when (fragment) {
+                is MyAdsAcceptedApplicantsFragment -> {
+                    fragment.setApplicationsAdapter(adapter)
+                    fragment.updateFilteredList()
+                }
+                is MyAdsPendingApplicantsFragment -> {
+                    fragment.setApplicationsAdapter(adapter)
                     fragment.updateFilteredList()
                 }
             }

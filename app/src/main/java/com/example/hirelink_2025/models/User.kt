@@ -3,7 +3,7 @@ package com.example.hirelink_2025.models
 data class User(
     val id: String = "",
     val email: String = "",//1 2
-    val fullName: String = "",// Cambiado de name a fullName
+    val name: String = "",// Cambiado de name a fullName
     val phone: String? = null,//1 2
     val profileImageUrl: String? = null,//1
     val active: Boolean = true,

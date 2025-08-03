@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hirelink_2025.databinding.FragmentMyAdsAcceptedApplicantsBinding
 import com.example.hirelink_2025.models.ApplicationStatus
 import com.example.hirelink_2025.view.adapter.ApplicantsAdapter
+import com.example.hirelink_2025.view.adapter.ApplicationsAdapter
 
 class MyAdsAcceptedApplicantsFragment : Fragment() {
 
@@ -16,6 +17,7 @@ class MyAdsAcceptedApplicantsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var applicantsAdapter: ApplicantsAdapter? = null
+    private var applicationsAdapter: ApplicationsAdapter? = null
     private var jobId: String? = null
 
     companion object {
@@ -48,7 +50,14 @@ class MyAdsAcceptedApplicantsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView()
+        
+        // Priorizar el nuevo adapter de aplicaciones si está disponible
+        applicationsAdapter?.let { 
+            setupApplicationsRecyclerView() 
+        } ?: run {
+            // Fallback al adapter legacy si no hay ApplicationsAdapter
+            applicantsAdapter?.let { setupRecyclerView() }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -58,17 +67,16 @@ class MyAdsAcceptedApplicantsFragment : Fragment() {
             // Crear un nuevo adapter filtrado para este fragment
             val filteredAdapter = ApplicantsAdapter(
                 onItemClicked = { applicant ->
-                    // Propagar el click al adapter padre
-                    (parentFragment as? MyAdsApplicantsFragment)?.let { parent ->
-                        // Llamar directamente al método de navegación del fragment padre
-                        parent.navigateToApplicantProfile(applicant)
-                    }
+                    // Legacy adapter - log para debugging
+                    android.util.Log.d("AcceptedApplicants", "Legacy applicant clicked: ${applicant.name}")
                 },
                 onAcceptClicked = { applicant ->
-                    (parentFragment as? MyAdsApplicantsFragment)?.handleAcceptApplicant(applicant)
+                    // Legacy adapter - log para debugging  
+                    android.util.Log.d("AcceptedApplicants", "Legacy accept clicked: ${applicant.name}")
                 },
                 onRejectClicked = { applicant ->
-                    (parentFragment as? MyAdsApplicantsFragment)?.handleRejectApplicant(applicant)
+                    // Legacy adapter - log para debugging
+                    android.util.Log.d("AcceptedApplicants", "Legacy reject clicked: ${applicant.name}")
                 }
             )
 
@@ -93,10 +101,55 @@ class MyAdsAcceptedApplicantsFragment : Fragment() {
     }
 
     /**
+     * Método para recibir el adapter de aplicaciones actualizado
+     */
+    fun setApplicationsAdapter(adapter: ApplicationsAdapter) {
+        this.applicationsAdapter = adapter
+        if (_binding != null) {
+            setupApplicationsRecyclerView()
+        }
+    }
+
+    /**
+     * Configurar RecyclerView para ApplicationsAdapter
+     */
+    private fun setupApplicationsRecyclerView() {
+        applicationsAdapter?.let { adapter ->
+            binding.acceptedApplicantsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+            
+            // Crear adapter filtrado para solo aplicaciones aceptadas
+            val filteredAdapter = ApplicationsAdapter(
+                onAcceptClick = { application ->
+                    (parentFragment as? MyAdsApplicantsFragment)?.handleAcceptApplication(application)
+                },
+                onRejectClick = { application ->
+                    (parentFragment as? MyAdsApplicantsFragment)?.handleRejectApplication(application)
+                },
+                onApplicantClick = { application ->
+                    (parentFragment as? MyAdsApplicantsFragment)?.navigateToApplicantProfile(application)
+                },
+                getUserInfo = { userId ->
+                    // Obtener info del usuario desde el fragment padre
+                    (parentFragment as? MyAdsApplicantsFragment)?.viewModel?.getUserById(userId)
+                }
+            )
+
+            binding.acceptedApplicantsRecyclerView.adapter = filteredAdapter
+
+            // Filtrar solo aplicaciones aceptadas
+            val acceptedApplications = adapter.currentList.filter {
+                it.status == ApplicationStatus.ACCEPTED
+            }
+            filteredAdapter.submitList(acceptedApplications)
+        }
+    }
+
+    /**
      * Actualizar lista filtrada
      */
     fun updateFilteredList() {
-        setupRecyclerView()
+        applicantsAdapter?.let { setupRecyclerView() }
+        applicationsAdapter?.let { setupApplicationsRecyclerView() }
     }
 
     override fun onDestroyView() {

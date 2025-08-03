@@ -12,10 +12,12 @@
         android:label="@string/nav_search">
 
         <action
-            android:id="@+id/action_searchFragment_to_searchResultListFragment"
-            app:destination="@id/searchResultListFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out" />
+            android:id="@+id/action_searchFragment_to_searchResultsFragment"
+            app:destination="@id/searchResultsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_searchFragment_to_jobDetailFragment"
             app:destination="@id/jobDetailFragment"
@@ -25,6 +27,32 @@
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
+    <!-- New Search Results Fragment -->
+    <fragment
+        android:id="@+id/searchResultsFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.SearchResultsFragment"
+        android:label="Resultados de Búsqueda"
+        tools:layout="@layout/fragment_search_results">
+        
+        <argument
+            android:name="jobType"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="location"
+            app:argType="string"
+            android:defaultValue="" />
+            
+        <action
+            android:id="@+id/action_searchResultsFragment_to_jobDetailFragment"
+            app:destination="@id/jobDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Legacy Search Results Fragment (for backward compatibility) -->
     <fragment
         android:id="@+id/searchResultListFragment"
         android:name="com.example.hirelink_2025.view.ui.fragments.search.SearchResultListFragment"
@@ -182,6 +210,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_companyDetailFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
 
     <fragment
@@ -344,6 +375,27 @@
 
         <argument
             android:name="jobId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mapPickerFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.MapPickerFragment"
+        android:label="Seleccionar Ubicación" />
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.hirelink_2025.view.ui.MapFragment"
+        android:label="Mapa"
+        tools:layout="@layout/fragment_map">
+        <argument
+            android:name="latitude"
+            app:argType="java.lang.Double" /> <!-- Cambiado a Double -->
+        <argument
+            android:name="longitude"
+            app:argType="java.lang.Double" />
+        <argument
+            android:name="locationName"
             app:argType="string" />
     </fragment>
 

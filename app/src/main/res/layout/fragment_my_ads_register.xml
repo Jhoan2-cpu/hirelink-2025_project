@@ -404,50 +404,6 @@
 
                 </LinearLayout>
 
-                <!-- Media & Location Section -->
-                <TextView
-                    style="@style/TextAppearance.HireLink.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_extra_large"
-                    android:text="Ubicación"
-                    android:textColor="@color/primary"
-                    android:drawableStart="@drawable/ic_location"
-                    android:drawableTint="@color/primary"
-                    android:drawablePadding="@dimen/margin_small"
-                    android:gravity="center_vertical" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:layout_marginBottom="@dimen/margin_medium"
-                    android:background="@color/divider" />
-
-                <!-- Image Upload Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/uploadImageButton"
-                    style="@style/Widget.HireLink.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/select_image"
-                    android:textColor="@color/secondary"
-                    app:icon="@drawable/ic_image"
-                    app:iconTint="@color/secondary"
-                    app:strokeColor="@color/secondary" />
-
-                <!-- Location Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/selectLocationButton"
-                    style="@style/Widget.HireLink.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:text="@string/select_location"
-                    android:textColor="@color/secondary"
-                    app:icon="@drawable/ic_location_on"
-                    app:iconTint="@color/secondary"
-                    app:strokeColor="@color/secondary" />
 
                 <!-- Contact Info Section -->
                 <TextView
