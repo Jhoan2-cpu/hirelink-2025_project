@@ -492,12 +492,28 @@ class FirestoreService {
      * Crear un nuevo trabajo
      */
     fun createJob(job: Job, callback: Callback<String>) {
+        Log.d("FirestoreService", "=== CREATING NEW JOB ===")
+        Log.d("FirestoreService", "Job title: ${job.title}")
+        Log.d("FirestoreService", "Job status: ${job.status}")
+        Log.d("FirestoreService", "Company ID: ${job.companyId}")
+        
         val docRef = db.collection(JOBS_COLLECTION).document()
         val jobWithId = job.copy(id = docRef.id)
         
         docRef.set(jobWithId)
-            .addOnSuccessListener { callback.onSuccess(docRef.id) }
-            .addOnFailureListener { callback.onError(it) }
+            .addOnSuccessListener { 
+                Log.d("FirestoreService", "✅ Job created successfully: ${docRef.id}")
+                Log.d("FirestoreService", "Job will be available for JobNotificationService monitoring")
+                callback.onSuccess(docRef.id)
+                
+                // Las notificaciones ahora son manejadas por JobNotificationService 
+                // que escucha cambios en tiempo real en Firestore
+                Log.d("FirestoreService", "Job creation complete - JobNotificationService will handle notifications")
+            }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "❌ Error creating job", it)
+                callback.onError(it) 
+            }
     }
     
     /**
@@ -1448,9 +1464,10 @@ class FirestoreService {
      * Obtener notificaciones del usuario
      */
     fun getUserNotifications(userId: String, callback: Callback<List<Notification>>) {
-        db.collection(NOTIFICATIONS_COLLECTION)
+        db.collection("user_notifications")
             .whereEqualTo("userId", userId)
             .orderBy("createdAt", Query.Direction.DESCENDING)
+            .limit(50)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val notifications = querySnapshot.toObjects(Notification::class.java)
@@ -1463,7 +1480,7 @@ class FirestoreService {
      * Marcar notificación como leída
      */
     fun markNotificationAsRead(notificationId: String, callback: VoidCallback) {
-        db.collection(NOTIFICATIONS_COLLECTION)
+        db.collection("user_notifications")
             .document(notificationId)
             .update("read", true)
             .addOnSuccessListener { callback.onSuccess() }
@@ -1946,4 +1963,198 @@ class FirestoreService {
             }
         }
     }
+
+    // ========================================
+    // MÉTODOS PARA NOTIFICACIONES PUSH (FCM)
+    // ========================================
+
+    /**
+     * Guarda el token FCM del usuario en Firestore
+     */
+    fun saveFCMToken(userId: String, token: String) {
+        Log.d("FirestoreService", "Saving FCM token for user: $userId")
+        
+        val tokenData = mapOf(
+            "fcmToken" to token,
+            "updatedAt" to System.currentTimeMillis(),
+            "deviceType" to "android"
+        )
+        
+        db.collection(USERS_COLLECTION)
+            .document(userId)
+            .update(tokenData)
+            .addOnSuccessListener {
+                Log.d("FirestoreService", "FCM token saved successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirestoreService", "Error saving FCM token", e)
+            }
+    }
+
+    /**
+     * Obtiene todos los tokens FCM de usuarios activos
+     */
+    fun getAllFCMTokens(callback: Callback<List<String>>) {
+        Log.d("FirestoreService", "Getting all FCM tokens")
+        
+        db.collection(USERS_COLLECTION)
+            .whereNotEqualTo("fcmToken", null)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val tokens = mutableListOf<String>()
+                for (document in querySnapshot.documents) {
+                    val token = document.getString("fcmToken")
+                    if (!token.isNullOrEmpty()) {
+                        tokens.add(token)
+                    }
+                }
+                Log.d("FirestoreService", "Found ${tokens.size} FCM tokens")
+                callback.onSuccess(tokens)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirestoreService", "Error getting FCM tokens", e)
+                callback.onError(e)
+            }
+    }
+
+    /**
+     * Envía notificación de nueva oferta laboral a todos los usuarios
+     */
+    fun notifyNewJobPosted(job: Job, company: Company) {
+        Log.d("FirestoreService", "Notifying new job posted: ${job.title} by ${company.name}")
+        
+        getAllFCMTokens(object : Callback<List<String>> {
+            override fun onSuccess(tokens: List<String>) {
+                if (tokens.isEmpty()) {
+                    Log.w("FirestoreService", "No FCM tokens found, cannot send notifications")
+                    return
+                }
+                
+                // Crear documento de notificación en Firestore
+                val notificationData = mapOf(
+                    "type" to "new_job",
+                    "jobId" to job.id,
+                    "companyId" to company.id,
+                    "companyName" to company.name,
+                    "jobTitle" to job.title,
+                    "title" to "Nueva oferta laboral",
+                    "body" to "Se publicó un anuncio laboral de ${company.name} - ${job.title}. Ver en HireLink",
+                    "tokens" to tokens,
+                    "createdAt" to System.currentTimeMillis(),
+                    "status" to "pending"
+                )
+                
+                // Guardar en colección de notificaciones para procesar por Cloud Functions
+                db.collection("notifications")
+                    .add(notificationData)
+                    .addOnSuccessListener { documentRef ->
+                        Log.d("FirestoreService", "Notification document created: ${documentRef.id}")
+                        
+                        // También crear notificaciones locales en Firestore para cada usuario
+                        createUserNotifications(job, company)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("FirestoreService", "Error creating notification document", e)
+                    }
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("FirestoreService", "Error getting FCM tokens for notification", exception)
+            }
+        })
+    }
+
+    /**
+     * Crea notificaciones individuales para cada usuario en Firestore
+     */
+    private fun createUserNotifications(job: Job, company: Company) {
+        Log.d("FirestoreService", "Creating user notifications for job: ${job.title}")
+        
+        // Obtener todos los usuarios
+        db.collection(USERS_COLLECTION)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val batch = db.batch()
+                
+                for (document in querySnapshot.documents) {
+                    val userId = document.id
+                    
+                    // No enviar notificación al propietario de la empresa
+                    if (userId == company.ownerId) {
+                        continue
+                    }
+                    
+                    val notification = Notification(
+                        id = "", // Se generará automáticamente
+                        userId = userId,
+                        title = "Nueva oferta laboral",
+                        message = "Se publicó un anuncio laboral de ${company.name} - ${job.title}",
+                        type = NotificationType.JOB_UPDATE,
+                        relatedId = job.id,
+                        createdAt = System.currentTimeMillis(),
+                        read = false
+                    )
+                    
+                    val notificationRef = db.collection("user_notifications").document()
+                    batch.set(notificationRef, notification.copy(id = notificationRef.id))
+                }
+                
+                batch.commit()
+                    .addOnSuccessListener {
+                        Log.d("FirestoreService", "User notifications created successfully")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("FirestoreService", "Error creating user notifications", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirestoreService", "Error getting users for notifications", e)
+            }
+    }
+
+    /**
+     * Método de prueba para enviar notificación de test
+     */
+    fun sendTestNotification() {
+        Log.d("FirestoreService", "=== SENDING TEST NOTIFICATION ===")
+        
+        getAllFCMTokens(object : Callback<List<String>> {
+            override fun onSuccess(tokens: List<String>) {
+                Log.d("FirestoreService", "Test notification - Found ${tokens.size} FCM tokens")
+                
+                if (tokens.isEmpty()) {
+                    Log.w("FirestoreService", "No FCM tokens found for test notification")
+                    return
+                }
+                
+                // Crear documento de notificación de prueba
+                val testNotificationData = mapOf(
+                    "type" to "test",
+                    "jobId" to "test-job-123",
+                    "companyId" to "test-company",
+                    "companyName" to "Empresa de Prueba",
+                    "jobTitle" to "Desarrollador de Prueba",
+                    "title" to "Notificación de Prueba",
+                    "body" to "Esta es una notificación de prueba del sistema HireLink",
+                    "tokens" to tokens,
+                    "createdAt" to System.currentTimeMillis(),
+                    "status" to "pending"
+                )
+                
+                db.collection("notifications")
+                    .add(testNotificationData)
+                    .addOnSuccessListener { documentRef ->
+                        Log.d("FirestoreService", "Test notification document created: ${documentRef.id}")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("FirestoreService", "Error creating test notification document", e)
+                    }
+            }
+            
+            override fun onError(exception: Exception) {
+                Log.e("FirestoreService", "Error getting FCM tokens for test notification", exception)
+            }
+        })
+    }
+
 }

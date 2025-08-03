@@ -44,6 +44,9 @@ class ViewModelFactory : ViewModelProvider.Factory {
             modelClass.isAssignableFrom(ApplicationsViewModel::class.java) -> {
                 ApplicationsViewModel() as T
             }
+            modelClass.isAssignableFrom(JobMapViewModel::class.java) -> {
+                JobMapViewModel() as T
+            }
             // Agregar otros ViewModels aquí conforme los creemos
             else -> throw IllegalArgumentException("ViewModel class desconocida: ${modelClass.name}")
         }

@@ -210,28 +210,28 @@ class JobDetailFragment : Fragment(), OnMapReadyCallback {
     // ✅ AGREGAR método para mostrar ubicación en el mapa
     private fun showCompanyLocationOnMap(company: Company) {
         try {
-            val coordinates = LocationUtils.extractCoordinates(company.ubication)
+            val locationUtils = LocationUtils()
+            val coordinates = locationUtils.extractCoordinates(company.ubication)
 
-            coordinates?.let { (latitude, longitude) ->
-                googleMap?.let { map ->
-                    val location = LatLng(latitude, longitude)
+            if (coordinates != null && googleMap != null) {
+                val (latitude, longitude) = coordinates
+                val location = LatLng(latitude, longitude)
 
-                    map.clear()
-                    map.addMarker(
-                        MarkerOptions()
-                            .position(location)
-                            .title(company.name)
-                            .snippet(company.address)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                    )
+                googleMap!!.clear()
+                googleMap!!.addMarker(
+                    MarkerOptions()
+                        .position(location)
+                        .title(company.name)
+                        .snippet("${company.city}, ${company.country}")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                )
 
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
+                googleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
 
-                    // Ocultar loading del mapa
-                    mapLoadingContainer.visibility = View.GONE
-                }
-            } ?: run {
-                // No hay coordenadas válidas
+                // Ocultar loading del mapa
+                mapLoadingContainer.visibility = View.GONE
+            } else {
+                // No hay coordenadas válidas o mapa no disponible
                 showNoLocationMessage()
             }
         } catch (e: Exception) {

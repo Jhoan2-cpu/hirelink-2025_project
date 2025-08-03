@@ -1,242 +1,105 @@
-2025-08-03 09:31:53.317 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=148160676, downTime=148160676, phoneEventTime=09:31:53.309 } moveCount:0
-2025-08-03 09:31:53.372 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=148160735, downTime=148160676, phoneEventTime=09:31:53.368 } moveCount:0
-2025-08-03 09:31:53.427 23188-23188 ScrollerOp...ionManager com.example.hirelink_2025            D  registerConfigChangedListener
-2025-08-03 09:31:53.437 23188-23188 ScrollerOp...ionManager com.example.hirelink_2025            D  registerConfigChangedListener
-2025-08-03 09:31:53.477 23188-23188 ScrollerOp...ionManager com.example.hirelink_2025            D  registerConfigChangedListener
-2025-08-03 09:31:53.479 23188-23188 FirestoreService        com.example.hirelink_2025            D  App verification disabled for testing
-2025-08-03 09:31:53.479 23188-23188 ApplicationsViewModel   com.example.hirelink_2025            D  ViewModel initialized
-2025-08-03 09:31:53.480 23188-23188 ApplicationsViewModel   com.example.hirelink_2025            D  Loading applications for user: AQ8jW8ne9KPi2tjM1g0Ov04WwwC2
-2025-08-03 09:31:53.480 23188-23188 FirestoreService        com.example.hirelink_2025            D  Getting applications for user: AQ8jW8ne9KPi2tjM1g0Ov04WwwC2
-2025-08-03 09:31:53.866 23188-23188 FirestoreService        com.example.hirelink_2025            D  Found 2 applications for user
-2025-08-03 09:31:53.866 23188-23188 ApplicationsViewModel   com.example.hirelink_2025            D  Successfully loaded 2 user applications
-2025-08-03 09:31:53.866 23188-23188 ApplicationsViewModel   com.example.hirelink_2025            D  Loading complete data for 2 applications (2 unique jobs)
-2025-08-03 09:31:54.004 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=148161366, downTime=148161366, phoneEventTime=09:31:53.999 } moveCount:0
-2025-08-03 09:31:54.039 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=148161404, downTime=148161366, phoneEventTime=09:31:54.037 } moveCount:0
-2025-08-03 09:31:54.069 23188-23188 ScrollerOp...ionManager com.example.hirelink_2025            D  registerConfigChangedListener
-2025-08-03 09:31:54.083 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Received search params - jobType: '', location: 'lima'
-2025-08-03 09:31:54.083 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Using existing search results: 2 jobs
-2025-08-03 09:31:54.083 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Received search results: 2 jobs
-2025-08-03 09:31:54.083 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Job 0: Chef (ID: Mkwj7Wy54MdR6NocNTkR)
-2025-08-03 09:31:54.084 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Job 1: Vendedor de pan delgado (ID: 6HiIk3WbAQES3LkpCVts)
-2025-08-03 09:31:54.084 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  updateContentVisibility - hasSearched: true, isEmpty: false, hasError: false, isLoading: false, resultsCount: 2
-2025-08-03 09:31:54.084 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Showing results: 2 jobs
-2025-08-03 09:31:54.084 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  updateContentVisibility - hasSearched: true, isEmpty: false, hasError: false, isLoading: false, resultsCount: 2
-2025-08-03 09:31:54.084 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Showing results: 2 jobs
-2025-08-03 09:31:54.084 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  updateContentVisibility - hasSearched: true, isEmpty: false, hasError: false, isLoading: false, resultsCount: 2
-2025-08-03 09:31:54.084 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Showing results: 2 jobs
-2025-08-03 09:31:54.566 23188-23188 FirestoreService        com.example.hirelink_2025            D  Looking for company with ID: 'ocI03ICdnzi4FM6Ft2ue'
-2025-08-03 09:31:54.570 23188-23188 FirestoreService        com.example.hirelink_2025            D  Looking for company with ID: 'l8DeP9wNqKO5wdYEXP1f'
-2025-08-03 09:31:54.862 23188-23188 FirestoreService        com.example.hirelink_2025            D  Document query result - exists: true, document ID: 'ocI03ICdnzi4FM6Ft2ue'
-2025-08-03 09:31:54.868 23188-23188 FirestoreService        com.example.hirelink_2025            D  Company deserialized successfully: PANADERIA SAN CRIST
-2025-08-03 09:31:54.869 23188-23188 FirestoreService        com.example.hirelink_2025            D  Document query result - exists: true, document ID: 'l8DeP9wNqKO5wdYEXP1f'
-2025-08-03 09:31:54.872 23188-23188 FirestoreService        com.example.hirelink_2025            D  Company deserialized successfully: Horus SAC
-2025-08-03 09:31:54.872 23188-23188 ApplicationsViewModel   com.example.hirelink_2025            D  Finished loading: 2 jobs, 2 companies
-2025-08-03 09:31:55.145 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=148162505, downTime=148162505, phoneEventTime=09:31:55.138 } moveCount:0
-2025-08-03 09:31:55.196 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=148162558, downTime=148162505, phoneEventTime=09:31:55.191 } moveCount:0
-2025-08-03 09:31:55.917 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=148163280, downTime=148163280, phoneEventTime=09:31:55.912 } moveCount:0
-2025-08-03 09:31:55.922 23188-23188 Editor                  com.example.hirelink_2025            D  Double tap detection is fail
-2025-08-03 09:31:55.936 23188-23188 TextViewImpl            com.example.hirelink_2025            V  sendCursorInfo support:true
-2025-08-03 09:31:55.938 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=148163304, downTime=148163280, phoneEventTime=09:31:55.936 } moveCount:0
-2025-08-03 09:31:55.941 23188-23188 HandWritingStubImpl     com.example.hirelink_2025            I  refreshLastKeyboardType: 1
-2025-08-03 09:31:55.942 23188-23188 HandWritingStubImpl     com.example.hirelink_2025            I  getCurrentKeyboardType: 1
-2025-08-03 09:31:55.945 23188-23188 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:f095fe53: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser true
-2025-08-03 09:31:55.946 23188-23188 InputMethodManager      com.example.hirelink_2025            D  showSoftInput() view=com.google.android.material.textfield.TextInputEditText{92ec2e VFED..CL. .F.P..ID 0,0-836,167 #7f080242 app:id/locationEditText aid=1073741825} flags=0 reason=SHOW_SOFT_INPUT
-2025-08-03 09:31:55.955 23188-27737 libc                    com.example.hirelink_2025            W  Access denied finding property "ro.vendor.display.iris_x7.support"
-2025-08-03 09:31:55.956 23188-23188 ForceDarkHelperStubImpl com.example.hirelink_2025            I  setViewRootImplForceDark: false for com.example.hirelink_2025.view.ui.activities.MainActivity@ef461aa, reason: DarkModeEnabled
-2025-08-03 09:31:55.956 23188-23188 VRI[PopupWindow:3e9]    com.example.hirelink_2025            D  hardware acceleration = true, forceHwAccelerated = false
-2025-08-03 09:31:55.962 23188-23188 InputEventReceiver      com.example.hirelink_2025            D  Input log is disabled in InputEventReceiver.
-2025-08-03 09:31:55.962 23188-23188 EditorStubImpl          com.example.hirelink_2025            D  Type = 0, RectF = RectF(387.0, 1059.0, 507.0, 1179.0), mInsertionHandleData = [HandleData{mIsShow=false, mPosition=RectF(0.0, 0.0, 0.0, 0.0)}]
-2025-08-03 09:31:55.962 23188-23188 EditorStubImpl          com.example.hirelink_2025            W  Two list size not equals,try recover it
-2025-08-03 09:31:55.962 23188-23188 EditorStubImpl          com.example.hirelink_2025            D  isMultiHandle = false, status = 1, sendData = [RectF(387.0, 1059.0, 507.0, 1179.0)]
-2025-08-03 09:31:55.982 23188-23188 BufferQueueConsumer     com.example.hirelink_2025            D  [](id:5a9400000002,api:0,p:-1,c:23188) connect: controlledByApp=false
-2025-08-03 09:31:55.982 23188-23188 BLASTBufferQueue        com.example.hirelink_2025            D  [VRI[PopupWindow:3e9]#2](f:0,a:0) constructor()
-2025-08-03 09:31:55.982 23188-23188 BLASTBufferQueue        com.example.hirelink_2025            D  [VRI[PopupWindow:3e9]#2](f:0,a:0) update width=120 height=120 format=-3 mTransformHint=0
-2025-08-03 09:31:55.983 23188-23188 ForceDarkHelperStubImpl com.example.hirelink_2025            I  setViewRootImplForceDark: false for com.example.hirelink_2025.view.ui.activities.MainActivity@ef461aa, reason: DarkModeEnabled
-2025-08-03 09:31:55.983 23188-23188 VRI[PopupWindow:3e9]    com.example.hirelink_2025            D  vri.reportNextDraw android.view.ViewRootImpl.performTraversals:4970 android.view.ViewRootImpl.doTraversal:3561 android.view.ViewRootImpl$TraversalRunnable.run:11760 android.view.Choreographer$CallbackRecord.run:1804 android.view.Choreographer$CallbackRecord.run:1813
-2025-08-03 09:31:55.983 23188-23188 VRI[PopupWindow:3e9]    com.example.hirelink_2025            D  Setup new sync=wmsSync-VRI[PopupWindow:3e9]#4
-2025-08-03 09:31:55.985 23188-27737 HWUI                    com.example.hirelink_2025            D  makeCurrent grContext:0xb400007bbff63ad0 reset mTextureAvailable
-2025-08-03 09:31:55.988 23188-27737 BLASTBufferQueue        com.example.hirelink_2025            D  [VRI[PopupWindow:3e9]#2](f:0,a:1) acquireNextBufferLocked size=120x120 mFrameNumber=1 applyTransaction=true mTimestamp=148163355099522(auto) mPendingTransactions.size=0 graphicBufferId=99591701659656 transform=0
-2025-08-03 09:31:55.989 23188-23188 VRI[PopupWindow:3e9]    com.example.hirelink_2025            D  vri.reportDrawFinished
-2025-08-03 09:31:55.990 23188-23188 EditorStubImpl          com.example.hirelink_2025            D  Type = 1, RectF = RectF(387.0, 1059.0, 507.0, 1179.0), mInsertionHandleData = [HandleData{mIsShow=true, mPosition=RectF(387.0, 1059.0, 507.0, 1179.0)}]
-2025-08-03 09:31:55.995 23188-23188 VRI[PopupWindow:3e9]    com.example.hirelink_2025            D  vri.reportNextDraw android.view.ViewRootImpl.handleResized:2768 android.view.ViewRootImpl.-$$Nest$mhandleResized:0 android.view.ViewRootImpl$W.resized:12911 android.app.servertransaction.WindowStateResizeItem.execute:64 android.app.servertransaction.WindowStateTransactionItem.execute:59
-2025-08-03 09:31:55.997 23188-23188 VRI[PopupWindow:3e9]    com.example.hirelink_2025            D  Setup new sync=wmsSync-VRI[PopupWindow:3e9]#6
-2025-08-03 09:31:56.005 23188-23188 VRI[PopupWindow:3e9]    com.example.hirelink_2025            D  vri.reportDrawFinished
-2025-08-03 09:31:56.034 23188-23188 InsetsController        com.example.hirelink_2025            D  show(ime(), fromIme=true)
-2025-08-03 09:31:56.034 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  requestedTypes: 8
-2025-08-03 09:31:56.044 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationStart
-2025-08-03 09:31:56.050 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.0
-2025-08-03 09:31:56.058 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.011765487
-2025-08-03 09:31:56.067 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.04349313
-2025-08-03 09:31:56.080 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.08885277
-2025-08-03 09:31:56.084 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.1429624
-2025-08-03 09:31:56.101 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.20209558
-2025-08-03 09:31:56.108 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.26346087
-2025-08-03 09:31:56.117 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.32500413
-2025-08-03 09:31:56.125 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.3852179
-2025-08-03 09:31:56.134 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.4430571
-2025-08-03 09:31:56.144 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.4978173
-2025-08-03 09:31:56.150 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.54907733
-2025-08-03 09:31:56.159 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.5966136
-2025-08-03 09:31:56.168 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.6403511
-2025-08-03 09:31:56.176 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.6803189
-2025-08-03 09:31:56.183 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.71664006
-2025-08-03 09:31:56.192 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.74948543
-2025-08-03 09:31:56.200 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.77904147
-2025-08-03 09:31:56.209 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.80552894
-2025-08-03 09:31:56.217 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.82918555
-2025-08-03 09:31:56.226 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.8502422
-2025-08-03 09:31:56.233 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.8689315
-2025-08-03 09:31:56.242 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.8854781
-2025-08-03 09:31:56.250 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.90009
-2025-08-03 09:31:56.259 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.91296285
-2025-08-03 09:31:56.267 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9242833
-2025-08-03 09:31:56.275 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9342187
-2025-08-03 09:31:56.283 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.94292206
-2025-08-03 09:31:56.292 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.95053416
-2025-08-03 09:31:56.300 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.95718104
-2025-08-03 09:31:56.308 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.96297634
-2025-08-03 09:31:56.317 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9680218
-2025-08-03 09:31:56.325 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.97240853
-2025-08-03 09:31:56.334 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9762173
-2025-08-03 09:31:56.342 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.97952044
-2025-08-03 09:31:56.350 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.98238236
-2025-08-03 09:31:56.359 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9848584
-2025-08-03 09:31:56.367 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9869982
-2025-08-03 09:31:56.374 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9888456
-2025-08-03 09:31:56.383 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99043876
-2025-08-03 09:31:56.391 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99181134
-2025-08-03 09:31:56.399 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99299264
-2025-08-03 09:31:56.408 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9940084
-2025-08-03 09:31:56.416 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9948811
-2025-08-03 09:31:56.424 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9956301
-2025-08-03 09:31:56.433 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9962725
-2025-08-03 09:31:56.441 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99682295
-2025-08-03 09:31:56.449 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99729425
-2025-08-03 09:31:56.459 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99769735
-2025-08-03 09:31:56.466 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9980419
-2025-08-03 09:31:56.475 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9983363
-2025-08-03 09:31:56.483 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9985875
-2025-08-03 09:31:56.491 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99880165
-2025-08-03 09:31:56.500 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 1.0
-2025-08-03 09:31:56.502 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationEnd,canceled: false
-2025-08-03 09:31:56.506 23188-23188 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:f095fe53: onShown
-2025-08-03 09:31:58.312 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=148165673, downTime=148165673, phoneEventTime=09:31:58.306 } moveCount:0
-2025-08-03 09:31:58.376 23188-23188 MIUIInput               com.example.hirelink_2025            I  [MotionEvent] ViewRootImpl windowName 'com.example.hirelink_2025/com.example.hirelink_2025.view.ui.activities.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=148165739, downTime=148165673, phoneEventTime=09:31:58.372 } moveCount:0
-2025-08-03 09:31:58.378 23188-23188 SearchFragment          com.example.hirelink_2025            D  Performing search - jobType: '', location: 'lima'
-2025-08-03 09:31:58.379 23188-23188 SearchViewModel         com.example.hirelink_2025            D  Searching jobs with jobType: '', location: 'lima'
-2025-08-03 09:31:58.379 23188-23188 FirestoreService        com.example.hirelink_2025            D  Getting all companies
-2025-08-03 09:31:58.379 23188-23188 SearchFragment          com.example.hirelink_2025            D  Navegando a resultados de búsqueda - jobType: '', location: 'lima'
-2025-08-03 09:31:58.381 23188-23188 WindowOnBackDispatcher  com.example.hirelink_2025            W  OnBackInvokedCallback is not enabled for the application.
-                                                                                                    Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
-2025-08-03 09:31:58.406 23188-23188 ScrollerOp...ionManager com.example.hirelink_2025            D  registerConfigChangedListener
-2025-08-03 09:31:58.415 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Received search params - jobType: '', location: 'lima'
-2025-08-03 09:31:58.415 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Using existing search results: 2 jobs
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Received search results: 2 jobs
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Job 0: Chef (ID: Mkwj7Wy54MdR6NocNTkR)
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Job 1: Vendedor de pan delgado (ID: 6HiIk3WbAQES3LkpCVts)
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  updateContentVisibility - hasSearched: true, isEmpty: false, hasError: false, isLoading: true, resultsCount: 2
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Showing loading state
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  updateContentVisibility - hasSearched: true, isEmpty: false, hasError: false, isLoading: true, resultsCount: 2
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Showing loading state
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  updateContentVisibility - hasSearched: true, isEmpty: false, hasError: false, isLoading: true, resultsCount: 2
-2025-08-03 09:31:58.416 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Showing loading state
-2025-08-03 09:31:58.417 23188-23188 WindowOnBackDispatcher  com.example.hirelink_2025            W  sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda12@5983ebf
-2025-08-03 09:31:58.420 23188-23188 View                    com.example.hirelink_2025            D  [Warning] assignParent to null: this = android.widget.PopupWindow$PopupDecorView{f4ee760 V.E...... R....... 0,0-120,120}
-2025-08-03 09:31:58.420 23188-23188 BLASTBufferQueue        com.example.hirelink_2025            D  [VRI[PopupWindow:3e9]#2](f:0,a:1) destructor()
-2025-08-03 09:31:58.421 23188-23188 BufferQueueConsumer     com.example.hirelink_2025            D  [VRI[PopupWindow:3e9]#2(BLAST Consumer)2](id:5a9400000002,api:0,p:-1,c:23188) disconnect
-2025-08-03 09:31:58.430 23188-23188 EditorStubImpl          com.example.hirelink_2025            D  Type = 2, RectF = RectF(387.0, 1059.0, 507.0, 1179.0), mInsertionHandleData = [HandleData{mIsShow=true, mPosition=RectF(387.0, 1059.0, 507.0, 1179.0)}]
-2025-08-03 09:31:58.430 23188-23188 EditorStubImpl          com.example.hirelink_2025            D  isMultiHandle = false, status = 3, sendData = [RectF(387.0, 1059.0, 507.0, 1179.0)]
-2025-08-03 09:31:58.718 23188-23188 FirestoreService        com.example.hirelink_2025            D  Found 10 total companies
-2025-08-03 09:31:58.721 23188-23188 FirestoreService        com.example.hirelink_2025            W  Failed to deserialize company document 78ToxeCbD1vE5yOLTAFx: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "10-100" (found in field 'size')
-2025-08-03 09:31:58.721 23188-23188 FirestoreService        com.example.hirelink_2025            D  Successfully created company manually: Mac Enterprise
-2025-08-03 09:31:58.721 23188-23188 FirestoreService        com.example.hirelink_2025            W  Failed to deserialize company document WpUo6BBDZoqmjFACSpik: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "213" (found in field 'size')
-2025-08-03 09:31:58.721 23188-23188 FirestoreService        com.example.hirelink_2025            D  Successfully created company manually: fasdfas
-2025-08-03 09:31:58.722 23188-23188 FirestoreService        com.example.hirelink_2025            W  Failed to deserialize company document 2rCvkvpUQ4g4RK16DEHH: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "34" (found in field 'size')
-2025-08-03 09:31:58.722 23188-23188 FirestoreService        com.example.hirelink_2025            D  Successfully created company manually: zz
-2025-08-03 09:31:58.724 23188-23188 FirestoreService        com.example.hirelink_2025            W  Failed to deserialize company document V6J9PfeoI4QdjClFaDcY: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "34" (found in field 'size')
-2025-08-03 09:31:58.724 23188-23188 FirestoreService        com.example.hirelink_2025            D  Successfully created company manually: Ropas
-2025-08-03 09:31:58.724 23188-23188 FirestoreService        com.example.hirelink_2025            W  Failed to deserialize company document AhAqeNqQp6YxooAEmycX: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "21" (found in field 'size')
-2025-08-03 09:31:58.725 23188-23188 FirestoreService        com.example.hirelink_2025            D  Successfully created company manually: COSO SAC
-2025-08-03 09:31:58.725 23188-23188 FirestoreService        com.example.hirelink_2025            W  Failed to deserialize company document lig9IDKS4cVGzTV9g2cz: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "23" (found in field 'size')
-2025-08-03 09:31:58.725 23188-23188 FirestoreService        com.example.hirelink_2025            D  Successfully created company manually: UTILIDADES S.A.C.
-2025-08-03 09:31:58.725 23188-23188 FirestoreService        com.example.hirelink_2025            W  Failed to deserialize company document f9PsBCuVSfVbPknUhmnL: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "23" (found in field 'size')
-2025-08-03 09:31:58.725 23188-23188 FirestoreService        com.example.hirelink_2025            D  Successfully created company manually: SKRE SAC
-2025-08-03 09:31:58.726 23188-23188 FirestoreService        com.example.hirelink_2025            W  Failed to deserialize company document 0e9n9uVNTFQYy2AKMSvb: Could not deserialize object. Could not find enum value of com.example.hirelink_2025.models.CompanySize for value "23" (found in field 'size')
-2025-08-03 09:31:58.726 23188-23188 FirestoreService        com.example.hirelink_2025            D  Successfully created company manually: HORUS S.A.C
-2025-08-03 09:31:58.726 23188-23188 SearchViewModel         com.example.hirelink_2025            D  Found 3 companies matching location 'lima'
-2025-08-03 09:31:58.752 23188-23188 EditorStubImpl          com.example.hirelink_2025            D  Type = 2, RectF = RectF(387.0, 1059.0, 507.0, 1179.0), mInsertionHandleData = [HandleData{mIsShow=false, mPosition=RectF(387.0, 1059.0, 507.0, 1179.0)}]
-2025-08-03 09:31:58.755 23188-23188 HandWritingStubImpl     com.example.hirelink_2025            I  refreshLastKeyboardType: 1
-2025-08-03 09:31:58.756 23188-23188 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:4500557f: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_CLOSE_CURRENT_SESSION fromUser false
-2025-08-03 09:31:58.765 23188-23188 InsetsController        com.example.hirelink_2025            D  hide(ime(), fromIme=true)
-2025-08-03 09:31:58.765 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  requestedTypes: 8
-2025-08-03 09:31:58.773 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationStart
-2025-08-03 09:31:58.774 23188-23188 RemoteInpu...ectionImpl com.example.hirelink_2025            W  requestCursorUpdates on inactive InputConnection
-2025-08-03 09:31:58.775 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.0
-2025-08-03 09:31:58.781 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.013280657
-2025-08-03 09:31:58.782 23188-23188 ImeBackDispatcher       com.example.hirelink_2025            E  Ime callback not found. Ignoring unregisterReceivedCallback. callbackId: 249163765
-2025-08-03 09:31:58.790 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.04879123
-2025-08-03 09:31:58.799 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.09893141
-2025-08-03 09:31:58.807 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.15797889
-2025-08-03 09:31:58.815 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.22169887
-2025-08-03 09:31:58.824 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.2869988
-2025-08-03 09:31:58.832 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.35167417
-2025-08-03 09:31:58.841 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.41419202
-2025-08-03 09:31:58.849 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.4735385
-2025-08-03 09:31:58.856 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.5290867
-2025-08-03 09:31:58.865 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.58050877
-2025-08-03 09:31:58.875 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.6276671
-2025-08-03 09:31:58.881 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.67059207
-2025-08-03 09:31:58.890 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.70940536
-2025-08-03 09:31:58.898 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.74430895
-2025-08-03 09:31:58.906 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.77554697
-2025-08-03 09:31:58.914 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.8033849
-2025-08-03 09:31:58.923 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.82810456
-2025-08-03 09:31:58.931 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.84998417
-2025-08-03 09:31:58.939 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.86929125
-2025-08-03 09:31:58.950 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.8862853
-2025-08-03 09:31:58.956 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9012072
-2025-08-03 09:31:58.965 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.91428244
-2025-08-03 09:31:58.973 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9257164
-2025-08-03 09:31:58.981 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.93569803
-2025-08-03 09:31:58.989 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9443965
-2025-08-03 09:31:58.998 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9519667
-2025-08-03 09:31:59.006 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.95854455
-2025-08-03 09:31:59.014 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.96425265
-2025-08-03 09:31:59.017 23188-23188 SearchViewModel         com.example.hirelink_2025            D  Search completed: 2 jobs found
-2025-08-03 09:31:59.018 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Received search results: 2 jobs
-2025-08-03 09:31:59.019 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Job 0: Chef (ID: Mkwj7Wy54MdR6NocNTkR)
-2025-08-03 09:31:59.020 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Job 1: Vendedor de pan delgado (ID: 6HiIk3WbAQES3LkpCVts)
-2025-08-03 09:31:59.021 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  updateContentVisibility - hasSearched: true, isEmpty: false, hasError: false, isLoading: true, resultsCount: 2
-2025-08-03 09:31:59.021 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Showing loading state
-2025-08-03 09:31:59.023 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.969199
-2025-08-03 09:31:59.023 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  updateContentVisibility - hasSearched: true, isEmpty: false, hasError: false, isLoading: true, resultsCount: 2
-2025-08-03 09:31:59.023 23188-23188 SearchResultsFragment   com.example.hirelink_2025            D  Showing loading state
-2025-08-03 09:31:59.024 23188-23188 FirestoreService        com.example.hirelink_2025            D  Looking for company with ID: 'ocI03ICdnzi4FM6Ft2ue'
-2025-08-03 09:31:59.034 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.97348136
-2025-08-03 09:31:59.039 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.97718495
-2025-08-03 09:31:59.048 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9803868
-2025-08-03 09:31:59.055 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.98314965
-2025-08-03 09:31:59.064 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9855323
-2025-08-03 09:31:59.072 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9875849
-2025-08-03 09:31:59.081 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.98935276
-2025-08-03 09:31:59.089 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.990874
-2025-08-03 09:31:59.097 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99218184
-2025-08-03 09:31:59.107 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9933055
-2025-08-03 09:31:59.116 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99427
-2025-08-03 09:31:59.123 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99509776
-2025-08-03 09:31:59.132 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99580747
-2025-08-03 09:31:59.140 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9964159
-2025-08-03 09:31:59.147 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99693716
-2025-08-03 09:31:59.156 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9973836
-2025-08-03 09:31:59.164 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9977657
-2025-08-03 09:31:59.172 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.99809265
-2025-08-03 09:31:59.181 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9983723
-2025-08-03 09:31:59.189 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9986114
-2025-08-03 09:31:59.197 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 0.9988157
-2025-08-03 09:31:59.205 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationUpdate, value: 1.0
-2025-08-03 09:31:59.206 23188-27821 ViewRootImplStubImpl    com.example.hirelink_2025            D  onAnimationEnd,canceled: false
-2025-08-03 09:31:59.209 23188-23188 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:9f018f46: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
-2025-08-03 09:31:59.211 23188-23188 ImeTracker              com.example.hirelink_2025            I  com.example.hirelink_2025:4500557f: onHidden
-2025-08-03 09:31:59.316 23188-23188 FirestoreService        com.example.hirelink_2025            D  Document query result - exists: true, document ID: 'ocI03ICdnzi4FM6Ft2ue'
-2025-08-03 09:31:59.317 23188-23188 FirestoreService        com.example.hirelink_2025            D  Company deserialized successfully: PANADERIA SAN CRIST
-2025-08-03 09:31:59.318 23188-23188 SearchViewModel         com.example.hirelink_2025            D  Loaded 1 companies for search results - Loading finished
+✅ PROBLEMA DE NOTIFICACIONES RESUELTO
+
+**Problema original:** Las notificaciones push no aparecían cuando otros usuarios publicaban empleos.
+
+**Causa raíz identificada:** Firebase Cloud Messaging requiere un servidor backend (Cloud Functions) para enviar notificaciones desde cliente a cliente. La implementación original intentaba enviar notificaciones directamente desde el cliente, lo cual no es posible.
+
+## 🔧 Solución implementada:
+
+### **Sistema de Notificaciones Locales en Tiempo Real**
+
+He implementado una solución alternativa más efectiva usando **Firestore Real-time Listeners** y **notificaciones locales**:
+
+#### **1. JobNotificationService.kt** ✅
+- **Monitoreo en tiempo real**: Escucha cambios en la colección "jobs" usando Firestore listeners
+- **Detección automática**: Detecta nuevas ofertas laborales con status ACTIVE
+- **Filtros inteligentes**: Solo notifica ofertas nuevas (últimos 5 minutos) y evita duplicados
+- **Exclusión del creador**: No notifica al usuario que creó la oferta
+
+#### **2. LocalNotificationManager.kt** ✅ 
+- **Notificaciones nativas**: Usa el sistema de notificaciones nativo de Android
+- **Navegación directa**: Al tocar la notificación, navega al detalle de la oferta
+- **Diseño personalizado**: Icono, colores y estilo de HireLink
+- **Canal dedicado**: Canal "Ofertas Laborales" con prioridad alta
+
+#### **3. Integración en MainActivity.kt** ✅
+- **Inicio automático**: Se inicia cuando la app se abre
+- **Ciclo de vida**: Se detiene cuando la app se cierra
+- **Logging detallado**: Para debugging y monitoreo
+
+---
+
+# ✅ MARCADORES DE MAPA FUNCIONALES - RESUELTO
+
+**Problema:** Los marcadores del mapa en "Mapa de Empleos" no eran clickeables. Al hacer click no navegaban a resultados filtrados por empresa.
+
+**Solución implementada:** Sistema completo de navegación y filtrado por empresa desde mapa.
+
+## 🔧 Implementación realizada:
+
+### **1. JobMapFragment.kt** ✅
+- **Click en marcadores**: `handleMarkerClick()` ahora navega directamente a ofertas de empresa
+- **Navegación optimizada**: `navigateToCompanyJobs()` simplificado sin callbacks innecesarios
+- **Parámetros correctos**: Envía `companyId`, `companyName` y `searchType = "company_jobs"`
+
+### **2. SearchViewModel.kt** ✅ 
+- **Nuevo método**: `loadJobsByCompany(companyId, companyName)` para carga específica por empresa
+- **Filtrado directo**: Usa `FirestoreService.getJobsByCompany()` sin depender de criterios de búsqueda generales
+- **Estado completo**: Maneja loading, errores, conteo y filtros aplicados correctamente
+- **Cache de empresas**: Carga automáticamente info de la empresa en el cache
+
+### **3. SearchResultsFragment.kt** ✅
+- **Método simplificado**: `loadCompanyJobs()` ahora usa el nuevo método del ViewModel
+- **Sin dependencias**: Ya no depende de criterios de búsqueda existentes
+- **Título personalizado**: Muestra "Ofertas de [Empresa]" en la toolbar
+
+---
+
+# ✅ MÓDULO "MIS POSTULACIONES" MEJORADO - RESUELTO
+
+**Problema:** Las tarjetas de postulación se veían vacías y tenían un botón cancelar innecesario.
+
+**Solución implementada:** Diseño enriquecido con información completa y sin botón cancelar.
+
+## 🔧 Mejoras implementadas:
+
+### **1. item_application_card.xml** ✅
+- **Botón cancelar eliminado**: Removido completamente del layout
+- **Información enriquecida**: Agregados campos para salario, tipo de empleo, modalidad, ubicación
+- **Diseño mejorado**: Chips estilizados, íconos descriptivos, mejor jerarquía visual
+- **Espaciado optimizado**: Mejor organización vertical de la información
+
+### **2. ApplicationAdapter.kt** ✅
+- **Parámetros actualizados**: Removido `onCancelClicked` del constructor
+- **Nuevos campos**: Referencias a `jobSalary`, `employmentType`, `jobModality`, `jobLocation`
+- **Lógica de formato**: Método `formatLocation()` para mostrar ubicación inteligente
+- **Poblado de datos**: Toda la información del trabajo ahora visible en las tarjetas
+
+### **3. Fragmentos actualizados** ✅
+- **ActiveApplicationsFragment.kt**: Instanciaciones del adapter sin `onCancelClicked`
+- **ReviewApplicationsFragment.kt**: Instanciaciones del adapter actualizadas
+- **FinishedApplicationsFragment.kt**: Instanciaciones del adapter actualizadas
+
+## ✅ Información mostrada en las tarjetas:
+
+### **Datos básicos:**
+- ✅ Logo de la empresa (placeholder)
+- ✅ Título del trabajo
+- ✅ Nombre de la empresa
+
+### **Información laboral:**
+- ✅ **Salario**: Destacado en verde con ícono de dinero
+- ✅ **Tipo de empleo**: En chip estilizado (ej: "Tiempo completo")
+- ✅ **Modalidad**: En chip estilizado (ej: "Remoto", "Presencial")
+- ✅ **Ubicación**: Lógica inteligente usando datos de empresa
+- ✅ **Fecha de postulación**: Con ícono de calendario
+- ✅ **Estado**: Chip colorizado según status
+
+### **Errores de compilación corregidos:**
+- ✅ Corregido error `job.location` → Removida referencia a propiedad inexistente
+- ✅ Método `formatLocation()` actualizado para usar solo datos de `Company`
+- ✅ Código compila correctamente sin errores
+
+## 🎯 Estado: COMPLETAMENTE FUNCIONAL ✅
+
+El módulo "Mis Postulaciones" ahora proporciona una experiencia rica y completa, mostrando toda la información relevante sin elementos innecesarios como el botón cancelar. Las tarjetas son informativas y visualmente atractivas.

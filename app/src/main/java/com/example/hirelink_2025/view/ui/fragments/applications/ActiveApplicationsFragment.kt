@@ -46,9 +46,6 @@ class ActiveApplicationsFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = ApplicationAdapter(
             apps = emptyList(),
-            onCancelClicked = { application ->
-                Toast.makeText(requireContext(), "Cancelaste: ${application.applicationId}", Toast.LENGTH_SHORT).show()
-            },
             onItemClicked = { application ->
                 navigateToApplicationDetail(application)
             },
@@ -105,9 +102,6 @@ class ActiveApplicationsFragment : Fragment() {
     private fun updateAdapter(applications: List<Application>) {
         adapter = ApplicationAdapter(
             apps = applications,
-            onCancelClicked = { application ->
-                Toast.makeText(requireContext(), "Cancelaste: ${application.applicationId}", Toast.LENGTH_SHORT).show()
-            },
             onItemClicked = { application ->
                 navigateToApplicationDetail(application)
             },

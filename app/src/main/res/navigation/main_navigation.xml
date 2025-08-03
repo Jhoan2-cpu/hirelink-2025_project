@@ -25,6 +25,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_searchFragment_to_jobMapFragment"
+            app:destination="@id/jobMapFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <!-- New Search Results Fragment -->
@@ -397,6 +404,30 @@
         <argument
             android:name="locationName"
             app:argType="string" />
+    </fragment>
+
+    <!-- Job Map Fragment -->
+    <fragment
+        android:id="@+id/jobMapFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.JobMapFragment"
+        android:label="Mapa de Empleos"
+        tools:layout="@layout/fragment_job_map">
+        
+        <action
+            android:id="@+id/action_jobMapFragment_to_searchResultsFragment"
+            app:destination="@id/searchResultsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+            
+        <action
+            android:id="@+id/action_jobMapFragment_to_jobDetailFragment"
+            app:destination="@id/jobDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
 </navigation>

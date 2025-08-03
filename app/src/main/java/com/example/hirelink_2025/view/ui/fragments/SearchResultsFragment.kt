@@ -171,8 +171,17 @@ class SearchResultsFragment : Fragment() {
         // Obtener argumentos del Bundle directamente hasta que se generen las clases de navegación
         val jobType = arguments?.getString("jobType") ?: ""
         val location = arguments?.getString("location") ?: ""
+        val companyId = arguments?.getString("companyId") ?: ""
+        val companyName = arguments?.getString("companyName") ?: ""
+        val searchType = arguments?.getString("searchType") ?: ""
 
-        android.util.Log.d("SearchResultsFragment", "Received search params - jobType: '$jobType', location: '$location'")
+        android.util.Log.d("SearchResultsFragment", "Received search params - jobType: '$jobType', location: '$location', companyId: '$companyId', searchType: '$searchType'")
+
+        // Si viene desde el mapa con ofertas de una empresa específica
+        if (searchType == "company_jobs" && companyId.isNotEmpty()) {
+            loadCompanyJobs(companyId, companyName)
+            return
+        }
 
         // Verificar si ya hay resultados de búsqueda disponibles
         val currentResults = viewModel.searchResults.value
@@ -197,6 +206,19 @@ class SearchResultsFragment : Fragment() {
 
         // Ejecutar búsqueda solo si es necesario
         viewModel.searchJobs()
+    }
+
+    /**
+     * Carga las ofertas activas de una empresa específica desde el mapa
+     */
+    private fun loadCompanyJobs(companyId: String, companyName: String) {
+        android.util.Log.d("SearchResultsFragment", "Loading jobs for company: $companyName (ID: $companyId)")
+        
+        // Actualizar el título para mostrar que estamos viendo ofertas de una empresa específica
+        binding.toolbar.title = "Ofertas de $companyName"
+        
+        // Usar el método específico del ViewModel para cargar ofertas de empresa
+        viewModel.loadJobsByCompany(companyId, companyName)
     }
 
     /**

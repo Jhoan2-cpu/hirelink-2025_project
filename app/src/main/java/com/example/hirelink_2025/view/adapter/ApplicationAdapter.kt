@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.models.Application
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 
 /**
@@ -18,7 +17,6 @@ import com.google.android.material.chip.Chip
  */
 class ApplicationAdapter(
     private val apps: List<Application>,
-    private val onCancelClicked: (Application) -> Unit,
     private val onItemClicked: (Application) -> Unit,
     private val getJobInfo: (String) -> com.example.hirelink_2025.models.Job?,
     private val getCompanyInfo: (String) -> com.example.hirelink_2025.models.Company?
@@ -28,9 +26,12 @@ class ApplicationAdapter(
         val logoImage: ImageView = view.findViewById(R.id.companyLogo)
         val jobTitle: TextView = view.findViewById(R.id.jobTitle)
         val companyName: TextView = view.findViewById(R.id.companyName)
+        val jobSalary: TextView = view.findViewById(R.id.jobSalary)
+        val employmentType: TextView = view.findViewById(R.id.employmentType)
+        val jobModality: TextView = view.findViewById(R.id.jobModality)
+        val jobLocation: TextView = view.findViewById(R.id.jobLocation)
         val applicationDate: TextView = view.findViewById(R.id.applicationDate)
         val statusChip: Chip = view.findViewById(R.id.statusChip)
-        val cancelButton: MaterialButton = view.findViewById(R.id.cancelButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,6 +50,10 @@ class ApplicationAdapter(
         // Poblar campos con datos del modelo simplificado
         holder.jobTitle.text = job?.title ?: "Trabajo no encontrado"
         holder.companyName.text = company?.name ?: "Compañía no encontrada"
+        holder.jobSalary.text = job?.salary ?: "Salario no especificado"
+        holder.employmentType.text = job?.employmentType ?: "No especificado"
+        holder.jobModality.text = job?.modality ?: "No especificado"
+        holder.jobLocation.text = formatLocation(job, company)
         holder.applicationDate.text = formatDate(app.appliedAt)
         holder.statusChip.text = getStatusText(app.status)
         
@@ -58,11 +63,7 @@ class ApplicationAdapter(
         // Configurar color del chip según estado
         setupStatusChip(holder.statusChip, app.status)
 
-        // Click listeners
-        holder.cancelButton.setOnClickListener {
-            onCancelClicked(app)
-        }
-
+        // Click listener para el item completo
         holder.itemView.setOnClickListener {
             onItemClicked(app)
         }
@@ -88,6 +89,16 @@ class ApplicationAdapter(
             com.example.hirelink_2025.models.ApplicationStatus.PENDING -> "Pendiente"
             com.example.hirelink_2025.models.ApplicationStatus.ACCEPTED -> "Aceptado"
             com.example.hirelink_2025.models.ApplicationStatus.REJECTED -> "Rechazado"
+        }
+    }
+    
+    private fun formatLocation(job: com.example.hirelink_2025.models.Job?, company: com.example.hirelink_2025.models.Company?): String {
+        return when {
+            company?.city?.isNotEmpty() == true && company.country?.isNotEmpty() == true -> 
+                "${company.city}, ${company.country}"
+            company?.city?.isNotEmpty() == true -> company.city
+            company?.country?.isNotEmpty() == true -> company.country
+            else -> "Ubicación no especificada"
         }
     }
     

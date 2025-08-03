@@ -13,11 +13,17 @@ import androidx.navigation.ui.setupWithNavController//importa extensión para vi
 import com.example.hirelink_2025.R//Referencia a recursos como id, layout, drawable, etc.
 import com.example.hirelink_2025.databinding.ActivityMainBinding //Clase ViewBinding del activity_main.xml
 
+// Imports para notificaciones FCM
+import com.google.firebase.messaging.FirebaseMessaging
+import com.example.hirelink_2025.network.FirestoreService
+import com.example.hirelink_2025.network.JobNotificationService
+
 class MainActivity : AppCompatActivity() {// La pantalla principal de la App extienede de AppCompatActivity()
     //Esto permite usar compatibilidad con funciones modernas de UI (Solo aspectos visuales).
 
     private lateinit var binding: ActivityMainBinding //Vincula el layout activity_main.xml con código Kotlin a través del ViewBinding.
     private lateinit var navController: NavController //Controla la navegación entre fragmentos definidos en el nav graph.
+    private lateinit var jobNotificationService: JobNotificationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +39,15 @@ class MainActivity : AppCompatActivity() {// La pantalla principal de la App ext
         //...Muestra la interfaz en pantalla
 
         setupBottomNavigation()
+        
+        // Configurar notificaciones FCM
+        setupFirebaseMessaging()
+        
+        // Inicializar servicio de notificaciones de empleos
+        setupJobNotificationService()
+        
+        // Manejar navegación desde notificaciones
+        handleNotificationNavigation(intent)
     }
 
     private fun isUserLoggedIn(): Boolean {
@@ -118,5 +133,112 @@ class MainActivity : AppCompatActivity() {// La pantalla principal de la App ext
 
         // Actualizar selección en BottomNavigation
         binding.bottomNavigation.menu.findItem(activeItemId)?.isChecked = true
+    }
+
+    // ========================================
+    // MÉTODOS PARA NOTIFICACIONES FCM
+    // ========================================
+
+    /**
+     * Configura Firebase Cloud Messaging
+     */
+    private fun setupFirebaseMessaging() {
+        Log.d("MainActivity", "Setting up Firebase Cloud Messaging")
+        
+        // Obtener token FCM
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("MainActivity", "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+            Log.d("MainActivity", "FCM Token: $token")
+            
+            // Guardar token en Firestore
+            val firestoreService = FirestoreService()
+            val currentUserId = firestoreService.getCurrentUserId()
+            
+            if (currentUserId != null) {
+                firestoreService.saveFCMToken(currentUserId, token)
+                Log.d("MainActivity", "FCM token saved for user: $currentUserId")
+            } else {
+                Log.w("MainActivity", "No authenticated user, cannot save FCM token")
+            }
+        }
+    }
+
+    /**
+     * Maneja la navegación cuando la app se abre desde una notificación
+     */
+    private fun handleNotificationNavigation(intent: Intent?) {
+        if (intent == null) return
+        
+        val navigationDestination = intent.getStringExtra("navigation_destination")
+        val jobId = intent.getStringExtra("job_id")
+        
+        Log.d("MainActivity", "Handling notification navigation - Destination: $navigationDestination, JobId: $jobId")
+        
+        if (navigationDestination == "job_detail" && !jobId.isNullOrEmpty()) {
+            // Navegar al detalle de la oferta laboral
+            navigateToJobDetail(jobId)
+        }
+    }
+
+    /**
+     * Navega al detalle de una oferta laboral específica
+     */
+    private fun navigateToJobDetail(jobId: String) {
+        try {
+            Log.d("MainActivity", "Navigating to job detail: $jobId")
+            
+            // Crear bundle con el jobId
+            val bundle = Bundle().apply {
+                putString("jobId", jobId)
+            }
+            
+            // Navegar al fragment de detalle de trabajo
+            navController.navigate(R.id.jobDetailFragment, bundle)
+            
+            Log.d("MainActivity", "Navigation to job detail successful")
+            
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error navigating to job detail", e)
+            Toast.makeText(this, "Error al abrir la oferta laboral", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Configura el servicio de notificaciones de empleos
+     */
+    private fun setupJobNotificationService() {
+        Log.d("MainActivity", "Setting up job notification service")
+        
+        jobNotificationService = JobNotificationService(this)
+        jobNotificationService.startMonitoring()
+        
+        Log.d("MainActivity", "Job notification service started")
+    }
+
+    /**
+     * Maneja nuevos intents cuando la app ya está abierta
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        Log.d("MainActivity", "onNewIntent called")
+        setIntent(intent)
+        handleNotificationNavigation(intent)
+    }
+
+    /**
+     * Detiene el servicio de notificaciones cuando la actividad se destruye
+     */
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::jobNotificationService.isInitialized) {
+            jobNotificationService.stopMonitoring()
+            Log.d("MainActivity", "Job notification service stopped")
+        }
     }
 }

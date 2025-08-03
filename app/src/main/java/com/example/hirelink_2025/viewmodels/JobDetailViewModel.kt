@@ -105,9 +105,11 @@ class JobDetailViewModel : ViewModel() {
 
     fun getCompanyLocation(): Pair<Double, Double>? {
         val company = _uiState.value.company
-        return company?.ubication?.let { ubication ->
-            LocationUtils.extractCoordinates(ubication)
+        if (company?.ubication?.isNotEmpty() == true) {
+            val locationUtils = LocationUtils()
+            return locationUtils.extractCoordinates(company.ubication)
         }
+        return null
     }
 
     private fun checkApplicationEligibility(jobId: String) {

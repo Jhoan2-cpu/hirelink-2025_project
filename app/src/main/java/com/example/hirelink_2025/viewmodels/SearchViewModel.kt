@@ -462,4 +462,71 @@ class SearchViewModel : ViewModel() {
     fun getCurrentFilters(): JobFilters {
         return _activeFilters.value ?: JobFilters()
     }
+
+    /**
+     * Cargar ofertas de una empresa específica (para uso desde mapa)
+     */
+    fun loadJobsByCompany(companyId: String, companyName: String) {
+        android.util.Log.d("SearchViewModel", "Loading jobs for company: $companyName (ID: $companyId)")
+        
+        _isLoading.value = true
+        _hasSearched.value = true
+        _errorMessage.value = ""
+        
+        firestoreService.getJobsByCompany(companyId, object : Callback<List<Job>> {
+            override fun onSuccess(jobs: List<Job>) {
+                // Filtrar solo trabajos activos
+                val activeJobs = jobs.filter { it.status == JobStatus.ACTIVE }
+                
+                android.util.Log.d("SearchViewModel", "Found ${activeJobs.size} active jobs for company $companyName")
+                
+                // Cargar información de la empresa en el caché
+                loadCompanyInfo(companyId)
+                
+                // Aplicar filtros si hay alguno activo
+                val currentFilters = getCurrentFilters()
+                val filteredJobs = if (currentFilters.hasActiveFilters()) {
+                    activeJobs.filter { job ->
+                        applyModalityFilter(job, currentFilters.modality) &&
+                        applySalaryRangeFilter(job, currentFilters.salaryRange)
+                    }
+                } else {
+                    activeJobs
+                }
+                
+                _searchResults.value = filteredJobs
+                _searchCount.value = filteredJobs.size
+                _isEmpty.value = filteredJobs.isEmpty()
+                _isLoading.value = false
+            }
+            
+            override fun onError(exception: Exception) {
+                android.util.Log.e("SearchViewModel", "Error loading jobs for company $companyName: ${exception.message}")
+                _errorMessage.value = "Error al cargar ofertas de la empresa: ${exception.message}"
+                _searchResults.value = emptyList()
+                _searchCount.value = 0
+                _isEmpty.value = true
+                _isLoading.value = false
+            }
+        })
+    }
+    
+    /**
+     * Cargar información de una empresa específica en el caché
+     */
+    private fun loadCompanyInfo(companyId: String) {
+        firestoreService.getCompanyById(companyId, object : Callback<Company?> {
+            override fun onSuccess(company: Company?) {
+                company?.let {
+                    val currentCache = _companiesCache.value?.toMutableMap() ?: mutableMapOf()
+                    currentCache[it.id] = it
+                    _companiesCache.value = currentCache
+                }
+            }
+            
+            override fun onError(exception: Exception) {
+                android.util.Log.e("SearchViewModel", "Error loading company info for $companyId: ${exception.message}")
+            }
+        })
+    }
 }

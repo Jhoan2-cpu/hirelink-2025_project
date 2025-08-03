@@ -45,9 +45,6 @@ class FinishedApplicationsFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = ApplicationAdapter(
             apps = emptyList(),
-            onCancelClicked = { application ->
-                Toast.makeText(requireContext(), "Esta postulación ya ha finalizado", Toast.LENGTH_SHORT).show()
-            },
             onItemClicked = { application ->
                 navigateToApplicationDetail(application)
             },
@@ -105,9 +102,6 @@ class FinishedApplicationsFragment : Fragment() {
     private fun updateAdapter(applications: List<Application>) {
         adapter = ApplicationAdapter(
             apps = applications,
-            onCancelClicked = { application ->
-                Toast.makeText(requireContext(), "Esta postulación ya ha finalizado", Toast.LENGTH_SHORT).show()
-            },
             onItemClicked = { application ->
                 navigateToApplicationDetail(application)
             },

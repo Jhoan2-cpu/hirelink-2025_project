@@ -15,7 +15,8 @@
       "Bash(cd:*)",
       "Bash(cd:*)",
       "Bash(cd:*)",
-      "Bash(apt list:*)"
+      "Bash(apt list:*)",
+      "Bash(export:*)"
     ],
     "deny": []
   }

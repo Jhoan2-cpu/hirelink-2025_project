@@ -90,4 +90,10 @@
     <color name="icon_tint">#5F6368</color>
     <color name="border_color">#E8EAED</color>
     <color name="info_color">#3498DB</color>
+    
+    <!-- Map Colors -->
+    <color name="background_overlay">#80FFFFFF</color>
+    <color name="map_marker_nearby">#2ECC71</color>
+    <color name="map_marker_default">#3498DB</color>
+    <color name="map_marker_many_jobs">#1ABC9C</color>
 </resources>

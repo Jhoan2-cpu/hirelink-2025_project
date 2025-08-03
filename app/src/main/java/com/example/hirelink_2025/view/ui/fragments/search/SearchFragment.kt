@@ -85,6 +85,11 @@ class SearchFragment : Fragment() {
         binding.searchButton.setOnClickListener {
             performSearch()
         }
+        
+        // Configurar botón del mapa
+        binding.mapButton.setOnClickListener {
+            navigateToMap()
+        }
     }
 
     /**
@@ -204,6 +209,18 @@ class SearchFragment : Fragment() {
      */
     private fun updateSearchButtonState() {
         binding.searchButton.isEnabled = searchViewModel.canSearch()
+    }
+
+    /**
+     * Navega al mapa de empleos
+     */
+    private fun navigateToMap() {
+        try {
+            findNavController().navigate(R.id.action_searchFragment_to_jobMapFragment)
+        } catch (e: Exception) {
+            android.util.Log.e("SearchFragment", "Error navigating to map: ${e.message}")
+            showErrorSnackbar("Error al abrir el mapa")
+        }
     }
 
     /**
