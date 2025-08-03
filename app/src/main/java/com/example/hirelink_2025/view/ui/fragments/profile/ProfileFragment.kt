@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.NavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
@@ -59,12 +60,12 @@ class ProfileFragment : Fragment() {
         setupRecyclerView()
         setupClickListeners()
         observeViewModel()
+        setupNavigationListener()
     }
 
     override fun onResume() {
         super.onResume()
-        // Recargar datos cuando regresamos de la edición
-        viewModel.loadUserData()
+        // Solo recargar si es necesario (el navigation listener manejará la recarga específica)
     }
 
     override fun onDestroyView() {
@@ -605,6 +606,21 @@ class ProfileFragment : Fragment() {
         val updatedEducation = currentProfile.education.toMutableList().apply { remove(education) }
         val updatedProfile = currentProfile.copy(education = updatedEducation)
         viewModel.updateUserProfile(updatedProfile)
+    }
+
+    /**
+     * Configura el listener de navegación para detectar cuando regresamos del ProfileEditFragment
+     */
+    private fun setupNavigationListener() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("profile_updated")?.observe(viewLifecycleOwner) { isUpdated ->
+            if (isUpdated == true) {
+                // Recargar datos desde Firebase
+                viewModel.loadUserData(forceRefresh = true)
+                // Limpiar el flag
+                findNavController().currentBackStackEntry?.savedStateHandle?.set("profile_updated", false)
+                showSuccessMessage("Perfil actualizado correctamente")
+            }
+        }
     }
 
     private fun updateLoadingState(isLoading: Boolean) {

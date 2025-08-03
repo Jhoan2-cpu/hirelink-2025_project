@@ -13,10 +13,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentSearchResultsBinding
 import com.example.hirelink_2025.models.Job
+import com.example.hirelink_2025.models.JobFilters
+import com.example.hirelink_2025.models.SalaryRange
 import com.example.hirelink_2025.view.adapter.SearchResultsAdapter
 import com.example.hirelink_2025.view.ui.utils.showErrorSnackbar
 import com.example.hirelink_2025.view.ui.utils.showSuccessSnackbar
 import com.example.hirelink_2025.viewmodels.SearchViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import android.widget.ArrayAdapter
+import android.widget.ListView
 
 /**
  * Fragment para mostrar resultados de búsqueda de empleos
@@ -32,6 +37,9 @@ class SearchResultsFragment : Fragment() {
 
     // Adapter para resultados
     private lateinit var searchResultsAdapter: SearchResultsAdapter
+    
+    // Estado de expansión de filtros
+    private var isFiltersExpanded = false
 
     // Navigation args para recibir parámetros de búsqueda (se generará automáticamente)
     // private val args: SearchResultsFragmentArgs by navArgs()
@@ -77,6 +85,10 @@ class SearchResultsFragment : Fragment() {
         binding.retryButton.setOnClickListener {
             viewModel.refreshResults()
         }
+
+        // Configurar filtros
+        setupFilterChips()
+        setupFilterExpansion()
     }
 
     /**
@@ -144,6 +156,11 @@ class SearchResultsFragment : Fragment() {
             if (companies.isNotEmpty()) {
                 searchResultsAdapter.notifyDataSetChanged()
             }
+        }
+
+        // Observar filtros activos
+        viewModel.activeFilters.observe(viewLifecycleOwner) { filters ->
+            updateFilterChips(filters)
         }
     }
 
@@ -280,6 +297,162 @@ class SearchResultsFragment : Fragment() {
         // viewModel.toggleBookmark(job)
         
         showSuccessSnackbar("Marcador actualizado para: ${job.title}")
+    }
+
+    /**
+     * Configura los chips de filtros
+     */
+    private fun setupFilterChips() {
+        // Configurar limpiar filtros
+        binding.clearFiltersButton.setOnClickListener {
+            viewModel.clearFilters()
+        }
+
+        // Configurar filtro de modalidad
+        binding.modalityFilterChip.setOnClickListener {
+            showModalityFilterDialog()
+        }
+
+
+        // Configurar filtro de rango salarial
+        binding.salaryRangeFilterChip.setOnClickListener {
+            showSalaryRangeFilterDialog()
+        }
+    }
+
+    /**
+     * Actualiza la apariencia de los chips según los filtros activos
+     */
+    private fun updateFilterChips(filters: JobFilters) {
+        // Actualizar chip de modalidad
+        binding.modalityFilterChip.isChecked = filters.modality.isNotEmpty()
+        binding.modalityFilterChip.text = if (filters.modality.isNotEmpty()) {
+            "Modalidad: ${filters.modality}"
+        } else {
+            "Modalidad"
+        }
+
+
+        // Actualizar chip de rango salarial
+        binding.salaryRangeFilterChip.isChecked = filters.salaryRange != SalaryRange.ALL
+        binding.salaryRangeFilterChip.text = if (filters.salaryRange != SalaryRange.ALL) {
+            "Salario: ${filters.salaryRange.displayName}"
+        } else {
+            "Rango salarial"
+        }
+
+        // Mostrar/ocultar botón de limpiar filtros
+        binding.clearFiltersButton.visibility = if (filters.hasActiveFilters()) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+
+        // Actualizar contador de filtros activos
+        updateActiveFiltersCount(filters)
+    }
+
+    /**
+     * Muestra dialog de filtro de modalidad
+     */
+    private fun showModalityFilterDialog() {
+        val modalityOptions = listOf("", "Presencial", "Remoto", "Híbrido")
+        val modalityNames = listOf("Todos", "Presencial", "Remoto", "Híbrido")
+
+        val currentFilters = viewModel.getCurrentFilters()
+        val selectedIndex = modalityOptions.indexOf(currentFilters.modality)
+
+        val dialog = BottomSheetDialog(requireContext())
+        val listView = ListView(requireContext()).apply {
+            adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_single_choice, modalityNames)
+            choiceMode = ListView.CHOICE_MODE_SINGLE
+            setItemChecked(selectedIndex, true)
+        }
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedModality = modalityOptions[position]
+            val newFilters = currentFilters.copy(modality = selectedModality)
+            viewModel.updateFilters(newFilters)
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(listView)
+        dialog.show()
+    }
+
+
+    /**
+     * Muestra dialog de filtro de rango salarial
+     */
+    private fun showSalaryRangeFilterDialog() {
+        val salaryRanges = SalaryRange.values()
+        val salaryNames = salaryRanges.map { it.displayName }
+
+        val currentFilters = viewModel.getCurrentFilters()
+        val selectedIndex = salaryRanges.indexOf(currentFilters.salaryRange)
+
+        val dialog = BottomSheetDialog(requireContext())
+        val listView = ListView(requireContext()).apply {
+            adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_single_choice, salaryNames)
+            choiceMode = ListView.CHOICE_MODE_SINGLE
+            setItemChecked(selectedIndex, true)
+        }
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedSalaryRange = salaryRanges[position]
+            val newFilters = currentFilters.copy(salaryRange = selectedSalaryRange)
+            viewModel.updateFilters(newFilters)
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(listView)
+        dialog.show()
+    }
+
+    /**
+     * Configura la expansión/colapso de filtros
+     */
+    private fun setupFilterExpansion() {
+        binding.filterHeader.setOnClickListener {
+            toggleFiltersExpansion()
+        }
+    }
+
+    /**
+     * Alterna entre expandir y colapsar los filtros
+     */
+    private fun toggleFiltersExpansion() {
+        isFiltersExpanded = !isFiltersExpanded
+        
+        binding.filterContent.visibility = if (isFiltersExpanded) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+
+        // Rotar el ícono de flecha
+        val rotation = if (isFiltersExpanded) 180f else 0f
+        binding.filterExpandIcon.animate()
+            .rotation(rotation)
+            .setDuration(200)
+            .start()
+    }
+
+    /**
+     * Actualiza el contador de filtros activos
+     */
+    private fun updateActiveFiltersCount(filters: JobFilters) {
+        var activeCount = 0
+        
+        if (filters.modality.isNotEmpty()) activeCount++
+        if (filters.salaryRange != SalaryRange.ALL) activeCount++
+
+        if (activeCount > 0) {
+            binding.activeFiltersCount.visibility = View.VISIBLE
+            binding.activeFiltersCount.text = "$activeCount activo${if (activeCount > 1) "s" else ""}"
+        } else {
+            binding.activeFiltersCount.visibility = View.GONE
+        }
     }
 
     override fun onDestroyView() {

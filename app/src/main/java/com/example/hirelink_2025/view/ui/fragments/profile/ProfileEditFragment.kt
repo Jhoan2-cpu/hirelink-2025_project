@@ -37,6 +37,7 @@ class ProfileEditFragment : Fragment() {
     }
 
     private var profileImageUri: Uri? = null
+    private var isUpdatingProfileData = false
 
     // Launcher para seleccionar imagen
     private val imagePickerLauncher = registerForActivityResult(
@@ -105,10 +106,19 @@ class ProfileEditFragment : Fragment() {
                 }
                 
                 if (state.isProfileUpdated) {
-                    Toast.makeText(requireContext(), "Perfil actualizado correctamente", Toast.LENGTH_SHORT).show()
-                    // Resetear el flag antes de navegar para que ProfileFragment pueda manejar la actualización
-                    viewModel.resetProfileUpdated()
-                    findNavController().popBackStack()
+                    if (isUpdatingProfileData) {
+                        // Actualización completa del perfil - navegar de vuelta
+                        Toast.makeText(requireContext(), "Perfil actualizado correctamente", Toast.LENGTH_SHORT).show()
+                        viewModel.resetProfileUpdated()
+                        // Notificar al ProfileFragment que debe recargar los datos
+                        findNavController().previousBackStackEntry?.savedStateHandle?.set("profile_updated", true)
+                        findNavController().popBackStack()
+                    } else {
+                        // Solo imagen actualizada - permanecer en la pantalla
+                        viewModel.resetProfileUpdated()
+                        Toast.makeText(requireContext(), "Imagen de perfil actualizada", Toast.LENGTH_SHORT).show()
+                    }
+                    isUpdatingProfileData = false
                 }
             }
         }
@@ -212,6 +222,7 @@ class ProfileEditFragment : Fragment() {
         builder.setMessage("¿Estás seguro de que quieres guardar los cambios en tu perfil?")
 
         builder.setPositiveButton("Guardar") { _, _ ->
+            isUpdatingProfileData = true
             saveToViewModel(profession, bio, skills, languages, location, phone, email, availability, salary, social, portfolio)
         }
 

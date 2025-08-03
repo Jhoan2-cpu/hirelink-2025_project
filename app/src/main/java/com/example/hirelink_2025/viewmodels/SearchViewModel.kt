@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.hirelink_2025.models.Job
 import com.example.hirelink_2025.models.Company
 import com.example.hirelink_2025.models.JobStatus
+import com.example.hirelink_2025.models.JobFilters
+import com.example.hirelink_2025.models.SalaryRange
 import com.example.hirelink_2025.network.Callback
 import com.example.hirelink_2025.network.FirestoreService
 import kotlinx.coroutines.launch
@@ -52,11 +54,18 @@ class SearchViewModel : ViewModel() {
     private val _searchCount = MutableLiveData<Int>()
     val searchCount: LiveData<Int> = _searchCount
 
+    // Filtros de búsqueda
+    private val _activeFilters = MutableLiveData<JobFilters>()
+    val activeFilters: LiveData<JobFilters> = _activeFilters
+
+    private val _allResults = MutableLiveData<List<Job>>()  // Resultados sin filtrar
+    
     init {
         _hasSearched.value = false
         _isEmpty.value = false
         _searchCount.value = 0
         _companiesCache.value = emptyMap()
+        _activeFilters.value = JobFilters()
     }
 
     /**
@@ -243,9 +252,12 @@ class SearchViewModel : ViewModel() {
         
         android.util.Log.d("SearchViewModel", "Search completed: ${sortedJobs.size} jobs found")
         
-        _searchResults.value = sortedJobs
-        _searchCount.value = sortedJobs.size
-        _isEmpty.value = sortedJobs.isEmpty()
+        // Guardar todos los resultados sin filtrar
+        _allResults.value = sortedJobs
+        
+        // Aplicar filtros a los resultados
+        applyFiltersToResults()
+        
         _isSearching.value = false
 
         // Precargar información de compañías para los resultados
@@ -372,5 +384,82 @@ class SearchViewModel : ViewModel() {
             android.util.Log.w("SearchViewModel", "Cannot refresh: no search criteria available")
             _errorMessage.value = "No hay criterios de búsqueda para refrescar"
         }
+    }
+
+    // ===== MÉTODOS PARA FILTROS =====
+
+    /**
+     * Actualizar filtros y aplicarlos a los resultados
+     */
+    fun updateFilters(filters: JobFilters) {
+        android.util.Log.d("SearchViewModel", "Updating filters: modality=${filters.modality}, salaryRange=${filters.salaryRange}")
+        _activeFilters.value = filters
+        applyFiltersToResults()
+    }
+
+    /**
+     * Limpiar todos los filtros
+     */
+    fun clearFilters() {
+        android.util.Log.d("SearchViewModel", "Clearing all filters")
+        _activeFilters.value = JobFilters()
+        applyFiltersToResults()
+    }
+
+    /**
+     * Aplicar filtros activos a los resultados de búsqueda
+     */
+    private fun applyFiltersToResults() {
+        val allJobs = _allResults.value ?: return
+        val filters = _activeFilters.value ?: JobFilters()
+
+        android.util.Log.d("SearchViewModel", "Applying filters to ${allJobs.size} jobs")
+
+        val filteredJobs = if (!filters.hasActiveFilters()) {
+            // Sin filtros, mostrar todos los resultados
+            allJobs
+        } else {
+            allJobs.filter { job ->
+                applyModalityFilter(job, filters.modality) &&
+                applySalaryRangeFilter(job, filters.salaryRange)
+            }
+        }
+
+        android.util.Log.d("SearchViewModel", "Filtered results: ${filteredJobs.size} jobs")
+
+        _searchResults.value = filteredJobs
+        _searchCount.value = filteredJobs.size
+        _isEmpty.value = filteredJobs.isEmpty()
+    }
+
+    /**
+     * Aplicar filtro de modalidad
+     */
+    private fun applyModalityFilter(job: Job, modalityFilter: String): Boolean {
+        if (modalityFilter.isEmpty()) return true
+        return job.modality.contains(modalityFilter, ignoreCase = true)
+    }
+
+    /**
+     * Aplicar filtro de rango salarial
+     */
+    private fun applySalaryRangeFilter(job: Job, salaryRange: SalaryRange): Boolean {
+        if (salaryRange == SalaryRange.ALL) return true
+
+        // Extraer valor del salario del job
+        val jobSalary = SalaryRange.extractSalaryValue(job.salary)
+        if (jobSalary == 0) {
+            // Si no tiene salario especificado, no excluir el job
+            return true
+        }
+
+        return jobSalary >= salaryRange.minSalary && jobSalary <= salaryRange.maxSalary
+    }
+
+    /**
+     * Obtener filtros activos
+     */
+    fun getCurrentFilters(): JobFilters {
+        return _activeFilters.value ?: JobFilters()
     }
 }

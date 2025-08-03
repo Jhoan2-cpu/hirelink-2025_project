@@ -99,6 +99,134 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Filters Section -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/filtersCard"
+        style="@style/Widget.HireLink.Card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_small"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchSummaryCard">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/margin_medium">
+
+            <!-- Filter Header (always visible) -->
+            <LinearLayout
+                android:id="@+id/filterHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingVertical="@dimen/margin_small"
+                android:paddingHorizontal="@dimen/margin_tiny">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_filter"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    app:tint="@color/primary" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Filtros"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/activeFiltersCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:textColor="@color/secondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:text="2 activos" />
+
+                <ImageView
+                    android:id="@+id/filterExpandIcon"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_arrow_drop_down"
+                    android:padding="@dimen/margin_tiny"
+                    app:tint="@color/text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Filter Content (collapsible) -->
+            <LinearLayout
+                android:id="@+id/filterContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Clear Filters Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/clearFiltersButton"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="Limpiar filtros"
+                    android:textColor="@color/secondary"
+                    android:textSize="@dimen/text_size_small"
+                    android:visibility="gone" />
+
+                <!-- Filter Chips Container -->
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/filterChipsGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    app:singleLine="false"
+                    app:chipSpacing="@dimen/margin_small">
+
+                    <!-- Modality Filter -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/modalityFilterChip"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Modalidad"
+                        app:chipIcon="@drawable/ic_modality"
+                        app:chipIconTint="@color/primary" />
+
+                    <!-- Salary Range Filter -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/salaryRangeFilterChip"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rango salarial"
+                        app:chipIcon="@drawable/ic_money"
+                        app:chipIconTint="@color/primary" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- Loading Progress Bar -->
     <ProgressBar
         android:id="@+id/loadingProgressBar"
@@ -110,7 +238,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchSummaryCard" />
+        app:layout_constraintTop_toBottomOf="@id/filtersCard" />
 
     <!-- Content Container -->
     <FrameLayout
