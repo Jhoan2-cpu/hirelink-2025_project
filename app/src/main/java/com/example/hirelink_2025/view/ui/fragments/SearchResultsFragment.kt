@@ -112,6 +112,8 @@ class SearchResultsFragment : Fragment() {
         // Observar estado de carga
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.loadingProgressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            // ✅ CRUCIAL: También actualizar la visibilidad del contenido cuando cambie isLoading
+            updateContentVisibility()
         }
 
         // Observar si hay resultados vacíos

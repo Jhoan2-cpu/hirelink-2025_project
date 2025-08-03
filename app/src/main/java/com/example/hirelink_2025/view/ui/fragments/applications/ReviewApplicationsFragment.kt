@@ -1,35 +1,30 @@
 package com.example.hirelink_2025.view.ui.fragments.applications
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hirelink_2025.R
 import com.example.hirelink_2025.databinding.FragmentActiveApplicationsBinding
 import com.example.hirelink_2025.models.Application
-import com.example.hirelink_2025.models.ApplicationDisplay
 import com.example.hirelink_2025.view.adapter.ApplicationAdapter
+import com.example.hirelink_2025.viewmodels.ApplicationsViewModel
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ReviewApplicationsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ReviewApplicationsFragment : Fragment() {
 
     private var _binding: FragmentActiveApplicationsBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var adapter: ApplicationAdapter
+    private val applicationsViewModel: ApplicationsViewModel by viewModels { ViewModelFactory() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,62 +37,111 @@ class ReviewApplicationsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val sampleList = listOf(
-            ApplicationDisplay(
-                jobTitle = "Desarrollador Android Senior",
-                companyName = "Tech Solutions S.A.C.",
-                applicationDate = "Postulado hace 3 días",
-                status = "En revisión",
-                logoResId = R.drawable.ic_title
-            ),
-            ApplicationDisplay(
-                jobTitle = "Backend Developer",
-                companyName = "GlobalSoft",
-                applicationDate = "Postulado ayer",
-                status = "En revisión",
-                logoResId = R.drawable.ic_profile
-            )
+        setupRecyclerView()
+        setupObservers()
+        loadUserApplications()
+    }
+
+    private fun setupRecyclerView() {
+        adapter = ApplicationAdapter(
+            apps = emptyList(),
+            onCancelClicked = { application ->
+                Toast.makeText(requireContext(), "Esta postulación está en revisión", Toast.LENGTH_SHORT).show()
+            },
+            onItemClicked = { application ->
+                navigateToApplicationDetail(application)
+            },
+            getJobInfo = { jobId -> applicationsViewModel.getJobInfo(jobId) },
+            getCompanyInfo = { companyId -> applicationsViewModel.getCompanyInfo(companyId) }
         )
 
-        // ✅ CORREGIR: Pasar los 3 parámetros requeridos
-        /*adapter = ApplicationAdapter(
-            apps = sampleList,
-            onCancelClicked = { item ->
-                Toast.makeText(requireContext(), "Cancelaste: ${item.jobTitle}", Toast.LENGTH_SHORT).show()
-            },
-            onItemClicked = { item ->
-                // ✅ NUEVA FUNCIONALIDAD: Navegar a detalles
-                navigateToApplicationDetail(item)
-            }
-        )
-*/
         binding.applicationsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.applicationsRecyclerView.adapter = adapter
+        
+        // Configurar pull-to-refresh
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            applicationsViewModel.refreshUserApplications()
+        }
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            applicationsViewModel.applications.collect { _ ->
+                // Filtrar solo las postulaciones en revisión
+                val reviewApplications = applicationsViewModel.getReviewApplications()
+                updateAdapter(reviewApplications)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            applicationsViewModel.isLoading.collect { isLoading ->
+                // Controlar SwipeRefreshLayout
+                binding.swipeRefreshLayout.isRefreshing = isLoading
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            applicationsViewModel.error.collect { error ->
+                error?.let {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    applicationsViewModel.clearError()
+                }
+            }
+        }
+    }
+
+    private fun loadUserApplications() {
+        // ✅ CAMBIAR - usar Firebase Auth directamente
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid
+
+        if (userId != null) {
+            applicationsViewModel.loadApplicationsForUser(userId)
+        } else {
+            Toast.makeText(requireContext(), "Error: Usuario no autenticado", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateAdapter(applications: List<Application>) {
+        adapter = ApplicationAdapter(
+            apps = applications,
+            onCancelClicked = { application ->
+                Toast.makeText(requireContext(), "Esta postulación está en revisión", Toast.LENGTH_SHORT).show()
+            },
+            onItemClicked = { application ->
+                navigateToApplicationDetail(application)
+            },
+            getJobInfo = { jobId -> applicationsViewModel.getJobInfo(jobId) },
+            getCompanyInfo = { companyId -> applicationsViewModel.getCompanyInfo(companyId) }
+        )
         binding.applicationsRecyclerView.adapter = adapter
     }
 
-
-    /**
-     * Navega a los detalles de la postulación
-     */
     private fun navigateToApplicationDetail(application: Application) {
+        val job = applicationsViewModel.getJobInfo(application.jobId)
+        val company = job?.let { applicationsViewModel.getCompanyInfo(it.companyId) }
+        
         val bundle = Bundle().apply {
-            /*
-            putString("job_title", application.jobTitle)
-            putString("company_name", application.companyName)
-            putString("application_date", application.applicationDate)
-            putString("status", application.status)
-            putInt("company_logo", application.logoResId)
-            putString("job_description", "Descripción detallada del trabajo...")
-            putString("job_requirements", "Kotlin, Android, MVVM")
-            putString("employment_type", "Tiempo completo")
-            putString("modality", "Remoto")
-            */
-
+            putString("application_id", application.applicationId)
+            putString("job_id", application.jobId)
+            putString("job_title", job?.title ?: "Trabajo no encontrado")
+            putString("company_name", company?.name ?: "Compañía no encontrada")
+            putLong("applied_at", application.appliedAt)
+            putString("status", application.status.name)
+            putString("job_description", job?.aboutJob ?: "")
+            putString("job_requirements", job?.requirements?.joinToString(", ") ?: "")
+            putString("employment_type", job?.employmentType ?: "")
+            putString("modality", job?.modality ?: "")
         }
 
         findNavController().navigate(
             R.id.action_myApplicationsFragment_to_applicationDetailFragment,
             bundle
         )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

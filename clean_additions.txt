@@ -1,0 +1,101 @@
+    /**
+     * Cargar todas las postulaciones de un usuario específico
+     */
+    fun loadApplicationsForUser(userId: String) {
+        Log.d("ApplicationsViewModel", "Loading applications for user: $userId")
+        _isLoading.value = true
+        _error.value = null
+        
+        firestoreService.getApplicationsByUserId(userId, object : Callback<List<Application>> {
+            override fun onSuccess(result: List<Application>) {
+                Log.d("ApplicationsViewModel", "Successfully loaded ${result.size} user applications")
+                _applications.value = result
+                _isLoading.value = false
+                
+                // Cargar información de trabajos para cada postulación
+                if (result.isNotEmpty()) {
+                    loadJobsInfoForApplications(result)
+                }
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("ApplicationsViewModel", "Error loading user applications", exception)
+                _error.value = "Error al cargar mis postulaciones: ${exception.message}"
+                _isLoading.value = false
+            }
+        })
+    }
+    
+    /**
+     * Cargar información de trabajos para las postulaciones del usuario
+     */
+    private fun loadJobsInfoForApplications(applications: List<Application>) {
+        val jobIds = applications.map { it.jobId }.distinct()
+        
+        jobIds.forEach { jobId ->
+            loadJobInfo(jobId)
+        }
+    }
+    
+    /**
+     * Cargar información de un trabajo
+     */
+    private fun loadJobInfo(jobId: String) {
+        firestoreService.getJobById(jobId, object : Callback<com.example.hirelink_2025.models.Job?> {
+            override fun onSuccess(result: com.example.hirelink_2025.models.Job?) {
+                result?.let { job ->
+                    val currentCache = _jobsCache.value.toMutableMap()
+                    currentCache[jobId] = job
+                    _jobsCache.value = currentCache
+                    
+                    // También cargar información de la empresa
+                    if (job.companyId.isNotEmpty()) {
+                        loadCompanyInfo(job.companyId)
+                    }
+                }
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("ApplicationsViewModel", "Error loading job info: $jobId", exception)
+            }
+        })
+    }
+    
+    /**
+     * Obtener información de un trabajo desde el cache
+     */
+    fun getJobInfo(jobId: String): com.example.hirelink_2025.models.Job? {
+        return _jobsCache.value[jobId]
+    }
+    
+    /**
+     * Filtrar postulaciones activas: ofertas que aún no han llegado a su fecha de cierre
+     */
+    fun getActiveApplications(): List<Application> {
+        val currentTime = System.currentTimeMillis()
+        return _applications.value.filter { application ->
+            val job = getJobInfo(application.jobId)
+            job != null && job.dueDate > currentTime && application.status == ApplicationStatus.PENDING
+        }
+    }
+    
+    /**
+     * Filtrar postulaciones en revisión: ofertas que ya finalizaron y están siendo revisadas
+     */
+    fun getReviewApplications(): List<Application> {
+        val currentTime = System.currentTimeMillis()
+        return _applications.value.filter { application ->
+            val job = getJobInfo(application.jobId)
+            job != null && job.dueDate <= currentTime && application.status == ApplicationStatus.PENDING
+        }
+    }
+    
+    /**
+     * Filtrar postulaciones finalizadas: que han sido aceptadas o rechazadas
+     */
+    fun getFinishedApplications(): List<Application> {
+        return _applications.value.filter { application ->
+            application.status == ApplicationStatus.ACCEPTED || application.status == ApplicationStatus.REJECTED
+        }
+    }
+}

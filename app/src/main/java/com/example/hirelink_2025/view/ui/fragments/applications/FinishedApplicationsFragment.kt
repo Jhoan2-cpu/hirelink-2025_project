@@ -1,60 +1,147 @@
 package com.example.hirelink_2025.view.ui.fragments.applications
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hirelink_2025.R
+import com.example.hirelink_2025.databinding.FragmentActiveApplicationsBinding
+import com.example.hirelink_2025.models.Application
+import com.example.hirelink_2025.view.adapter.ApplicationAdapter
+import com.example.hirelink_2025.viewmodels.ApplicationsViewModel
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FinishedApplicationsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FinishedApplicationsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentActiveApplicationsBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var adapter: ApplicationAdapter
+    private val applicationsViewModel: ApplicationsViewModel by viewModels { ViewModelFactory() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_finished_applications, container, false)
+    ): View {
+        _binding = FragmentActiveApplicationsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FinishApplicationsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FinishedApplicationsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupObservers()
+        loadUserApplications()
+    }
+
+    private fun setupRecyclerView() {
+        adapter = ApplicationAdapter(
+            apps = emptyList(),
+            onCancelClicked = { application ->
+                Toast.makeText(requireContext(), "Esta postulación ya ha finalizado", Toast.LENGTH_SHORT).show()
+            },
+            onItemClicked = { application ->
+                navigateToApplicationDetail(application)
+            },
+            getJobInfo = { jobId -> applicationsViewModel.getJobInfo(jobId) },
+            getCompanyInfo = { companyId -> applicationsViewModel.getCompanyInfo(companyId) }
+        )
+
+        binding.applicationsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.applicationsRecyclerView.adapter = adapter
+        
+        // Configurar pull-to-refresh
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            applicationsViewModel.refreshUserApplications()
+        }
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            applicationsViewModel.applications.collect { _ ->
+                // Filtrar solo las postulaciones finalizadas
+                val finishedApplications = applicationsViewModel.getFinishedApplications()
+                updateAdapter(finishedApplications)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            applicationsViewModel.isLoading.collect { isLoading ->
+                // Controlar SwipeRefreshLayout
+                binding.swipeRefreshLayout.isRefreshing = isLoading
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            applicationsViewModel.error.collect { error ->
+                error?.let {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    applicationsViewModel.clearError()
                 }
             }
+        }
+    }
+
+    private fun loadUserApplications() {
+        // ✅ CAMBIAR - usar Firebase Auth directamente
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid
+
+        if (userId != null) {
+            applicationsViewModel.loadApplicationsForUser(userId)
+        } else {
+            Toast.makeText(requireContext(), "Error: Usuario no autenticado", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateAdapter(applications: List<Application>) {
+        adapter = ApplicationAdapter(
+            apps = applications,
+            onCancelClicked = { application ->
+                Toast.makeText(requireContext(), "Esta postulación ya ha finalizado", Toast.LENGTH_SHORT).show()
+            },
+            onItemClicked = { application ->
+                navigateToApplicationDetail(application)
+            },
+            getJobInfo = { jobId -> applicationsViewModel.getJobInfo(jobId) },
+            getCompanyInfo = { companyId -> applicationsViewModel.getCompanyInfo(companyId) }
+        )
+        binding.applicationsRecyclerView.adapter = adapter
+    }
+
+    private fun navigateToApplicationDetail(application: Application) {
+        val job = applicationsViewModel.getJobInfo(application.jobId)
+        val company = job?.let { applicationsViewModel.getCompanyInfo(it.companyId) }
+        
+        val bundle = Bundle().apply {
+            putString("application_id", application.applicationId)
+            putString("job_id", application.jobId)
+            putString("job_title", job?.title ?: "Trabajo no encontrado")
+            putString("company_name", company?.name ?: "Compañía no encontrada")
+            putLong("applied_at", application.appliedAt)
+            putString("status", application.status.name)
+            putString("job_description", job?.aboutJob ?: "")
+            putString("job_requirements", job?.requirements?.joinToString(", ") ?: "")
+            putString("employment_type", job?.employmentType ?: "")
+            putString("modality", job?.modality ?: "")
+        }
+
+        findNavController().navigate(
+            R.id.action_myApplicationsFragment_to_applicationDetailFragment,
+            bundle
+        )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

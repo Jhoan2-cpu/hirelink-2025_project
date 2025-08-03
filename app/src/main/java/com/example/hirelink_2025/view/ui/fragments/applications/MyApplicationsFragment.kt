@@ -36,9 +36,8 @@ class MyApplicationsFragment : Fragment() {
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "Activas"
-                1 -> "En revisión"
-                2 -> "Finalizadas"
+                0 -> "En revisión"
+                1 -> "Finalizadas"
                 else -> ""
             }
         }.attach()

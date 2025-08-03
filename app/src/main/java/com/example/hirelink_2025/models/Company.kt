@@ -22,7 +22,20 @@ data class Company(
     // Campos adicionales para compatibilidad con Firestore existente
     val employeeCount: Int = 0, // Ignorado pero evita warnings
     val activeJobsCount: Int = 0 // Ignorado pero evita warnings
-)
+) {
+    /**
+     * Obtiene el tamaño de la compañía de forma legible
+     */
+    fun getDisplaySize(): String {
+        return when (size) {
+            CompanySize.STARTUP -> "1-10 empleados"
+            CompanySize.SMALL -> "11-50 empleados"
+            CompanySize.MEDIUM -> "51-200 empleados"
+            CompanySize.LARGE -> "201-1000 empleados"
+            CompanySize.ENTERPRISE -> "1000+ empleados"
+        }
+    }
+}
 //val employeeCount: Int = 0,//NO HAY
 //val activeJobsCount: Int = 0,//NO HAY
 

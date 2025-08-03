@@ -226,27 +226,13 @@ class ApplicationsViewModel : ViewModel() {
     }
 
     /**
-     * Refrescar postulaciones para un trabajo específico
+     * Refrescar postulaciones
      */
     fun refreshApplications(jobId: String) {
         loadApplicationsForJob(jobId)
     }
+}
     
-    /**
-     * Refrescar postulaciones del usuario
-     */
-    fun refreshUserApplications() {
-        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid
-        
-        if (userId != null) {
-            Log.d("ApplicationsViewModel", "Refreshing user applications")
-            loadApplicationsForUser(userId)
-        } else {
-            Log.w("ApplicationsViewModel", "Cannot refresh: no authenticated user")
-            _error.value = "Error: Usuario no autenticado"
-        }
-    }
     /**
      * Cargar todas las postulaciones de un usuario específico
      */
@@ -255,21 +241,15 @@ class ApplicationsViewModel : ViewModel() {
         _isLoading.value = true
         _error.value = null
         
-        // Limpiar caches previos para datos frescos
-        _jobsCache.value = emptyMap()
-        _companiesCache.value = emptyMap()
-        
         firestoreService.getApplicationsByUserId(userId, object : Callback<List<Application>> {
             override fun onSuccess(result: List<Application>) {
                 Log.d("ApplicationsViewModel", "Successfully loaded ${result.size} user applications")
+                _applications.value = result
+                _isLoading.value = false
                 
+                // Cargar información de trabajos para cada postulación
                 if (result.isNotEmpty()) {
-                    // Cargar información de trabajos y compañías ANTES de establecer las aplicaciones
-                    loadCompleteDataForApplications(result)
-                } else {
-                    // Si no hay aplicaciones, establecer lista vacía inmediatamente
-                    _applications.value = result
-                    _isLoading.value = false
+                    loadJobsInfoForApplications(result)
                 }
             }
 
@@ -282,86 +262,13 @@ class ApplicationsViewModel : ViewModel() {
     }
     
     /**
-     * Cargar información completa (jobs + compañías) para las postulaciones del usuario
-     * Solo establece las aplicaciones cuando TODOS los datos están cargados
+     * Cargar información de trabajos para las postulaciones del usuario
      */
-    private fun loadCompleteDataForApplications(applications: List<Application>) {
+    private fun loadJobsInfoForApplications(applications: List<Application>) {
         val jobIds = applications.map { it.jobId }.distinct()
-        val jobsMap = mutableMapOf<String, com.example.hirelink_2025.models.Job>()
-        val companiesMap = mutableMapOf<String, com.example.hirelink_2025.models.Company>()
-        
-        var jobsLoaded = 0
-        val totalJobs = jobIds.size
-        
-        Log.d("ApplicationsViewModel", "Loading complete data for ${applications.size} applications (${totalJobs} unique jobs)")
-        
-        if (totalJobs == 0) {
-            _applications.value = applications
-            _isLoading.value = false
-            return
-        }
         
         jobIds.forEach { jobId ->
-            firestoreService.getJobById(jobId, object : Callback<com.example.hirelink_2025.models.Job?> {
-                override fun onSuccess(job: com.example.hirelink_2025.models.Job?) {
-                    job?.let { 
-                        jobsMap[jobId] = it
-                        
-                        // Cargar información de la compañía para este job
-                        if (it.companyId.isNotEmpty()) {
-                            firestoreService.getCompanyById(it.companyId, object : Callback<com.example.hirelink_2025.models.Company?> {
-                                override fun onSuccess(company: com.example.hirelink_2025.models.Company?) {
-                                    company?.let { companiesMap[it.id] = it }
-                                    
-                                    jobsLoaded++
-                                    checkAndFinishLoading(applications, jobsLoaded, totalJobs, jobsMap, companiesMap)
-                                }
-                                
-                                override fun onError(exception: Exception) {
-                                    Log.e("ApplicationsViewModel", "Error loading company for job $jobId", exception)
-                                    jobsLoaded++
-                                    checkAndFinishLoading(applications, jobsLoaded, totalJobs, jobsMap, companiesMap)
-                                }
-                            })
-                        } else {
-                            jobsLoaded++
-                            checkAndFinishLoading(applications, jobsLoaded, totalJobs, jobsMap, companiesMap)
-                        }
-                    } ?: run {
-                        jobsLoaded++
-                        checkAndFinishLoading(applications, jobsLoaded, totalJobs, jobsMap, companiesMap)
-                    }
-                }
-                
-                override fun onError(exception: Exception) {
-                    Log.e("ApplicationsViewModel", "Error loading job $jobId", exception)
-                    jobsLoaded++
-                    checkAndFinishLoading(applications, jobsLoaded, totalJobs, jobsMap, companiesMap)
-                }
-            })
-        }
-    }
-    
-    /**
-     * Verificar si se completó la carga y finalizar
-     */
-    private fun checkAndFinishLoading(
-        applications: List<Application>,
-        jobsLoaded: Int,
-        totalJobs: Int,
-        jobsMap: Map<String, com.example.hirelink_2025.models.Job>,
-        companiesMap: Map<String, com.example.hirelink_2025.models.Company>
-    ) {
-        if (jobsLoaded >= totalJobs) {
-            Log.d("ApplicationsViewModel", "Finished loading: ${jobsMap.size} jobs, ${companiesMap.size} companies")
-            
-            // Actualizar caches
-            _jobsCache.value = jobsMap
-            _companiesCache.value = companiesMap
-            
-            // Finalmente establecer las aplicaciones (esto trigger los observers)
-            _applications.value = applications
-            _isLoading.value = false
+            loadJobInfo(jobId)
         }
     }
     
@@ -397,30 +304,8 @@ class ApplicationsViewModel : ViewModel() {
     }
     
     /**
-     * Filtrar postulaciones activas: ELIMINADO - Ahora todas van a revisión
-     * Esta función se mantiene para compatibilidad pero devuelve lista vacía
+     * Obtener información de una empresa desde el cache
      */
-    @Deprecated("Las postulaciones activas se eliminaron, usar getReviewApplications()")
-    fun getActiveApplications(): List<Application> {
-        return emptyList()
-    }
-    
-    /**
-     * Filtrar postulaciones en revisión: TODAS las postulaciones pendientes van aquí
-     * (Anteriormente incluía solo las que habían pasado la fecha límite)
-     */
-    fun getReviewApplications(): List<Application> {
-        return _applications.value.filter { application ->
-            application.status == ApplicationStatus.PENDING
-        }
-    }
-    
-    /**
-     * Filtrar postulaciones finalizadas: que han sido aceptadas o rechazadas
-     */
-    fun getFinishedApplications(): List<Application> {
-        return _applications.value.filter { application ->
-            application.status == ApplicationStatus.ACCEPTED || application.status == ApplicationStatus.REJECTED
-        }
-    }
-}
+    fun getCompanyInfo(companyId: String): Company? {
+        return _companiesCache.value[companyId]
+    }\n}

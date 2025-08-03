@@ -80,16 +80,20 @@ class SearchViewModel : ViewModel() {
         val jobType = _jobTypeQuery.value?.trim()
         val location = _locationQuery.value?.trim()
 
+        // Marcar que se intentó hacer búsqueda (para que refresh funcione)
+        _hasSearched.value = true
+
         // Validar que al menos un campo tenga contenido
         if (jobType.isNullOrBlank() && location.isNullOrBlank()) {
             _errorMessage.value = "Ingresa al menos un criterio de búsqueda"
+            _isLoading.value = false
+            _isSearching.value = false
             return
         }
 
         _isLoading.value = true
         _isSearching.value = true
         _errorMessage.value = ""
-        _hasSearched.value = true
 
         android.util.Log.d("SearchViewModel", "Searching jobs with jobType: '$jobType', location: '$location'")
 
@@ -242,12 +246,15 @@ class SearchViewModel : ViewModel() {
         _searchResults.value = sortedJobs
         _searchCount.value = sortedJobs.size
         _isEmpty.value = sortedJobs.isEmpty()
-        _isLoading.value = false
         _isSearching.value = false
 
         // Precargar información de compañías para los resultados
         if (sortedJobs.isNotEmpty()) {
+            // MANTENER loading=true mientras carga compañías
             loadCompaniesForJobs(sortedJobs)
+        } else {
+            // Si no hay jobs, terminar loading inmediatamente
+            _isLoading.value = false
         }
     }
 
@@ -257,7 +264,12 @@ class SearchViewModel : ViewModel() {
     private fun loadCompaniesForJobs(jobs: List<Job>) {
         val companyIds = jobs.map { it.companyId }.distinct().filter { it.isNotEmpty() }
         
-        if (companyIds.isEmpty()) return
+        if (companyIds.isEmpty()) {
+            // Si no hay companyIds, terminar loading inmediatamente
+            _isLoading.value = false
+            android.util.Log.d("SearchViewModel", "No companies to load - Loading finished")
+            return
+        }
 
         val companiesMap = mutableMapOf<String, Company>()
         var pendingRequests = companyIds.size
@@ -270,7 +282,8 @@ class SearchViewModel : ViewModel() {
 
                     if (pendingRequests == 0) {
                         _companiesCache.value = companiesMap
-                        android.util.Log.d("SearchViewModel", "Loaded ${companiesMap.size} companies for search results")
+                        _isLoading.value = false  // ✅ TERMINAR loading cuando se cargan todas las compañías
+                        android.util.Log.d("SearchViewModel", "Loaded ${companiesMap.size} companies for search results - Loading finished")
                     }
                 }
 
@@ -280,6 +293,8 @@ class SearchViewModel : ViewModel() {
 
                     if (pendingRequests == 0) {
                         _companiesCache.value = companiesMap
+                        _isLoading.value = false  // ✅ TERMINAR loading también en caso de error
+                        android.util.Log.d("SearchViewModel", "Finished loading companies (with errors) - Loading finished")
                     }
                 }
             })
@@ -344,8 +359,18 @@ class SearchViewModel : ViewModel() {
      * Recargar resultados (para refresh)
      */
     fun refreshResults() {
-        if (_hasSearched.value == true && canSearch()) {
+        android.util.Log.d("SearchViewModel", "refreshResults() called")
+        android.util.Log.d("SearchViewModel", "hasSearched: ${_hasSearched.value}, canSearch: ${canSearch()}")
+        android.util.Log.d("SearchViewModel", "jobType: '${_jobTypeQuery.value}', location: '${_locationQuery.value}'")
+        
+        if (canSearch()) {
+            android.util.Log.d("SearchViewModel", "Executing refresh search")
+            // Limpiar errores previos antes de refrescar
+            _errorMessage.value = ""
             searchJobs()
+        } else {
+            android.util.Log.w("SearchViewModel", "Cannot refresh: no search criteria available")
+            _errorMessage.value = "No hay criterios de búsqueda para refrescar"
         }
     }
 }

@@ -364,7 +364,19 @@ class FirestoreService {
                         company?.let { companies.add(it) }
                     } catch (e: Exception) {
                         Log.w("FirestoreService", "Failed to deserialize company document ${document.id}: ${e.message}")
-                        // Skip this document and continue with others
+                        
+                        // Intentar crear Company manualmente para documentos con problemas de deserialización
+                        try {
+                            val data = document.data
+                            if (data != null) {
+                                val manualCompany = createCompanyFromRawData(document.id, data)
+                                companies.add(manualCompany)
+                                Log.d("FirestoreService", "Successfully created company manually: ${manualCompany.name}")
+                            }
+                        } catch (e2: Exception) {
+                            Log.w("FirestoreService", "Failed to create company manually for document ${document.id}: ${e2.message}")
+                            // Skip this document completely
+                        }
                     }
                 }
                 callback.onSuccess(companies)
@@ -374,6 +386,7 @@ class FirestoreService {
                 callback.onError(it) 
             }
     }
+
     
     /**
      * Actualizar empresa
@@ -858,7 +871,6 @@ class FirestoreService {
         Log.d("FirestoreService", "Getting applications for user: $userId")
         db.collection(APPLICATIONS_COLLECTION)
             .whereEqualTo("applicantId", userId)
-            .orderBy("appliedAt", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val applications = mutableListOf<Application>()
@@ -870,8 +882,10 @@ class FirestoreService {
                         Log.w("FirestoreService", "Failed to deserialize application document ${document.id}: ${e.message}")
                     }
                 }
-                Log.d("FirestoreService", "Found ${applications.size} applications for user")
-                callback.onSuccess(applications)
+                // Sort by appliedAt in descending order (most recent first) on the client side
+                val sortedApplications = applications.sortedByDescending { it.appliedAt }
+                Log.d("FirestoreService", "Found ${sortedApplications.size} applications for user")
+                callback.onSuccess(sortedApplications)
             }
             .addOnFailureListener { 
                 Log.e("FirestoreService", "Error getting applications for user", it)
