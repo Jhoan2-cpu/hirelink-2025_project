@@ -106,10 +106,9 @@
                                 android:id="@+id/applicantPhoto"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:padding="@dimen/margin_medium"
                                 android:src="@drawable/ic_person"
-                                android:scaleType="centerInside"
-                                app:tint="@color/primary" />
+                                android:scaleType="centerCrop"
+                                android:contentDescription="Foto de perfil del postulante" />
 
                         </com.google.android.material.card.MaterialCardView>
 

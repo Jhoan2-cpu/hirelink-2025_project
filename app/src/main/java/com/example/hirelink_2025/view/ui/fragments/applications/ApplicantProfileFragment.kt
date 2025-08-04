@@ -285,15 +285,81 @@ class ApplicantProfileFragment : Fragment() {
     
     private fun loadProfileImage(imageUrl: String?) {
         if (!imageUrl.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_person)
-                .error(R.drawable.ic_person)
-                .circleCrop()
-                .into(applicantPhoto)
+            try {
+                // If it's already a download URL (contains https://), use it directly
+                if (imageUrl.startsWith("https://") || imageUrl.startsWith("http://")) {
+                    // Reset ImageView for actual profile photo
+                    applicantPhoto.clearColorFilter()
+                    applicantPhoto.scaleType = ImageView.ScaleType.CENTER_CROP
+                    applicantPhoto.setPadding(0, 0, 0, 0)
+                    
+                    Glide.with(this)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_person)
+                        .error(R.drawable.ic_person)
+                        .circleCrop()
+                        .into(applicantPhoto)
+                } else {
+                    // If it's a Firebase Storage reference path, get the download URL
+                    val storage = com.google.firebase.storage.FirebaseStorage.getInstance()
+                    
+                    try {
+                        // Handle different path formats
+                        val imageRef = if (imageUrl.startsWith("profile_images/") || imageUrl.startsWith("gs://")) {
+                            if (imageUrl.startsWith("gs://")) {
+                                storage.getReferenceFromUrl(imageUrl)
+                            } else {
+                                storage.reference.child(imageUrl)
+                            }
+                        } else {
+                            // Assume it's a profile image path
+                            storage.reference.child("profile_images/$imageUrl")
+                        }
+                        
+                        imageRef.downloadUrl
+                            .addOnSuccessListener { downloadUrl ->
+                                // Reset ImageView for actual profile photo
+                                applicantPhoto.clearColorFilter()
+                                applicantPhoto.scaleType = ImageView.ScaleType.CENTER_CROP
+                                applicantPhoto.setPadding(0, 0, 0, 0)
+                                
+                                Glide.with(this)
+                                    .load(downloadUrl)
+                                    .placeholder(R.drawable.ic_person)
+                                    .error(R.drawable.ic_person)
+                                    .circleCrop()
+                                    .into(applicantPhoto)
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.e("ApplicantProfileFragment", "Error getting download URL for path: $imageUrl", exception)
+                                // Use default image if download URL fails
+                                setDefaultProfileImage()
+                            }
+                    } catch (e: Exception) {
+                        Log.e("ApplicantProfileFragment", "Error with Firebase Storage reference for path: $imageUrl", e)
+                        setDefaultProfileImage()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ApplicantProfileFragment", "Error loading image", e)
+                setDefaultProfileImage()
+            }
         } else {
-            applicantPhoto.setImageResource(R.drawable.ic_person)
+            setDefaultProfileImage()
         }
+    }
+    
+    private fun setDefaultProfileImage() {
+        // Since we removed the tint from the layout, we'll apply it programmatically for the default icon
+        applicantPhoto.setImageResource(R.drawable.ic_person)
+        applicantPhoto.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary))
+        applicantPhoto.scaleType = ImageView.ScaleType.CENTER_INSIDE
+        applicantPhoto.setPadding(
+            resources.getDimensionPixelSize(R.dimen.margin_medium),
+            resources.getDimensionPixelSize(R.dimen.margin_medium),
+            resources.getDimensionPixelSize(R.dimen.margin_medium),
+            resources.getDimensionPixelSize(R.dimen.margin_medium)
+        )
     }
     
     private fun setupSkillsChips(skills: List<String>) {
