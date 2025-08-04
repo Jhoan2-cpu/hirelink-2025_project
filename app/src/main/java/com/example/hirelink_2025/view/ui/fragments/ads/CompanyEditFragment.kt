@@ -29,6 +29,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import android.widget.AutoCompleteTextView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -44,7 +45,7 @@ class CompanyEditFragment : Fragment() {
     private lateinit var companyDescriptionInputLayout: TextInputLayout
     private lateinit var companyDescriptionEditText: TextInputEditText
     private lateinit var companySizeInputLayout: TextInputLayout
-    private lateinit var companySizeEditText: TextInputEditText
+    private lateinit var companySizeEditText: AutoCompleteTextView
     private lateinit var foundedYearInputLayout: TextInputLayout
     private lateinit var foundedYearEditText: TextInputEditText
     private lateinit var addressInputLayout: TextInputLayout
@@ -95,6 +96,7 @@ class CompanyEditFragment : Fragment() {
         initViews(view)
         setupClickListeners()
         setupObservers()
+        setupCompanySizeDropdown()
         getCurrentUserAndLoadCompany()
     }
     
@@ -188,6 +190,25 @@ class CompanyEditFragment : Fragment() {
         }
     }
     
+    private fun setupCompanySizeDropdown() {
+        val companySizes = listOf(
+            "1-10",
+            "11-50",
+            "51-200",
+            "201-1000",
+            "1000+"
+        )
+        val adapter = android.widget.ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            companySizes
+        )
+        companySizeEditText.apply {
+            setAdapter(adapter)
+            threshold = 0
+        }
+    }
+    
     private fun getCurrentUserAndLoadCompany() {
         currentUserId = FirebaseAuth.getInstance().currentUser?.uid
         
@@ -248,7 +269,7 @@ class CompanyEditFragment : Fragment() {
                 com.example.hirelink_2025.models.CompanySize.LARGE -> "201-1000"
                 com.example.hirelink_2025.models.CompanySize.ENTERPRISE -> "1000+"
             }
-            companySizeEditText.setText(sizeText)
+            companySizeEditText.setText(sizeText, false)
             
             if (company.foundedYear > 0) {
                 foundedYearEditText.setText(company.foundedYear.toString())

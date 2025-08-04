@@ -48,7 +48,7 @@ class MyAdsRegisterFragment : Fragment() {
     
     // Additional fields
     private lateinit var vacanciesEditText: TextInputEditText
-    private lateinit var employmentTypeEditText: TextInputEditText
+    private lateinit var employmentTypeDropdown: MaterialAutoCompleteTextView
     private lateinit var modalityDropdown: MaterialAutoCompleteTextView
     private lateinit var dateEditText: TextInputEditText
     private lateinit var positionEditText: TextInputEditText
@@ -99,7 +99,7 @@ class MyAdsRegisterFragment : Fragment() {
         
         // Additional fields
         vacanciesEditText = view.findViewById(R.id.vacanciesEditText)
-        employmentTypeEditText = view.findViewById(R.id.employmentTypeEditText)
+        employmentTypeDropdown = view.findViewById(R.id.employmentTypeDropdown)
         modalityDropdown = view.findViewById(R.id.modalityDropdown)
         dateEditText = view.findViewById(R.id.dateEditText)
         positionEditText = view.findViewById(R.id.positionEditText)
@@ -212,9 +212,13 @@ class MyAdsRegisterFragment : Fragment() {
     }
     
     private fun setupEmploymentTypeDropdown() {
-        val employmentOptions = viewModel.getEmploymentTypeOptions()
-        // Para este campo usaremos un EditText normal, pero podríamos convertirlo a dropdown
-        // employmentTypeEditText puede mostrar sugerencias si es necesario
+        val employmentTypeOptions = com.example.hirelink_2025.models.EmploymentType.getAllDisplayNames()
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, employmentTypeOptions)
+        employmentTypeDropdown.setAdapter(adapter)
+        
+        employmentTypeDropdown.setOnItemClickListener { _, _, position, _ ->
+            employmentTypeDropdown.setText(employmentTypeOptions[position], false)
+        }
     }
     
     private fun showDatePicker() {
@@ -267,7 +271,7 @@ class MyAdsRegisterFragment : Fragment() {
         val vacancies = try {
             vacanciesEditText.text.toString().toIntOrNull() ?: 1
         } catch (e: Exception) { 1 }
-        val employmentType = employmentTypeEditText.text.toString().ifBlank { "Tiempo Completo" }
+        val employmentType = employmentTypeDropdown.text.toString().ifBlank { "Tiempo completo" }
         val modality = modalityDropdown.text.toString().ifBlank { "Presencial" }
         val deadline = dateEditText.text.toString()
         val offerSalary = positionEditText.text.toString().ifBlank { "Por negociar" }

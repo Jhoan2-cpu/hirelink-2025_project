@@ -314,13 +314,19 @@
                         android:layout_marginStart="@dimen/margin_small"
                         android:hint="Horario Laboral"
                         app:startIconDrawable="@drawable/ic_work_small"
-                        app:startIconTint="@color/secondary">
+                        app:startIconTint="@color/secondary"
+                        app:endIconMode="dropdown_menu">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/employmentTypeEditText"
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                            android:id="@+id/employmentTypeDropdown"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text" />
+                            android:minHeight="48dp"
+                            android:paddingVertical="8dp"
+                            android:importantForAccessibility="yes"
+                            android:inputType="none"
+                            android:focusable="false"
+                            android:clickable="true" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 

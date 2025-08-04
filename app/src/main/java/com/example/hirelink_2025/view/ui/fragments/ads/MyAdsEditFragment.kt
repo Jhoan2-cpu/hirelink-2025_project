@@ -36,6 +36,7 @@ class MyAdsEditFragment : Fragment() {
 
     // Adapters para dropdowns
     private lateinit var modalityAdapter: ArrayAdapter<String>
+    private lateinit var employmentTypeAdapter: ArrayAdapter<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,8 +108,10 @@ class MyAdsEditFragment : Fragment() {
             viewModel.updateVacancies(text.toString())
         }
 
-        binding.employmentTypeEditText.doOnTextChanged { text, _, _, _ ->
-            viewModel.updateEmploymentType(text.toString())
+        // Configurar dropdown de tipo de empleo
+        binding.employmentTypeDropdown.setOnItemClickListener { _, _, position, _ ->
+            val selectedType = employmentTypeAdapter.getItem(position) ?: ""
+            viewModel.updateEmploymentType(selectedType)
         }
 
         // Configurar dropdown de modalidad
@@ -168,7 +171,13 @@ class MyAdsEditFragment : Fragment() {
         )
         binding.modalityDropdown.setAdapter(modalityAdapter)
 
-        // El tipo de empleo es campo de texto libre, no necesita adapter
+        // Adapter para tipo de empleo
+        employmentTypeAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            com.example.hirelink_2025.models.EmploymentType.getAllDisplayNames()
+        )
+        binding.employmentTypeDropdown.setAdapter(employmentTypeAdapter)
     }
 
     /**
@@ -208,8 +217,8 @@ class MyAdsEditFragment : Fragment() {
         }
 
         viewModel.employmentType.observe(viewLifecycleOwner) { employmentType ->
-            if (binding.employmentTypeEditText.text.toString() != employmentType) {
-                binding.employmentTypeEditText.setText(employmentType)
+            if (binding.employmentTypeDropdown.text.toString() != employmentType) {
+                binding.employmentTypeDropdown.setText(employmentType, false)
             }
         }
 
@@ -407,7 +416,7 @@ class MyAdsEditFragment : Fragment() {
             aboutJobEditText.isEnabled = !isLoading
             skillsEditText.isEnabled = !isLoading
             vacanciesEditText.isEnabled = !isLoading
-            employmentTypeEditText.isEnabled = !isLoading
+            employmentTypeDropdown.isEnabled = !isLoading
             modalityDropdown.isEnabled = !isLoading
             salaryEditText.isEnabled = !isLoading
             deadlineEditText.isEnabled = !isLoading
