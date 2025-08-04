@@ -49,7 +49,9 @@ class SearchResultsAdapter(
                 val company = getCompanyForJob(job)
                 companyNameTextView.text = company?.name ?: "Empresa no disponible"
 
-                // Company Logo
+
+                companyLogoImageView.setImageResource(R.drawable.ic_work)
+                /* Company Logo
                 if (!company?.logoUrl.isNullOrEmpty()) {
                     Glide.with(companyLogoImageView.context)
                         .load(company?.logoUrl)
@@ -60,7 +62,7 @@ class SearchResultsAdapter(
                 } else {
                     companyLogoImageView.setImageResource(R.drawable.ic_work)
                 }
-
+*/
                 // Location from company
                 locationChip.text = when {
                     !company?.city.isNullOrBlank() && !company?.country.isNullOrBlank() -> 
@@ -85,7 +87,7 @@ class SearchResultsAdapter(
 
                 // Salary
                 salaryTextView.text = if (job.salary.isNotBlank()) {
-                    job.salary
+                    "S/. " + job.salary
                 } else {
                     "Salario a convenir"
                 }

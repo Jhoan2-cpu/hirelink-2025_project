@@ -305,7 +305,7 @@ class JobDetailFragment : Fragment(), OnMapReadyCallback {
         }
         
         // Datos del trabajo
-        salaryText.text = if (job.salary.isNotBlank()) job.salary else "Salario a convenir"
+        salaryText.text = if (job.salary.isNotBlank()) "S/. " + job.salary else "Salario a convenir"
         modalityText.text = job.modality.ifBlank { "No especificado" }
         
         // Tipo de empleo si existe el campo

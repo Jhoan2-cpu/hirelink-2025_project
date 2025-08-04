@@ -45,7 +45,7 @@ class MyAdAdapter(
         fun bind(job: Job) = with(binding) {
             // Información básica del trabajo
             jobTitle.text = job.title
-            salary.text = if (job.salary.isNotEmpty()) job.salary else job.offerSalary.ifEmpty { "Salario no especificado" }
+            salary.text = if (job.salary.isNotEmpty()) "S/. " + job.salary else job.offerSalary.ifEmpty { "Salario no especificado" }
             
             // Obtener información de la empresa
             val company = getCompanyInfo(job.companyId)

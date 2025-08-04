@@ -212,7 +212,7 @@ class ProfileFragment : Fragment() {
 
             // Disponibilidad y salario
             userAvailability.text = profile.availability.ifBlank { "No especificado" }
-            userSalaryExpectation.text = profile.salaryExpectation.ifBlank { "No especificado" }
+            userSalaryExpectation.text = "S./ " + profile.salaryExpectation.ifBlank { "No especificado" }
 
             // LinkedIn y Portfolio
             if (profile.socialNetworkUrl.isNotBlank()) {

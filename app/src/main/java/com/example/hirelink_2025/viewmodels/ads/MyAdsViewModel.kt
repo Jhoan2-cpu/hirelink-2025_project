@@ -115,7 +115,9 @@ class MyAdsViewModel : ViewModel() {
         // Using placeholders for views and applications since they're not in the simplified Job model
         // These could be replaced with actual data from a separate analytics service if needed
         stats["totalViews"] = 0 // Placeholder: views data not available in current Job model
-        stats["totalApplications"] = 0 // Placeholder: applications data not available in current Job model
+        // Obtener el conteo total de aplicaciones sumando todos los valores del mapa
+        val totalApplications = _applicationsCount.value?.values?.sum() ?: 0
+        stats["totalApplications"] = totalApplications
         // Alternative: Use vacancies as a rough indicator of job activity
         stats["totalVacancies"] = ads.sumOf { it.vacancies }
         
@@ -496,6 +498,8 @@ class MyAdsViewModel : ViewModel() {
                     // Cuando todas las respuestas estén listas, actualizar LiveData
                     if (pendingRequests == 0) {
                         _applicationsCount.value = counts.toMap()
+                        // Recalcular estadísticas con los nuevos conteos
+                        _myAds.value?.let { calculateStats(it) }
                         Log.d("MyAdsViewModel", "Loaded applications counts: $counts")
                     }
                 }

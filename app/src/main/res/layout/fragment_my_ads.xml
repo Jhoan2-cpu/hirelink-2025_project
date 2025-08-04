@@ -130,7 +130,7 @@
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Empresa"
+                    android:text="Gestionar Empresas"
                     app:icon="@drawable/ic_vacation"
                     app:iconSize="24dp" />
             </LinearLayout>

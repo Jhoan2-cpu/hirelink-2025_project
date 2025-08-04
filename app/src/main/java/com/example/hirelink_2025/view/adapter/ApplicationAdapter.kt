@@ -53,7 +53,7 @@ class ApplicationAdapter(
         
         // Priorizar offerSalary sobre salary
         val salary = job?.offerSalary?.takeIf { it.isNotEmpty() } ?: job?.salary?.takeIf { it.isNotEmpty() }
-        holder.jobSalary.text = salary ?: "Salario no especificado"
+        holder.jobSalary.text = "S/. " + salary ?: "Salario no especificado"
         
         holder.employmentType.text = job?.employmentType?.takeIf { it.isNotEmpty() } ?: "No especificado"
         holder.jobModality.text = job?.modality?.takeIf { it.isNotEmpty() } ?: "No especificado"
