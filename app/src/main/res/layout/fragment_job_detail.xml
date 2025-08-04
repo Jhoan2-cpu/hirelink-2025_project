@@ -86,6 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
+                    android:textColor="@color/white"
                     android:background="@drawable/chip_background"
                     android:drawableStart="@drawable/ic_location_small"
                     android:drawablePadding="4dp"
@@ -99,10 +100,10 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/chip_background"
                     android:drawableStart="@drawable/ic_calendar"
+                    android:textColor="@color/white"
                     android:drawablePadding="4dp"
                     android:padding="8dp"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
                     tools:text="Publicado el 15 Ene 2025" />
 
             </LinearLayout>
@@ -123,6 +124,7 @@
                     android:background="@drawable/chip_background"
                     android:drawableStart="@drawable/ic_money"
                     android:drawablePadding="4dp"
+                    android:textColor="@color/white"
                     android:padding="8dp"
                     android:textSize="14sp"
                     tools:text="S/ 5000 - 7000" />
@@ -134,6 +136,7 @@
                     android:background="@drawable/chip_background"
                     android:drawableStart="@drawable/ic_people"
                     android:drawablePadding="4dp"
+                    android:textColor="@color/white"
                     android:padding="8dp"
                     android:textSize="14sp"
                     tools:text="3 vacantes" />
@@ -156,6 +159,7 @@
                     android:drawableStart="@drawable/ic_modality"
                     android:drawablePadding="4dp"
                     android:padding="8dp"
+                    android:textColor="@color/white"
                     android:textSize="14sp"
                     tools:text="Remoto" />
 
@@ -166,6 +170,7 @@
                     android:background="@drawable/chip_background"
                     android:drawableStart="@drawable/ic_work_small"
                     android:drawablePadding="4dp"
+                    android:textColor="@color/white"
                     android:padding="8dp"
                     android:textSize="14sp"
                     tools:text="Tiempo completo" />

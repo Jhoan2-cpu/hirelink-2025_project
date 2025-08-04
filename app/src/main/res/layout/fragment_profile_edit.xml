@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
                     android:text="Nombre del usuario"
-                    android:textColor="#261B1B"
+                    android:textColor="@color/text_primary"
                     android:textSize="@dimen/text_size_title"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"

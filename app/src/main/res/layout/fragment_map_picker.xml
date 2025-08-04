@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:background="#AAFFFFFF"
+        android:background="@color/background_overlay"
         android:padding="16dp"
         android:gravity="center_horizontal">
 
