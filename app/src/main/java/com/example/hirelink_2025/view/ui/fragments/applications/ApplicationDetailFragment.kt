@@ -13,12 +13,22 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hirelink_2025.R
+import com.example.hirelink_2025.viewmodels.ApplicationsViewModel
+import com.example.hirelink_2025.viewmodels.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 
 class ApplicationDetailFragment : Fragment() {
+
+    // ViewModel
+    private val applicationsViewModel: ApplicationsViewModel by viewModels { ViewModelFactory() }
+    
+    // Application ID for cancellation
+    private var applicationId: String? = null
 
     // UI Components
     private lateinit var backButton: MaterialButton
@@ -133,6 +143,9 @@ class ApplicationDetailFragment : Fragment() {
     
     private fun getApplicationDataFromArguments() {
         arguments?.let { args ->
+            // Get application ID for cancellation
+            applicationId = args.getString("application_id")
+            
             applicationData = ApplicationData(
                 jobTitle = args.getString("job_title", ""),
                 companyName = args.getString("company_name", ""),
@@ -359,8 +372,34 @@ class ApplicationDetailFragment : Fragment() {
     }
 
     private fun cancelApplication() {
-        Toast.makeText(requireContext(), "Postulación cancelada exitosamente", Toast.LENGTH_LONG).show()
-        findNavController().navigateUp()
+        val appId = applicationId
+        if (appId == null) {
+            Toast.makeText(requireContext(), "Error: ID de postulación no encontrado", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        // Mostrar indicador de carga
+        cancelApplicationButton.isEnabled = false
+        cancelApplicationButton.text = "Cancelando..."
+        
+        applicationsViewModel.cancelApplication(appId) { success ->
+            // Restaurar estado del botón
+            cancelApplicationButton.isEnabled = true
+            cancelApplicationButton.text = "Cancelar Postulación"
+            
+            if (success) {
+                Toast.makeText(requireContext(), "Postulación cancelada exitosamente", Toast.LENGTH_LONG).show()
+                
+                // Notificar al fragmento padre que debe recargar las postulaciones
+                setFragmentResult("application_cancelled", Bundle().apply {
+                    putBoolean("should_reload", true)
+                })
+                
+                findNavController().navigateUp()
+            } else {
+                Toast.makeText(requireContext(), "Error al cancelar la postulación. Inténtalo de nuevo.", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     companion object {

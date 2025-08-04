@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -39,7 +40,17 @@ class FinishedApplicationsFragment : Fragment() {
 
         setupRecyclerView()
         setupObservers()
+        setupFragmentResultListener()
         loadUserApplications()
+    }
+    
+    private fun setupFragmentResultListener() {
+        setFragmentResultListener("application_cancelled") { _, bundle ->
+            val shouldReload = bundle.getBoolean("should_reload", false)
+            if (shouldReload) {
+                loadUserApplications()
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -57,15 +68,18 @@ class FinishedApplicationsFragment : Fragment() {
         
         // Configurar pull-to-refresh
         binding.swipeRefreshLayout.setOnRefreshListener {
+            android.util.Log.d("FinishedApplicationsFragment", "Pull-to-refresh triggered")
             applicationsViewModel.refreshUserApplications()
         }
     }
 
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
-            applicationsViewModel.applications.collect { _ ->
+            applicationsViewModel.applications.collect { applications ->
+                android.util.Log.d("FinishedApplicationsFragment", "Received ${applications.size} total applications")
                 // Filtrar solo las postulaciones finalizadas
                 val finishedApplications = applicationsViewModel.getFinishedApplications()
+                android.util.Log.d("FinishedApplicationsFragment", "Filtered to ${finishedApplications.size} finished applications")
                 updateAdapter(finishedApplications)
             }
         }
@@ -80,7 +94,9 @@ class FinishedApplicationsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             applicationsViewModel.error.collect { error ->
                 error?.let {
+                    android.util.Log.e("FinishedApplicationsFragment", "Error: $it")
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    binding.swipeRefreshLayout.isRefreshing = false
                     applicationsViewModel.clearError()
                 }
             }
@@ -100,6 +116,7 @@ class FinishedApplicationsFragment : Fragment() {
     }
 
     private fun updateAdapter(applications: List<Application>) {
+        android.util.Log.d("FinishedApplicationsFragment", "Updating adapter with ${applications.size} applications")
         adapter = ApplicationAdapter(
             apps = applications,
             onItemClicked = { application ->
@@ -126,6 +143,11 @@ class FinishedApplicationsFragment : Fragment() {
             putString("job_requirements", job?.requirements?.joinToString(", ") ?: "")
             putString("employment_type", job?.employmentType ?: "")
             putString("modality", job?.modality ?: "")
+            putString("salary", job?.offerSalary?.ifEmpty { job?.salary } ?: "")
+            putString("vacancies", job?.vacancies?.toString() ?: "")
+            putString("company_phone", company?.phone ?: "")
+            putString("company_email", company?.email ?: "")
+            putString("company_website", company?.website ?: "")
         }
 
         findNavController().navigate(

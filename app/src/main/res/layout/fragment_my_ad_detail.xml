@@ -103,29 +103,7 @@
                     android:drawablePadding="@dimen/margin_small"
                     android:gravity="center_vertical" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:layout_marginBottom="@dimen/margin_medium"
-                    android:background="@color/divider" />
-
                 <!-- Title Display -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Puesto:"
-                    android:textStyle="bold"
-                    android:textColor="@color/secondary"
-                    android:layout_marginBottom="@dimen/margin_tiny" />
-
-                <TextView
-                    android:id="@+id/jobTitleDisplayText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_medium"
-                    android:textColor="@color/text_primary"
-                    tools:text="Desarrollador Android Senior" />
 
                 <!-- About Company Display -->
                 <TextView
@@ -392,6 +370,7 @@
             app:cardCornerRadius="@dimen/radius_extra_large"
             app:cardElevation="@dimen/card_elevation"
             app:cardBackgroundColor="@color/surface"
+            android:visibility="invisible"
             app:strokeWidth="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

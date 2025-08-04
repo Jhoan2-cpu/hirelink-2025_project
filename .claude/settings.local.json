@@ -16,7 +16,9 @@
       "Bash(cd:*)",
       "Bash(cd:*)",
       "Bash(apt list:*)",
-      "Bash(export:*)"
+      "Bash(export:*)",
+      "Bash(java:*)",
+      "Bash(javac:*)"
     ],
     "deny": []
   }

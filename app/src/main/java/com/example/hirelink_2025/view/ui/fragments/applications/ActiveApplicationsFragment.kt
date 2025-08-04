@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -40,7 +41,17 @@ class ActiveApplicationsFragment : Fragment() {
 
         setupRecyclerView()
         setupObservers()
+        setupFragmentResultListener()
         loadUserApplications()
+    }
+    
+    private fun setupFragmentResultListener() {
+        setFragmentResultListener("application_cancelled") { _, bundle ->
+            val shouldReload = bundle.getBoolean("should_reload", false)
+            if (shouldReload) {
+                loadUserApplications()
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -55,6 +66,11 @@ class ActiveApplicationsFragment : Fragment() {
 
         binding.applicationsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.applicationsRecyclerView.adapter = adapter
+        
+        // Configurar pull-to-refresh
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            applicationsViewModel.refreshUserApplications()
+        }
     }
 
     private fun setupObservers() {
@@ -68,12 +84,8 @@ class ActiveApplicationsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             applicationsViewModel.isLoading.collect { isLoading ->
-                // Mostrar/ocultar loading indicator
-                if (isLoading) {
-                    // binding.progressBar.visibility = View.VISIBLE
-                } else {
-                    // binding.progressBar.visibility = View.GONE
-                }
+                // Controlar SwipeRefreshLayout
+                binding.swipeRefreshLayout.isRefreshing = isLoading
             }
         }
 
@@ -126,6 +138,11 @@ class ActiveApplicationsFragment : Fragment() {
             putString("job_requirements", job?.requirements?.joinToString(", ") ?: "")
             putString("employment_type", job?.employmentType ?: "")
             putString("modality", job?.modality ?: "")
+            putString("salary", job?.offerSalary?.ifEmpty { job?.salary } ?: "")
+            putString("vacancies", job?.vacancies?.toString() ?: "")
+            putString("company_phone", company?.phone ?: "")
+            putString("company_email", company?.email ?: "")
+            putString("company_website", company?.website ?: "")
         }
 
         findNavController().navigate(

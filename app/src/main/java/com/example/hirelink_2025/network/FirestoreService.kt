@@ -928,6 +928,24 @@ class FirestoreService {
     }
     
     /**
+     * Eliminar postulación por ID
+     */
+    fun deleteApplication(applicationId: String, callback: VoidCallback) {
+        Log.d("FirestoreService", "Deleting application: $applicationId")
+        db.collection(APPLICATIONS_COLLECTION)
+            .document(applicationId)
+            .delete()
+            .addOnSuccessListener { 
+                Log.d("FirestoreService", "Application deleted successfully")
+                callback.onSuccess() 
+            }
+            .addOnFailureListener { 
+                Log.e("FirestoreService", "Error deleting application", it)
+                callback.onError(it) 
+            }
+    }
+    
+    /**
      * Contar postulaciones por trabajo
      */
     fun countApplicationsByJobId(jobId: String, callback: (Int) -> Unit) {

@@ -240,11 +240,19 @@ class ApplicationsViewModel : ViewModel() {
         val userId = currentUser?.uid
         
         if (userId != null) {
-            Log.d("ApplicationsViewModel", "Refreshing user applications")
+            Log.d("ApplicationsViewModel", "Refreshing user applications - clearing all caches")
+            
+            // Limpiar todos los caches para forzar una recarga completa
+            _applications.value = emptyList()
+            _jobsCache.value = emptyMap()
+            _companiesCache.value = emptyMap()
+            
+            // Recargar datos
             loadApplicationsForUser(userId)
         } else {
             Log.w("ApplicationsViewModel", "Cannot refresh: no authenticated user")
             _error.value = "Error: Usuario no autenticado"
+            _isLoading.value = false
         }
     }
     /**
@@ -422,5 +430,31 @@ class ApplicationsViewModel : ViewModel() {
         return _applications.value.filter { application ->
             application.status == ApplicationStatus.ACCEPTED || application.status == ApplicationStatus.REJECTED
         }
+    }
+    
+    /**
+     * Cancelar/eliminar una postulación
+     */
+    fun cancelApplication(applicationId: String, callback: (Boolean) -> Unit) {
+        Log.d("ApplicationsViewModel", "Canceling application: $applicationId")
+        
+        firestoreService.deleteApplication(applicationId, object : VoidCallback {
+            override fun onSuccess() {
+                Log.d("ApplicationsViewModel", "Application canceled successfully")
+                _operationResult.value = "Postulación cancelada exitosamente"
+                
+                // Remover la aplicación de la lista local
+                val updatedApplications = _applications.value.filter { it.applicationId != applicationId }
+                _applications.value = updatedApplications
+                
+                callback(true)
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("ApplicationsViewModel", "Error canceling application", exception)
+                _operationResult.value = "Error al cancelar la postulación: ${exception.message}"
+                callback(false)
+            }
+        })
     }
 }

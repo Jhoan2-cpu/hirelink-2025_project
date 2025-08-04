@@ -50,9 +50,13 @@ class ApplicationAdapter(
         // Poblar campos con datos del modelo simplificado
         holder.jobTitle.text = job?.title ?: "Trabajo no encontrado"
         holder.companyName.text = company?.name ?: "Compañía no encontrada"
-        holder.jobSalary.text = job?.salary ?: "Salario no especificado"
-        holder.employmentType.text = job?.employmentType ?: "No especificado"
-        holder.jobModality.text = job?.modality ?: "No especificado"
+        
+        // Priorizar offerSalary sobre salary
+        val salary = job?.offerSalary?.takeIf { it.isNotEmpty() } ?: job?.salary?.takeIf { it.isNotEmpty() }
+        holder.jobSalary.text = salary ?: "Salario no especificado"
+        
+        holder.employmentType.text = job?.employmentType?.takeIf { it.isNotEmpty() } ?: "No especificado"
+        holder.jobModality.text = job?.modality?.takeIf { it.isNotEmpty() } ?: "No especificado"
         holder.jobLocation.text = formatLocation(job, company)
         holder.applicationDate.text = formatDate(app.appliedAt)
         holder.statusChip.text = getStatusText(app.status)
