@@ -8,8 +8,6 @@ data class Application(
     val jobId: String = "",       // Referencia al TRABAJO (Job)
     val applicantId: String = "", // Referencia al usuario (User)
     val appliedAt: Long = System.currentTimeMillis(),
-    //val coverLetter: String = "",
-    //val resumeUrl: String = "",
     val reviewedAt: Long? = null,//opcional
     val status: ApplicationStatus = ApplicationStatus.PENDING
 )
