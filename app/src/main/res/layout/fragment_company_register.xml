@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Header with gradient -->
+        <View
+            android:id="@+id/headerGradient"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/gradient_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/toolbar" />
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/transparent"
+            android:elevation="0dp"
+            app:navigationIcon="@drawable/ic_close"
+            app:navigationIconTint="@color/white"
+            app:title="Registrar Compañía"
+            app:titleTextColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Main Content Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mainContentCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
+            app:cardCornerRadius="@dimen/radius_extra_large"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/margin_large">
+
+                <!-- Company Information Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Información de la Compañía"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_group"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
+
+                <!-- Company Name Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/companyNameInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nombre de la compañía"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_group"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/companyNameEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Company Type/Industry Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/companyTypeInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:hint="Tipo de industria"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_work"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/companyTypeEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Company Description Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/companyDescriptionInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:hint="Descripción de la compañía"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_description"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/companyDescriptionEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:minLines="3"
+                        android:maxLines="5" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Company Size and Founded Year Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/companySizeInputLayout"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:hint="Tamaño de la empresa"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_people"
+                        app:startIconTint="@color/secondary">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/companySizeEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/foundedYearInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:hint="Año de fundación"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_calendar"
+                        app:startIconTint="@color/secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/foundedYearEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <!-- Location Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_extra_large"
+                    android:text="Ubicación"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_location"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
+                <!-- Button to open map -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/openMapButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Seleccionar ubicación en el mapa"
+                    app:icon="@drawable/ic_location"
+                    app:iconGravity="textStart"
+                    android:layout_marginTop="8dp"/>
+
+                <!-- Address Input  UBICATION-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ubicationInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Ubicación"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_location_on"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ubicationEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!--ADDRESS DIRECCIÓN-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/addressInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Dirección"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_location_on"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/addressEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- City and Country Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/cityInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:hint="Ciudad"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_location_small"
+                        app:startIconTint="@color/secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/cityEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/countryInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:hint="País"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_location"
+                        app:startIconTint="@color/secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/countryEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <!-- Contact Info Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_extra_large"
+                    android:text="Información de Contacto"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_phone"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
+
+                <!-- Phone Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/phoneInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Teléfono"
+                    app:errorEnabled="true"
+                    app:prefixText="+51"
+                    app:startIconDrawable="@drawable/ic_phone"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/phoneEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:maxLength="9" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Email Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/emailInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:hint="Email"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_email"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/emailEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Website Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/websiteInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:hint="Sitio web"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_web"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/websiteEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Logo Upload Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/uploadLogoButton"
+                    style="@style/Widget.HireLink.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:text="Seleccionar logo de la compañía"
+                    android:textColor="@color/secondary"
+                    app:icon="@drawable/ic_image"
+                    app:iconTint="@color/secondary"
+                    app:strokeColor="@color/secondary" />
+
+                <!-- Logo Preview -->
+                <ImageView
+                    android:id="@+id/logoPreviewImageView"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/circle_background"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    android:contentDescription="Vista previa del logo seleccionado" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Register Button Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginBottom="@dimen/margin_large"
+            app:cardCornerRadius="@dimen/radius_extra_large"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainContentCard">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/registerCompanyButton"
+                style="@style/Widget.HireLink.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_medium"
+                android:minHeight="@dimen/button_height"
+                android:text="Registrar Compañía"
+                android:textSize="@dimen/text_size_medium"
+                app:icon="@drawable/ic_save"
+                app:iconGravity="textStart"
+                app:backgroundTint="@color/primary"
+                app:cornerRadius="@dimen/radius_large" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

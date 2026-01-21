@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.HireLink.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/margin_medium"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardElevation="@dimen/card_elevation">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_large">
+
+        <!-- Company Logo Placeholder -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/companyLogoImageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@color/surface_variant"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_work"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.HireLink.BottomNav.ActiveIndicator"
+            app:tint="@color/text_hint" />
+
+        <!-- Job Title -->
+        <TextView
+            android:id="@+id/jobTitleTextView"
+            style="@style/TextAppearance.HireLink.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toStartOf="@id/bookmarkButton"
+            app:layout_constraintStart_toEndOf="@id/companyLogoImageView"
+            app:layout_constraintTop_toTopOf="@id/companyLogoImageView"
+            tools:text="Vendedor de Tecnología Senior" />
+
+        <!-- Company Name -->
+        <TextView
+            android:id="@+id/companyNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="@id/jobTitleTextView"
+            app:layout_constraintStart_toStartOf="@id/jobTitleTextView"
+            app:layout_constraintTop_toBottomOf="@id/jobTitleTextView"
+            tools:text="TechCorp Solutions SAC" />
+
+
+        <!-- Job Details Row -->
+        <LinearLayout
+            android:id="@+id/jobDetailsLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/companyLogoImageView"
+            app:layout_constraintTop_toBottomOf="@id/companyLogoImageView">
+
+            <!-- Location Chip -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/locationChip"
+                style="@style/Widget.HireLink.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Lima, Perú"
+                android:textSize="@dimen/text_size_small"
+                app:chipIcon="@drawable/ic_location_small"
+                app:chipIconSize="16dp"
+                app:chipIconTint="@color/text_secondary" />
+
+            <!-- Modality Chip -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/modalityChip"
+                style="@style/Widget.HireLink.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Presencial"
+                android:textSize="@dimen/text_size_small"
+                app:chipIcon="@drawable/ic_modality"
+                app:chipIconSize="16dp"
+                app:chipIconTint="@color/text_secondary" />
+
+            <!-- Employment Type Chip -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/employmentTypeChip"
+                style="@style/Widget.HireLink.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tiempo Completo"
+                android:textSize="@dimen/text_size_small"
+                app:chipIcon="@drawable/ic_work_small"
+                app:chipIconSize="16dp"
+                app:chipIconTint="@color/text_secondary" />
+
+        </LinearLayout>
+
+        <!-- Job Description -->
+        <TextView
+            android:id="@+id/jobDescriptionTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/jobDetailsLayout"
+            app:layout_constraintTop_toBottomOf="@id/jobDetailsLayout"
+            tools:text="Buscamos un vendedor experimentado para nuestro equipo de tecnología. Responsable de ventas B2B y desarrollo de nuevos clientes." />
+
+        <!-- Bottom Row -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/jobDetailsLayout"
+            app:layout_constraintTop_toBottomOf="@id/jobDescriptionTextView">
+
+            <!-- Salary -->
+            <TextView
+                android:id="@+id/salaryTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_money"
+                android:drawablePadding="@dimen/margin_small"
+                android:drawableTint="@color/success"
+                android:gravity="center_vertical"
+                android:textColor="@color/success"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="bold"
+                tools:text="S/. 2,500 - 3,500" />
+
+            <!-- Posted Date -->
+            <TextView
+                android:id="@+id/postedDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_schedule"
+                android:drawablePadding="@dimen/margin_small"
+                android:drawableTint="@color/text_hint"
+                android:gravity="center_vertical"
+                android:textColor="@color/text_hint"
+                android:textSize="@dimen/text_size_small"
+                tools:text="Hace 2 días" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

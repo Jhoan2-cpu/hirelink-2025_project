@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Header with gradient -->
+        <View
+            android:id="@+id/headerGradient"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:background="@drawable/gradient_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Close Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/closeButton"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/white"
+            android:elevation="4dp"
+            app:icon="@drawable/ic_close"
+            app:iconGravity="textStart"
+            app:iconTint="@color/text_primary"
+            app:iconSize="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="Cerrar" />
+
+        <!-- Job Title and Status -->
+        <TextView
+            android:id="@+id/jobTitleText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_large"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_headline"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Desarrollador Android Senior" />
+
+        <TextView
+            android:id="@+id/jobStatusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
+            android:background="@drawable/status_background"
+            android:padding="@dimen/margin_small"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/jobTitleText"
+            tools:text="ACTIVO" />
+
+        <!-- Main Content Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mainContentCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
+            app:cardCornerRadius="@dimen/radius_extra_large"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerGradient">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/margin_large">
+
+                <!-- Job Information Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Información del Empleo"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_work"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <!-- Title Display -->
+
+                <!-- About Company Display -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Acerca de la empresa:"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary"
+                    android:layout_marginBottom="@dimen/margin_tiny" />
+
+                <TextView
+                    android:id="@+id/aboutCompanyText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:textColor="@color/text_primary"
+                    tools:text="Empresa líder en desarrollo de software..." />
+
+                <!-- About Job Display -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Acerca del empleo:"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary"
+                    android:layout_marginBottom="@dimen/margin_tiny" />
+
+                <TextView
+                    android:id="@+id/aboutJobText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:textColor="@color/text_primary"
+                    tools:text="Buscamos desarrollador Android con experiencia..." />
+
+                <!-- Required Skills Display -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Requisitos:"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary"
+                    android:layout_marginBottom="@dimen/margin_tiny" />
+
+                <TextView
+                    android:id="@+id/skillsText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:textColor="@color/text_primary"
+                    tools:text="Kotlin, Android, MVVM, Clean Architecture" />
+
+                <!-- Job Details Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_extra_large"
+                    android:text="Detalles del Empleo"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_info"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
+
+                <!-- Job Details Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Vacantes:"
+                            android:textStyle="bold"
+                            android:textColor="@color/secondary"
+                            android:layout_marginBottom="@dimen/margin_tiny" />
+
+                        <TextView
+                            android:id="@+id/vacanciesText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            tools:text="5" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Tipo de empleo:"
+                            android:textStyle="bold"
+                            android:textColor="@color/secondary"
+                            android:layout_marginBottom="@dimen/margin_tiny" />
+
+                        <TextView
+                            android:id="@+id/employmentTypeText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            tools:text="Tiempo completo" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Modality Display -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:text="Modalidad:"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary"
+                    android:layout_marginBottom="@dimen/margin_tiny" />
+
+                <TextView
+                    android:id="@+id/modalityText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:textColor="@color/text_primary"
+                    tools:text="Remoto" />
+
+                <!-- Date and Position Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Fecha de publicación:"
+                            android:textStyle="bold"
+                            android:textColor="@color/secondary"
+                            android:layout_marginBottom="@dimen/margin_tiny" />
+
+                        <TextView
+                            android:id="@+id/dateText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            tools:text="15/01/2025" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <!-- Contact Info Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_extra_large"
+                    android:text="Información de Contacto"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_phone"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
+
+                <!-- Phone Display -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Teléfono:"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary"
+                    android:layout_marginBottom="@dimen/margin_tiny" />
+
+                <TextView
+                    android:id="@+id/phoneText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:textColor="@color/text_primary"
+                    tools:text="+51 123456789" />
+
+                <!-- Email Display -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Email:"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary"
+                    android:layout_marginBottom="@dimen/margin_tiny" />
+
+                <TextView
+                    android:id="@+id/emailText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:textColor="@color/text_primary"
+                    tools:text="contact@company.com" />
+
+                <!-- Website Display -->
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_tiny"
+                    android:text="Sitio web:"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/websiteText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    tools:text="https://company.com" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Action Buttons Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginBottom="@dimen/margin_large"
+            app:cardCornerRadius="@dimen/radius_extra_large"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardBackgroundColor="@color/surface"
+            android:visibility="invisible"
+            app:strokeWidth="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainContentCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/margin_large">
+
+                <!-- Action Buttons Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Acciones"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_settings"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
+
+                <!-- View Applicants Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/viewApplicantsButton"
+                    style="@style/Widget.HireLink.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:minHeight="@dimen/button_height"
+                    android:text="Ver postulantes"
+                    android:textSize="@dimen/text_size_medium"
+                    app:icon="@drawable/ic_people"
+                    app:iconGravity="textStart"
+                    app:backgroundTint="@color/primary"
+                    app:cornerRadius="@dimen/radius_large" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

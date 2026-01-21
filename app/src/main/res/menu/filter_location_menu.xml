@@ -1,0 +1,19 @@
+
+<!-- res/menu/filter_location_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/loc_same_city"
+        android:title="Misma ciudad" />
+    <item
+        android:id="@+id/loc_same_region"
+        android:title="Misma región" />
+    <item
+        android:id="@+id/loc_national"
+        android:title="Nacional" />
+    <item
+        android:id="@+id/loc_international"
+        android:title="Internacional" />
+    <item
+        android:id="@+id/loc_all"
+        android:title="Todas" />
+</menu>

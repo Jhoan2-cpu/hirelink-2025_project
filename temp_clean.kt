@@ -1,0 +1,234 @@
+package com.example.hirelink_2025.viewmodels
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import com.example.hirelink_2025.models.Application
+import com.example.hirelink_2025.models.ApplicationStatus
+import com.example.hirelink_2025.models.User
+import com.example.hirelink_2025.models.UserProfile
+import com.example.hirelink_2025.models.Company
+import com.example.hirelink_2025.network.Callback
+import com.example.hirelink_2025.network.FirestoreService
+import com.example.hirelink_2025.network.VoidCallback
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+/**
+ * ViewModel para manejo de postulaciones/aplicaciones
+ */
+class ApplicationsViewModel : ViewModel() {
+
+    private val firestoreService = FirestoreService()
+
+    // Lista de postulaciones
+    private val _applications = MutableStateFlow<List<Application>>(emptyList())
+    val applications: StateFlow<List<Application>> = _applications.asStateFlow()
+
+    // Estados de carga
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    // Errores
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    // Cache de información de usuarios y empresas
+    private val _usersCache = MutableStateFlow<Map<String, User>>(emptyMap())
+    val usersCache: StateFlow<Map<String, User>> = _usersCache.asStateFlow()
+    
+    private val _userProfilesCache = MutableStateFlow<Map<String, UserProfile>>(emptyMap())
+    val userProfilesCache: StateFlow<Map<String, UserProfile>> = _userProfilesCache.asStateFlow()
+    
+    private val _companiesCache = MutableStateFlow<Map<String, Company>>(emptyMap())
+    val companiesCache: StateFlow<Map<String, Company>> = _companiesCache.asStateFlow()
+    
+    private val _jobsCache = MutableStateFlow<Map<String, com.example.hirelink_2025.models.Job>>(emptyMap())
+    val jobsCache: StateFlow<Map<String, com.example.hirelink_2025.models.Job>> = _jobsCache.asStateFlow()
+
+    // Estado para operaciones
+    private val _operationResult = MutableStateFlow<String?>(null)
+    val operationResult: StateFlow<String?> = _operationResult.asStateFlow()
+
+    init {
+        Log.d("ApplicationsViewModel", "ViewModel initialized")
+    }
+
+    /**
+     * Cargar postulaciones para un trabajo específico
+     */
+    fun loadApplicationsForJob(jobId: String) {
+        Log.d("ApplicationsViewModel", "Loading applications for job: $jobId")
+        _isLoading.value = true
+        _error.value = null
+        
+        firestoreService.getApplicationsByJobId(jobId, object : Callback<List<Application>> {
+            override fun onSuccess(result: List<Application>) {
+                Log.d("ApplicationsViewModel", "Successfully loaded ${result.size} applications")
+                _applications.value = result
+                _isLoading.value = false
+                
+                // Cargar información adicional de los usuarios
+                loadUsersInfoForApplications(result)
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("ApplicationsViewModel", "Error loading applications", exception)
+                _error.value = "Error al cargar las postulaciones: ${exception.message}"
+                _isLoading.value = false
+            }
+        })
+    }
+
+    /**
+     * Cargar información de usuarios para las postulaciones
+     */
+    private fun loadUsersInfoForApplications(applications: List<Application>) {
+        val userIds = applications.map { it.applicantId }.distinct()
+        
+        userIds.forEach { userId ->
+            loadUserInfo(userId)
+            loadUserProfile(userId)
+        }
+    }
+
+    /**
+     * Cargar información básica de un usuario
+     */
+    private fun loadUserInfo(userId: String) {
+        firestoreService.getUserById(userId, object : Callback<User?> {
+            override fun onSuccess(result: User?) {
+                result?.let { user ->
+                    val currentCache = _usersCache.value.toMutableMap()
+                    currentCache[userId] = user
+                    _usersCache.value = currentCache
+                }
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("ApplicationsViewModel", "Error loading user info: $userId", exception)
+            }
+        })
+    }
+
+    /**
+     * Cargar perfil de un usuario
+     */
+    private fun loadUserProfile(userId: String) {
+        firestoreService.getUserProfile(userId, object : Callback<UserProfile?> {
+            override fun onSuccess(result: UserProfile?) {
+                result?.let { profile ->
+                    val currentCache = _userProfilesCache.value.toMutableMap()
+                    currentCache[userId] = profile
+                    _userProfilesCache.value = currentCache
+                }
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("ApplicationsViewModel", "Error loading user profile: $userId", exception)
+            }
+        })
+    }
+
+    /**
+     * Actualizar estado de una postulación
+     */
+    fun updateApplicationStatus(applicationId: String, status: ApplicationStatus, callback: (Boolean) -> Unit) {
+        Log.d("ApplicationsViewModel", "Updating application $applicationId status to $status")
+        
+        firestoreService.updateJobApplicationStatus(applicationId, status, object : VoidCallback {
+            override fun onSuccess() {
+                Log.d("ApplicationsViewModel", "Application status updated successfully")
+                _operationResult.value = "Estado actualizado correctamente"
+                
+                // Actualizar la lista local
+                val updatedApplications = _applications.value.map { app ->
+                    if (app.applicationId == applicationId) {
+                        app.copy(status = status)
+                    } else {
+                        app
+                    }
+                }
+                _applications.value = updatedApplications
+                
+                callback(true)
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("ApplicationsViewModel", "Error updating application status", exception)
+                _operationResult.value = "Error al actualizar el estado: ${exception.message}"
+                callback(false)
+            }
+        })
+    }
+
+    /**
+     * Obtener información de usuario desde cache
+     */
+    fun getUserInfo(userId: String): User? {
+        return _usersCache.value[userId]
+    }
+
+    /**
+     * Obtener perfil de usuario desde cache
+     */
+    fun getUserProfile(userId: String): UserProfile? {
+        return _userProfilesCache.value[userId]
+    }
+
+    /**
+     * Obtener información de empresa desde cache
+     */
+    fun getCompanyInfo(companyId: String): Company? {
+        return _companiesCache.value[companyId]
+    }
+
+    /**
+     * Cargar información de una empresa y almacenarla en cache
+     */
+    fun loadCompanyInfo(companyId: String) {
+        if (_companiesCache.value.containsKey(companyId)) return // Ya está en cache
+        
+        firestoreService.getCompanyById(companyId, object : Callback<Company?> {
+            override fun onSuccess(result: Company?) {
+                result?.let { company ->
+                    val currentCache = _companiesCache.value.toMutableMap()
+                    currentCache[companyId] = company
+                    _companiesCache.value = currentCache
+                }
+            }
+
+            override fun onError(exception: Exception) {
+                Log.e("ApplicationsViewModel", "Error loading company info: $companyId", exception)
+            }
+        })
+    }
+
+    /**
+     * Contar postulaciones para un trabajo
+     */
+    fun getApplicationsCount(jobId: String, callback: (Int) -> Unit) {
+        firestoreService.countApplicationsByJobId(jobId, callback)
+    }
+
+    /**
+     * Limpiar mensaje de resultado de operación
+     */
+    fun clearOperationResult() {
+        _operationResult.value = null
+    }
+
+    /**
+     * Limpiar error
+     */
+    fun clearError() {
+        _error.value = null
+    }
+
+    /**
+     * Refrescar postulaciones
+     */
+    fun refreshApplications(jobId: String) {
+        loadApplicationsForJob(jobId)
+    }
+}

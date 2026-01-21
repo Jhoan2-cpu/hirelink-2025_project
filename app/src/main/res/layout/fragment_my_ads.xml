@@ -67,14 +67,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="@color/primary" />
+                            android:textColor="@color/card_stroke" />
 
                         <TextView
                             style="@style/TextAppearance.HireLink.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Anuncios Activos"
-                            android:textColor="@color/primary" />
+                            android:textColor="@color/card_stroke" />
 
                     </LinearLayout>
 
@@ -103,19 +103,36 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="@color/secondary" />
+                            android:textColor="@color/card_stroke" />
 
                         <TextView
                             style="@style/TextAppearance.HireLink.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total Postulantes"
-                            android:textColor="@color/secondary" />
+                            android:textColor="@color/card_stroke" />
 
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
+            </LinearLayout>
+
+            <!--AddCompany-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/margin_medium">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/companyButton"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gestionar Empresas"
+                    app:icon="@drawable/ic_vacation"
+                    app:iconSize="24dp" />
             </LinearLayout>
 
         </LinearLayout>

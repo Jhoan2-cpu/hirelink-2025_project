@@ -15,6 +15,56 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Collapsed Search Bar (initially hidden) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/collapsedSearchBar"
+        style="@style/Widget.HireLink.Card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:visibility="gone"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/collapsedSearchContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/margin_medium"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/searchIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_search"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:contentDescription="Buscar" />
+
+            <TextView
+                android:id="@+id/searchHint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Buscar trabajos..."
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/expandIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_drop_down"
+                android:contentDescription="Expandir búsqueda" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- App Logo -->
     <TextView
         android:id="@+id/appLogo"
@@ -63,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
-                android:hint="@string/job_type"
+                android:hint="Modalidad"
                 app:startIconDrawable="@drawable/ic_work">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -101,35 +151,20 @@
                 android:layout_marginTop="@dimen/margin_large"
                 android:text="@string/search" />
 
+            <!-- Map Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mapButton"
+                style="@style/Widget.HireLink.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:text="Ver en el Mapa"
+                app:icon="@drawable/ic_location_on"
+                app:iconGravity="start" />
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
-    <!-- Recent Searches -->
-    <TextView
-        android:id="@+id/recentSearchesTitle"
-        style="@style/TextAppearance.HireLink.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_large"
-        android:layout_marginTop="@dimen/margin_large"
-        android:text="Búsquedas recientes"
-        android:textColor="@color/text_primary"
-        android:alpha="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchCard" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recentSearchesRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_medium"
-        android:paddingHorizontal="@dimen/margin_large"
-        android:clipToPadding="false"
-        android:alpha="0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recentSearchesTitle" />
 
     <!-- Bottom decoration -->
     <View

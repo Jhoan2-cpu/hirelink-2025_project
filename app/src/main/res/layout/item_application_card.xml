@@ -64,6 +64,85 @@
             app:layout_constraintTop_toBottomOf="@id/jobTitle"
             tools:text="Tech Solutions S.A.C." />
 
+        <!-- Salary -->
+        <TextView
+            android:id="@+id/jobSalary"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/success"
+            android:textStyle="bold"
+            android:drawableStart="@drawable/ic_money"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/jobTitle"
+            app:layout_constraintTop_toBottomOf="@id/companyName"
+            tools:text="S/ 2,500 - S/ 3,500" />
+
+        <!-- Job Details Row -->
+        <LinearLayout
+            android:id="@+id/jobDetailsRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/jobTitle"
+            app:layout_constraintTop_toBottomOf="@id/jobSalary">
+
+            <!-- Employment Type -->
+            <TextView
+                android:id="@+id/employmentType"
+                style="@style/TextAppearance.HireLink.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/chip_background"
+                android:drawableStart="@drawable/ic_work_small"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                tools:text="Tiempo completo" />
+
+            <!-- Modality -->
+            <TextView
+                android:id="@+id/jobModality"
+                style="@style/TextAppearance.HireLink.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:background="@drawable/chip_background"
+                android:drawableStart="@drawable/ic_modality"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                tools:text="Remoto" />
+
+        </LinearLayout>
+
+        <!-- Location -->
+        <TextView
+            android:id="@+id/jobLocation"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/text_secondary"
+            android:drawableStart="@drawable/ic_location_small"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/jobTitle"
+            app:layout_constraintTop_toBottomOf="@id/jobDetailsRow"
+            tools:text="Lima, Perú" />
+
         <!-- Application Date -->
         <TextView
             android:id="@+id/applicationDate"
@@ -72,8 +151,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
             android:textColor="@color/text_secondary"
+            android:drawableStart="@drawable/ic_calendar"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             app:layout_constraintStart_toStartOf="@id/jobTitle"
-            app:layout_constraintTop_toBottomOf="@id/companyName"
+            app:layout_constraintTop_toBottomOf="@id/jobLocation"
             tools:text="Postulado hace 3 días" />
 
         <!-- Status Chip -->
@@ -88,21 +170,9 @@
             app:chipBackgroundColor="@color/success"
             app:chipMinHeight="32dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/logoCard"
+            app:layout_constraintTop_toBottomOf="@id/applicationDate"
             tools:text="En revisión" />
 
-        <!-- Cancel Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/cancelButton"
-            style="@style/Widget.HireLink.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/cancel_application"
-            android:textColor="@color/error"
-            android:textSize="@dimen/text_size_small"
-            app:layout_constraintBottom_toBottomOf="@id/statusChip"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/statusChip" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

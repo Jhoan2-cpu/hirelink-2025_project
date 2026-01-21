@@ -14,6 +14,7 @@
     <string name="phone">Teléfono</string>
     <string name="login">Iniciar sesión</string>
     <string name="register">Registrarse</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="no_account">¿No tienes cuenta?</string>
     <string name="already_have_account">¿Ya tienes cuenta?</string>
     <string name="back">Volver</string>
@@ -114,4 +115,102 @@
     <string name="add">Agregar</string>
     <string name="personal_data">Datos personales</string>
     <string name="contact_data">Datos de contacto</string>
+
+    <!-- AdDetailFragment -->
+    <string name="job_information">Información del Trabajo</string>
+    <string name="vacancy_count">Cantidad de Vacantes:</string>
+    <string name="date">Fecha:</string>
+    <string name="contact_info">Contacto:</string>
+    <string name="call">Llamar</string>
+    <string name="job_detail">Detalle del Anuncio</string>
+
+    <!-- Estados de trabajo -->
+    <string name="status_active">Activo</string>
+    <string name="status_paused">Pausado</string>
+    <string name="status_closed">Cerrado</string>
+    <string name="status_available">Disponible</string>
+
+    <!-- Mensajes de error -->
+    <string name="error_phone_app">No se pudo abrir la aplicación de teléfono</string>
+    <string name="error_email_app">No se pudo abrir la aplicación de email</string>
+    <string name="email_subject">Consulta sobre: %s</string>
+    <string name="email_body">Hola,\n\nMe interesa conocer más sobre la oferta de trabajo: %s\n\nSaludos</string>
+
+
+    <!-- Agregar a strings.xml -->
+
+    <!-- Job Status Names -->
+    <string name="status_draft">Borrador</string>
+    <string name="status_pending_review">Pendiente de Revisión</string>
+    <string name="status_full">Lleno</string>
+    <string name="status_expired">Expirado</string>
+    <string name="status_rejected">Rechazado</string>
+    <string name="status_suspended">Suspendido</string>
+
+    <!-- Job Actions -->
+    <string name="action_edit">Editar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_publish">Publicar</string>
+    <string name="action_pause">Pausar</string>
+    <string name="action_resume">Reanudar</string>
+    <string name="action_close">Cerrar</string>
+    <string name="action_reactivate">Reactivar</string>
+    <string name="action_renew">Renovar</string>
+    <string name="action_view_applicants">Ver Postulantes</string>
+    <string name="action_duplicate">Duplicar</string>
+    <string name="action_share">Compartir</string>
+    <string name="action_statistics">Estadísticas</string>
+
+    <!-- Help Messages -->
+    <string name="help_draft">Tu anuncio está guardado como borrador. Puedes editarlo y publicarlo cuando esté listo.</string>
+    <string name="help_pending_review">Tu anuncio está siendo revisado por nuestro equipo. Será publicado pronto.</string>
+    <string name="help_active">Tu anuncio está activo y recibiendo postulaciones. Los candidatos pueden aplicar.</string>
+    <string name="help_paused">Tu anuncio está pausado temporalmente. No aparece en búsquedas hasta que lo reactives.</string>
+    <string name="help_full">Tu anuncio ha alcanzado el límite de postulaciones. Ya no acepta más candidatos.</string>
+    <string name="help_closed">Tu anuncio ha sido cerrado. Las postulaciones ya no son posibles.</string>
+    <string name="help_expired">Tu anuncio ha expirado. Puedes renovarlo para volverlo a publicar.</string>
+    <string name="help_rejected">Tu anuncio fue rechazado. Por favor, revisa las políticas y edítalo antes de volver a enviarlo.</string>
+    <string name="help_suspended">Tu anuncio ha sido suspendido por violación de políticas. Contacta al soporte para más información.</string>
+
+    <!-- Status Change Messages -->
+    <string name="status_changed_to_draft">Anuncio guardado como borrador</string>
+    <string name="status_changed_to_active">Anuncio publicado exitosamente</string>
+    <string name="status_changed_to_paused">Anuncio pausado</string>
+    <string name="status_changed_to_closed">Anuncio cerrado</string>
+    <string name="status_changed_to_expired">Anuncio expirado</string>
+
+    <!-- Status Filter Options -->
+    <string name="filter_all_status">Todos los estados</string>
+    <string name="filter_published">Publicados</string>
+    <string name="filter_pending">Pendientes</string>
+    <string name="filter_active_only">Solo activos</string>
+
+    <!-- Confirmation Messages -->
+    <string name="confirm_delete_job">¿Estás seguro de que deseas eliminar este anuncio?</string>
+    <string name="confirm_close_job">¿Estás seguro de que deseas cerrar este anuncio? Ya no recibirá más postulaciones.</string>
+    <string name="confirm_publish_job">¿Estás seguro de que deseas publicar este anuncio?</string>
+    <string name="confirm_pause_job">¿Deseas pausar este anuncio? No aparecerá en las búsquedas hasta que lo reactives.</string>
+
+    <!-- Error Messages -->
+    <string name="error_invalid_status_transition">No se puede cambiar el estado del anuncio</string>
+    <string name="error_cannot_edit_job">No puedes editar este anuncio en su estado actual</string>
+    <string name="error_cannot_delete_job">No puedes eliminar este anuncio en su estado actual</string>
+
+    <!-- Success Messages -->
+    <string name="success_job_published">¡Anuncio publicado exitosamente!</string>
+    <string name="success_job_paused">Anuncio pausado correctamente</string>
+    <string name="success_job_closed">Anuncio cerrado correctamente</string>
+    <string name="success_job_deleted">Anuncio eliminado correctamente</string>
+
+    <!-- Statistics -->
+    <string name="stats_total_jobs">Total de anuncios</string>
+    <string name="stats_active_jobs">Anuncios activos</string>
+    <string name="stats_draft_jobs">Borradores</string>
+    <string name="stats_closed_jobs">Cerrados</string>
+    <string name="stats_success_rate">Tasa de éxito</string>
+    <string name="stats_published_jobs">Publicados</string>
+    <string name="stats_pending_jobs">Pendientes</string>
+
+
+    <!-- Agregar a colors.xml -->
 </resources>

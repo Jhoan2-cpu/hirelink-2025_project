@@ -44,4 +44,17 @@
     <dimen name="splash_logo_size">120dp</dimen>
     <dimen name="job_card_height">120dp</dimen>
     <dimen name="chip_height">32dp</dimen>
+
+
+    <!-- Agregar estas dimensiones a tu archivo res/values/dimens.xml -->
+    <!-- Margins -->
+    <dimen name="margin_xlarge">32dp</dimen>
+
+    <!-- Text Sizes -->
+    <dimen name="text_size_xlarge">24sp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="elevation_small">2dp</dimen>
+    <dimen name="elevation_medium">4dp</dimen>
+    <dimen name="elevation_large">8dp</dimen>
 </resources>

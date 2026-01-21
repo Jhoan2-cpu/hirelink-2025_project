@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="8dp"
+    android:layout_marginHorizontal="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/divider">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Indicador de estado -->
+        <View
+            android:id="@+id/statusIndicator"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="@color/primary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/applicantName" />
+
+        <!-- Nombre del aplicante -->
+        <TextView
+            android:id="@+id/applicantName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Nombre del Aplicante"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/statusIndicator"
+            app:layout_constraintEnd_toStartOf="@id/statusText" />
+
+        <!-- Estado del aplicante -->
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pendiente"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/warning"
+            android:background="@drawable/bg_status_chip"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            app:layout_constraintTop_toTopOf="@id/applicantName"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Profesión -->
+        <TextView
+            android:id="@+id/applicantProfession"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Profesión"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toBottomOf="@id/applicantName"
+            app:layout_constraintStart_toEndOf="@id/statusIndicator"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Experiencia -->
+        <TextView
+            android:id="@+id/applicantExperience"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Experiencia"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toBottomOf="@id/applicantProfession"
+            app:layout_constraintStart_toEndOf="@id/statusIndicator"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Skills -->
+        <TextView
+            android:id="@+id/skillsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Habilidades:"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toBottomOf="@id/applicantExperience"
+            app:layout_constraintStart_toEndOf="@id/statusIndicator" />
+
+        <TextView
+            android:id="@+id/applicantSkills"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Habilidades del aplicante"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toBottomOf="@id/skillsLabel"
+            app:layout_constraintStart_toEndOf="@id/statusIndicator"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Fecha de aplicación -->
+        <TextView
+            android:id="@+id/applicationDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Fecha de aplicación"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toBottomOf="@id/applicantSkills"
+            app:layout_constraintStart_toEndOf="@id/statusIndicator"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Botones de acción -->
+        <LinearLayout
+            android:id="@+id/actionButtonsLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toBottomOf="@id/applicationDate"
+            app:layout_constraintStart_toEndOf="@id/statusIndicator"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Botón ver perfil -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/viewProfileButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ver Perfil"
+                android:textSize="12sp"
+                android:minWidth="0dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:layout_marginEnd="8dp" />
+
+            <!-- Botón aceptar -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/acceptButton"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aceptar"
+                android:textSize="12sp"
+                android:minWidth="0dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@color/success" />
+
+            <!-- Botón rechazar -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/rejectButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rechazar"
+                android:textSize="12sp"
+                android:minWidth="0dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:strokeColor="@color/error"
+                android:textColor="@color/error" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

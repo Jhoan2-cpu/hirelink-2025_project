@@ -1,0 +1,197 @@
+// ProfileEditExperienceFragment.kt
+package com.example.hirelink_2025.view.ui.fragments.profile
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hirelink_2025.R
+import com.example.hirelink_2025.databinding.FragmentProfileEditExperienceBinding
+import com.example.hirelink_2025.view.adapter.ExperienceEditAdapter
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.checkbox.MaterialCheckBox
+
+class ProfileEditExperienceFragment : Fragment() {
+
+    private lateinit var binding: FragmentProfileEditExperienceBinding
+    private lateinit var experienceAdapter: ExperienceEditAdapter
+    private val experiences = mutableListOf<ProfileEditFragment.Experience>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentProfileEditExperienceBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupClickListeners()
+        loadExistingExperiences()
+    }
+
+    private fun setupRecyclerView() {
+        experienceAdapter = ExperienceEditAdapter(
+            experiences = experiences,
+            onEditClick = { experience -> showEditExperienceDialog(experience) },
+            onDeleteClick = { experience -> deleteExperience(experience) }
+        )
+
+        binding.experienceRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = experienceAdapter
+        }
+    }
+
+    private fun setupClickListeners() {
+        binding.addExperienceButton.setOnClickListener {
+            showAddExperienceDialog()
+        }
+    }
+
+    private fun loadExistingExperiences() {
+        // Cargar experiencias existentes
+        experiences.add(
+            ProfileEditFragment.Experience(
+                position = "Analista",
+                company = "Universidad Nacional Del Santo",
+                description = "Desarrollador técnico en la empresa x trabajando 2 años.",
+                startDate = "Enero 2022",
+                endDate = "Diciembre 2023",
+                isCurrent = false
+            )
+        )
+        experienceAdapter.notifyDataSetChanged()
+    }
+
+    private fun showAddExperienceDialog() {
+        showExperienceDialog(null)
+    }
+
+    private fun showEditExperienceDialog(experience: ProfileEditFragment.Experience) {
+        showExperienceDialog(experience)
+    }
+
+    private fun showExperienceDialog(experience: ProfileEditFragment.Experience?) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(
+            R.layout.dialog_add_experience, null
+        )
+
+        val positionInput = dialogView.findViewById<TextInputEditText>(
+            R.id.positionInput
+        )
+        val companyInput = dialogView.findViewById<TextInputEditText>(
+            R.id.companyInput
+        )
+        val descriptionInput = dialogView.findViewById<TextInputEditText>(
+            R.id.descriptionInput
+        )
+        val startDateInput = dialogView.findViewById<TextInputEditText>(
+            R.id.startDateInput
+        )
+        val endDateInput = dialogView.findViewById<TextInputEditText>(
+            R.id.endDateInput
+        )
+        val currentJobCheckbox = dialogView.findViewById<MaterialCheckBox>(
+            R.id.currentJobCheckbox
+        )
+
+        val saveButton = dialogView.findViewById<MaterialButton>(
+            R.id.saveExperienceButton
+        )
+        val cancelButton = dialogView.findViewById<MaterialButton>(
+            R.id.cancelExperienceButton
+        )
+
+        // Si estamos editando, llenar los campos
+        experience?.let {
+            positionInput.setText(it.position)
+            companyInput.setText(it.company)
+            descriptionInput.setText(it.description)
+            startDateInput.setText(it.startDate)
+            endDateInput.setText(it.endDate)
+            currentJobCheckbox.isChecked = it.isCurrent
+        }
+
+        // Handle current job checkbox
+        currentJobCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            endDateInput.isEnabled = !isChecked
+            if (isChecked) {
+                endDateInput.setText("")
+            }
+        }
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        saveButton.setOnClickListener {
+            val position = positionInput.text.toString().trim()
+            val company = companyInput.text.toString().trim()
+            val description = descriptionInput.text.toString().trim()
+            val startDate = startDateInput.text.toString().trim()
+            val endDate = if (currentJobCheckbox.isChecked) "" else endDateInput.text.toString().trim()
+            val isCurrent = currentJobCheckbox.isChecked
+
+            if (position.isNotEmpty() && company.isNotEmpty()) {
+                val newExperience = ProfileEditFragment.Experience(
+                    position = position,
+                    company = company,
+                    description = description,
+                    startDate = startDate,
+                    endDate = endDate,
+                    isCurrent = isCurrent
+                )
+
+                if (experience != null) {
+                    // Editar existente
+                    val index = experiences.indexOf(experience)
+                    if (index != -1) {
+                        experiences[index] = newExperience
+                    }
+                } else {
+                    // Agregar nuevo
+                    experiences.add(newExperience)
+                }
+
+                experienceAdapter.notifyDataSetChanged()
+                dialog.dismiss()
+            }
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun deleteExperience(experience: ProfileEditFragment.Experience) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Eliminar Experiencia")
+        builder.setMessage("¿Estás seguro de que quieres eliminar esta experiencia?")
+
+        builder.setPositiveButton("Eliminar") { _, _ ->
+            experiences.remove(experience)
+            experienceAdapter.notifyDataSetChanged()
+        }
+
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
+    }
+
+    companion object {
+        fun newInstance() = ProfileEditExperienceFragment()
+    }
+}

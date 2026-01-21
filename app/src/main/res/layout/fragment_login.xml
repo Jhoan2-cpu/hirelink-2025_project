@@ -91,13 +91,28 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Forgot Password Button -->
+                <TextView
+                    android:id="@+id/forgotPasswordButton"
+                    style="@style/TextAppearance.HireLink.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="@string/forgot_password"
+                    android:textColor="@color/primary"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="@dimen/margin_small"
+                    android:clickable="true"
+                    android:focusable="true" />
+
                 <!-- Login Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/loginButton"
                     style="@style/Widget.HireLink.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
+                    android:layout_marginTop="@dimen/margin_medium"
                     android:text="@string/login" />
 
             </LinearLayout>

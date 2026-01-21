@@ -1,106 +1,298 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- fragment_profile_about.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background"
-    android:padding="@dimen/margin_large"
-    android:fillViewport="true">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/margin_medium">
 
-    <LinearLayout
+    <!-- About Me Card -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.HireLink.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginBottom="@dimen/margin_medium"
+        app:cardElevation="2dp">
 
-        <!-- Nombre completo -->
-        <TextView
-            android:id="@+id/fullNameTextView"
-            style="@style/TextAppearance.HireLink.Title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre del Usuario"
-            android:textColor="@color/text_primary" />
+            android:orientation="vertical"
+            android:padding="@dimen/margin_medium">
 
-        <!-- Especialidad -->
-        <TextView
-            android:id="@+id/specialtyTextView"
-            style="@style/TextAppearance.HireLink.Body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="Especialidad: Android Developer"
-            android:textColor="@color/text_secondary" />
+            <TextView
+                style="@style/TextAppearance.HireLink.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Acerca de mí"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-        <!-- Ciudad o país -->
-        <TextView
-            android:id="@+id/locationTextView"
-            style="@style/TextAppearance.HireLink.Body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lima, Perú"
-            android:textColor="@color/text_secondary"
-            android:layout_marginTop="@dimen/margin_small" />
+            <TextView
+                android:id="@+id/aboutMeText"
+                style="@style/TextAppearance.HireLink.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:lineSpacingExtra="4dp"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
 
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="@dimen/margin_medium"
-            android:background="@color/divider" />
+        </LinearLayout>
 
-        <!-- Biografía -->
-        <TextView
-            android:id="@+id/bioTitle"
-            style="@style/TextAppearance.HireLink.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_me"
-            android:textColor="@color/text_primary" />
+    </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/bioTextView"
-            style="@style/TextAppearance.HireLink.Body"
+    <!-- Education Card -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.HireLink.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_medium"
+        app:cardElevation="2dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="Soy un desarrollador apasionado por crear aplicaciones móviles útiles y de alto rendimiento." />
+            android:orientation="vertical"
+            android:padding="@dimen/margin_medium">
 
-        <!-- Divider -->
-        <View
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_medium">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_education"
+                    app:tint="@color/primary" />
+
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="Educación"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/educationText"
+                style="@style/TextAppearance.HireLink.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="4dp"
+                android:text="Ingeniería de Sistemas - Universidad Nacional del Santa"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Location Card -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.HireLink.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="2dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="@dimen/margin_medium"
-            android:background="@color/divider" />
-
-        <!-- Enlaces -->
-        <TextView
-            android:id="@+id/linksTitle"
-            style="@style/TextAppearance.HireLink.Caption"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Redes / Portafolio"
-            android:textColor="@color/text_primary" />
+            android:orientation="vertical"
+            android:padding="@dimen/margin_medium">
 
-        <!-- Sitio web -->
-        <TextView
-            android:id="@+id/websiteTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autoLink="web"
-            android:text="https://portafolioejemplo.com"
-            android:textColor="@color/primary"
-            android:layout_marginTop="@dimen/margin_small" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_medium">
 
-        <!-- LinkedIn -->
-        <TextView
-            android:id="@+id/linkedinTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autoLink="web"
-            android:text="https://linkedin.com/in/usuario"
-            android:textColor="@color/primary"
-            android:layout_marginTop="@dimen/margin_small" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_location_on"
+                    app:tint="@color/primary" />
 
-    </LinearLayout>
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="Ubicación"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-</androidx.core.widget.NestedScrollView>
+            </LinearLayout>
+
+            <!-- Address -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_small">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_location_small"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/addressText"
+                    style="@style/TextAppearance.HireLink.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="Av. Universitaria 123, Urb. Los Jardines"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+            <!-- District -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_small">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_location_small"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="Distrito: "
+                    android:textColor="@color/text_hint"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/districtText"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chimbote"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Province -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_small">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_location_small"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="Provincia: "
+                    android:textColor="@color/text_hint"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/provinceText"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Santa"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Department -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_small">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_location_small"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="Departamento: "
+                    android:textColor="@color/text_hint"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/departmentText"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Áncash"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Country -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_location_small"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="País: "
+                    android:textColor="@color/text_hint"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/countryText"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Perú"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

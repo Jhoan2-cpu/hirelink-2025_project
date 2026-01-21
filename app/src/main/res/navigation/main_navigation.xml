@@ -1,25 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_navigation"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/searchFragment">
 
-    <!-- Search Flow -->
+<!-- Search Flow -->
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.search.SearchFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.search.SearchFragment"
         android:label="@string/nav_search">
 
         <action
-            android:id="@+id/action_searchFragment_to_searchResultListFragment"
-            app:destination="@id/searchResultListFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out" />
+            android:id="@+id/action_searchFragment_to_searchResultsFragment"
+            app:destination="@id/searchResultsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_searchFragment_to_jobDetailFragment"
+            app:destination="@id/jobDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_searchFragment_to_jobMapFragment"
+            app:destination="@id/jobMapFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
+    <!-- New Search Results Fragment -->
+    <fragment
+        android:id="@+id/searchResultsFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.SearchResultsFragment"
+        android:label="Resultados de Búsqueda"
+        tools:layout="@layout/fragment_search_results">
+        
+        <argument
+            android:name="jobType"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="location"
+            app:argType="string"
+            android:defaultValue="" />
+            
+        <action
+            android:id="@+id/action_searchResultsFragment_to_jobDetailFragment"
+            app:destination="@id/jobDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Legacy Search Results Fragment (for backward compatibility) -->
     <fragment
         android:id="@+id/searchResultListFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.search.SearchResultListFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.search.SearchResultListFragment"
         android:label="@string/results">
         <action
             android:id="@+id/action_searchResultListFragment_to_jobDescriptionDetailFragment"
@@ -37,7 +80,7 @@
 
     <fragment
         android:id="@+id/searchFilterMenuFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.search.SearchFilterMenuFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.search.SearchFilterMenuFragment"
         android:label="@string/filters">
         <action
             android:id="@+id/action_searchFilterMenuFragment_to_searchFilterDetailFragment"
@@ -48,12 +91,12 @@
 
     <fragment
         android:id="@+id/searchFilterDetailFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.search.SearchFilterDetailFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.search.SearchFilterDetailFragment"
         android:label="Filter" />
 
     <fragment
         android:id="@+id/jobDescriptionDetailFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.common.JobDescriptionDetailFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.common.JobDescriptionDetailFragment"
         android:label="Job Details">
         <action
             android:id="@+id/action_jobDescriptionDetailFragment_to_jobLocationDetailDialog"
@@ -62,41 +105,126 @@
 
     <dialog
         android:id="@+id/jobLocationDetailDialog"
-        android:name="com.example.hirelink_2025.ui.dialogs.JobLocationDetailDialog"
+        android:name="com.example.hirelink_2025.view.ui.dialogs.JobLocationDetailDialog"
         android:label="Location" />
 
     <!-- My Applications -->
     <fragment
         android:id="@+id/myApplicationsFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.applications.MyApplicationsFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.applications.MyApplicationsFragment"
         android:label="@string/nav_applications">
+
         <action
-            android:id="@+id/action_myApplicationsFragment_to_jobDescriptionDetailFragment"
-            app:destination="@id/jobDescriptionDetailFragment" />
+            android:id="@+id/action_myApplicationsFragment_to_applicationDetailFragment"
+            app:destination="@id/applicationDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
     </fragment>
 
+    <!-- NUEVO FRAGMENT - Agregar al final antes de </navigation> -->
+
+
+    <fragment
+        android:id="@+id/applicationDetailFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.applications.ApplicationDetailFragment"
+        android:label="Detalles de Postulación"
+        tools:layout="@layout/fragment_application_detail" />
     <!-- My Ads Flow -->
     <fragment
         android:id="@+id/myAdsFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.ads.MyAdsFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.MyAdsFragment"
         android:label="@string/nav_my_ads">
         <action
             android:id="@+id/action_myAdsFragment_to_myAdsRegisterFragment"
             app:destination="@id/myAdsRegisterFragment" />
-        <action
-            android:id="@+id/action_myAdsFragment_to_jobDescriptionDetailFragment"
-            app:destination="@id/jobDescriptionDetailFragment" />
         <action
             android:id="@+id/action_myAdsFragment_to_myAdsEditFragment"
             app:destination="@id/myAdsEditFragment" />
         <action
             android:id="@+id/action_myAdsFragment_to_myAdsApplicantsFragment"
             app:destination="@id/myAdsApplicantsFragment" />
+        <action
+            android:id="@+id/action_myAdsFragment_to_myAdDetailFragment"
+            app:destination="@id/myAdDetailFragment" />
+        <action
+            android:id="@+id/action_myAdsFragment_to_companyFragment"
+            app:destination="@+id/companyFragment"/>
+        <action
+            android:id="@+id/action_myAdsFragment_to_jobApplicantsFragment"
+            app:destination="@id/jobApplicantsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/companyFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.CompanyFragment"
+        android:label="Mis Compañías">
+        <action
+            android:id="@+id/action_companyFragment_to_companyRegisterFragment"
+            app:destination="@id/companyRegisterFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_companyFragment_to_companyEditFragment"
+            app:destination="@id/companyEditFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_companyFragment_to_companyDetailFragment"
+            app:destination="@id/companyDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/companyRegisterFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.CompanyRegisterFragment"
+        android:label="Registrar Compañía" />
+
+    <fragment
+        android:id="@+id/companyEditFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.CompanyEditFragment"
+        android:label="Editar Compañía">
+        <argument
+            android:name="companyId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/companyDetailFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.CompanyDetailFragment"
+        android:label="Detalles de la Compañía">
+        <argument
+            android:name="companyId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_companyDetailFragment_to_companyEditFragment"
+            app:destination="@id/companyEditFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_companyDetailFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/myAdsRegisterFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.ads.MyAdsRegisterFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.MyAdsRegisterFragment"
         android:label="@string/new_ad">
         <action
             android:id="@+id/action_myAdsRegisterFragment_to_editLocationFragment"
@@ -105,7 +233,7 @@
 
     <fragment
         android:id="@+id/myAdsEditFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.ads.MyAdsEditFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.MyAdsEditFragment"
         android:label="@string/edit_job">
         <action
             android:id="@+id/action_myAdsEditFragment_to_editLocationFragment"
@@ -113,28 +241,106 @@
     </fragment>
 
     <fragment
+        android:id="@+id/myAdDetailFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.MyAdDetailFragment"
+        android:label="Detalles del Anuncio"
+        tools:layout="@layout/fragment_my_ad_detail">
+
+        <action
+            android:id="@+id/action_myAdDetailFragment_to_myAdsEditFragment"
+            app:destination="@id/myAdsEditFragment" />
+
+        <action
+            android:id="@+id/action_myAdDetailFragment_to_myAdsApplicantsFragment"
+            app:destination="@id/myAdsApplicantsFragment" />
+
+    </fragment>
+
+    <fragment
         android:id="@+id/editLocationFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.ads.EditLocationFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.EditLocationFragment"
         android:label="@string/location" />
 
     <fragment
         android:id="@+id/myAdsApplicantsFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.ads.MyAdsApplicantsFragment"
-        android:label="@string/applicants">
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.MyAdsApplicantsFragment"
+        android:label="Aplicantes"
+        tools:layout="@layout/fragment_my_ads_applicants">
+
         <action
             android:id="@+id/action_myAdsApplicantsFragment_to_profileFragment"
             app:destination="@id/profileViewFragment" />
+        <action
+            android:id="@+id/action_myAdsApplicantsFragment_to_applicantProfileFragment"
+            app:destination="@id/applicantProfileFragment" />
+
+        <!-- En nav_graph.xml, dentro del fragment myAdsApplicantsFragment -->
+    </fragment>
+
+    <!-- Nuevo fragmento para postulantes usando el modelo Application -->
+    <fragment
+        android:id="@+id/jobApplicantsFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.ads.JobApplicantsFragment"
+        android:label="Postulantes"
+        tools:layout="@layout/fragment_job_applicants" />
+
+    <!-- Agregar este nuevo fragment al final del archivo, antes de </navigation> -->
+    <!-- AGREGAR ESTE DESTINO -->
+    <fragment
+        android:id="@+id/applicantProfileFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.applications.ApplicantProfileFragment"
+        android:label="Perfil del Aplicante"
+        tools:layout="@layout/fragment_applicant_profile">
+
+        <argument
+            android:name="applicant_id"
+            app:argType="string" />
+        <argument
+            android:name="applicant_name"
+            app:argType="string" />
+        <argument
+            android:name="applicant_email"
+            app:argType="string" />
+        <argument
+            android:name="applicant_phone"
+            app:argType="string" />
+        <argument
+            android:name="applicant_profession"
+            app:argType="string" />
+        <argument
+            android:name="applicant_experience"
+            app:argType="string" />
+        <argument
+            android:name="applicant_skills"
+            app:argType="string[]" />
+        <argument
+            android:name="application_date"
+            app:argType="string" />
+        <argument
+            android:name="application_status"
+            app:argType="string" />
+        <argument
+            android:name="profile_image"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="job_id"
+            app:argType="string" />
+        <argument
+            android:name="cover_letter"
+            app:argType="string" />
+
     </fragment>
 
     <fragment
         android:id="@+id/profileViewFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.profile.ProfileViewFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.profile.ProfileViewFragment"
         android:label="Profile" />
 
     <!-- Profile -->
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.profile.ProfileFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.profile.ProfileFragment"
         android:label="@string/nav_profile">
         <action
             android:id="@+id/action_profileFragment_to_profileEditFragment"
@@ -143,7 +349,7 @@
 
     <fragment
         android:id="@+id/profileEditFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.profile.ProfileEditFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.profile.ProfileEditFragment"
         android:label="@string/edit_profile">
         <action
             android:id="@+id/action_profileEditFragment_to_profileEditExperienceAddFragment"
@@ -152,7 +358,76 @@
 
     <fragment
         android:id="@+id/profileEditExperienceAddFragment"
-        android:name="com.example.hirelink_2025.ui.fragments.profile.ProfileEditExperienceAddFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.profile.ProfileEditExperienceAddFragment"
         android:label="@string/add_experience" />
+
+    <!-- Fragment de empleos existente -->
+    <fragment
+        android:id="@+id/jobsFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.JobsFragment"
+        android:label="Empleos"
+        tools:layout="@layout/fragment_jobs">
+
+        <action
+            android:id="@+id/action_jobsFragment_to_jobDetailFragment"
+            app:destination="@id/jobDetailFragment" />
+    </fragment>
+
+    <!-- NUEVO: Fragment de detalles del empleo -->
+    <fragment
+        android:id="@+id/jobDetailFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.JobDetailFragment"
+        android:label="Detalles del Empleo"
+        tools:layout="@layout/fragment_job_detail">
+
+        <argument
+            android:name="jobId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mapPickerFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.MapPickerFragment"
+        android:label="Seleccionar Ubicación" />
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.hirelink_2025.view.ui.MapFragment"
+        android:label="Mapa"
+        tools:layout="@layout/fragment_map">
+        <argument
+            android:name="latitude"
+            app:argType="java.lang.Double" /> <!-- Cambiado a Double -->
+        <argument
+            android:name="longitude"
+            app:argType="java.lang.Double" />
+        <argument
+            android:name="locationName"
+            app:argType="string" />
+    </fragment>
+
+    <!-- Job Map Fragment -->
+    <fragment
+        android:id="@+id/jobMapFragment"
+        android:name="com.example.hirelink_2025.view.ui.fragments.JobMapFragment"
+        android:label="Mapa de Empleos"
+        tools:layout="@layout/fragment_job_map">
+        
+        <action
+            android:id="@+id/action_jobMapFragment_to_searchResultsFragment"
+            app:destination="@id/searchResultsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+            
+        <action
+            android:id="@+id/action_jobMapFragment_to_jobDetailFragment"
+            app:destination="@id/jobDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
 </navigation>

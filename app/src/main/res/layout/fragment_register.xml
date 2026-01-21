@@ -11,44 +11,33 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/margin_large">
 
-        <!-- Back Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/backButton"
-            style="@style/Widget.Material3.Button.IconButton"
+        <!-- Logo -->
+        <View
+            android:id="@+id/logoContainer"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="@dimen/margin_huge"
+            android:background="@drawable/logo_background_small"
+            android:elevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Welcome Text -->
+        <TextView
+            android:id="@+id/welcomeText"
+            style="@style/TextAppearance.HireLink.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:icon="@drawable/ic_arrow_back"
-            app:iconTint="@color/text_primary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="@string/back"/>
-
-        <!-- Title -->
-        <TextView
-            android:id="@+id/titleText"
-            style="@style/TextAppearance.HireLink.Headline"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:text="@string/join_us"
+            android:layout_marginTop="@dimen/margin_large"
+            android:gravity="center"
+            android:text="Crear Cuenta"
             android:textColor="@color/text_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/backButton" />
+            app:layout_constraintTop_toBottomOf="@id/logoContainer" />
 
-        <TextView
-            android:id="@+id/subtitleText"
-            style="@style/TextAppearance.HireLink.Body"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/create_account"
-            android:textColor="@color/text_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleText" />
-
-        <!-- Registration Card -->
+        <!-- Register Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/registerCard"
             style="@style/Widget.HireLink.Card"
@@ -58,7 +47,7 @@
             app:cardElevation="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/subtitleText">
+            app:layout_constraintTop_toBottomOf="@id/welcomeText">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,48 +55,22 @@
                 android:orientation="vertical"
                 android:padding="@dimen/margin_medium">
 
-                <!-- Names Row -->
-                <LinearLayout
+                <!-- Name Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/nameInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:baselineAligned="false">
+                    android:hint="Nombre completo"
+                    app:startIconDrawable="@drawable/ic_person">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/firstNameInputLayout"
-                        style="@style/Widget.HireLink.TextInputLayout"
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/nameEditText"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:hint="@string/first_name">
+                        android:inputType="textPersonName" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/firstNameEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="textPersonName|textCapWords" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/lastNameInputLayout"
-                        style="@style/Widget.HireLink.TextInputLayout"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:hint="@string/last_name">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/lastNameEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="textPersonName|textCapWords" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Email Input -->
                 <com.google.android.material.textfield.TextInputLayout
@@ -124,6 +87,25 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textEmailAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Phone Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/phoneInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:hint="Teléfono (opcional)"
+                    app:startIconDrawable="@drawable/ic_phone"
+                    app:helperText="Formato recomendado: +51 987654321">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/phoneEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -153,7 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
-                    android:hint="@string/confirm_password"
+                    android:hint="Confirmar contraseña"
                     app:endIconMode="password_toggle"
                     app:startIconDrawable="@drawable/ic_lock">
 
@@ -165,26 +147,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Phone Input -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/phoneInputLayout"
-                    style="@style/Widget.HireLink.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_medium"
-                    android:hint="@string/phone"
-                    app:prefixText="+51"
-                    app:startIconDrawable="@drawable/ic_phone">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/phoneEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="phone"
-                        android:maxLength="9" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
                 <!-- Register Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/registerButton"
@@ -192,7 +154,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_large"
-                    android:text="@string/register" />
+                    android:text="Registrarse" />
 
             </LinearLayout>
 
@@ -214,7 +176,7 @@
                 style="@style/TextAppearance.HireLink.Body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/already_have_account"
+                android:text="¿Ya tienes cuenta?"
                 android:textColor="@color/text_secondary" />
 
             <com.google.android.material.button.MaterialButton
@@ -223,7 +185,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_tiny"
-                android:text="@string/login"
+                android:text="Iniciar Sesión"
                 android:textColor="@color/primary" />
 
         </LinearLayout>

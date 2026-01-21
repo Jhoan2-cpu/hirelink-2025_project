@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/companyCard"
+    style="@style/Widget.HireLink.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/margin_small"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_medium">
+
+        <!-- Company Logo -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/logoCard"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardCornerRadius="@dimen/radius_medium"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface_variant"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/companyLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/margin_small"
+                android:src="@drawable/ic_group"
+                android:scaleType="fitCenter"
+                android:contentDescription="Logo de la compañía" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Company Name -->
+        <TextView
+            android:id="@+id/companyName"
+            style="@style/TextAppearance.HireLink.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/logoCard"
+            app:layout_constraintTop_toTopOf="@id/logoCard"
+            tools:text="TechSolutions S.A.C." />
+
+        <!-- Company Type/Industry -->
+        <TextView
+            android:id="@+id/companyType"
+            style="@style/TextAppearance.HireLink.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintStart_toStartOf="@id/companyName"
+            app:layout_constraintTop_toBottomOf="@id/companyName"
+            tools:text="Tecnología • Lima, Perú" />
+
+        <!-- Company Description -->
+        <TextView
+            android:id="@+id/companyDescription"
+            style="@style/TextAppearance.HireLink.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="@color/text_primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logoCard"
+            tools:text="Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras para el mercado peruano." />
+
+        <!-- Info Chips -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/infoChipGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            app:chipSpacingHorizontal="@dimen/margin_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/companyDescription">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/employeeCountChip"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:textSize="@dimen/text_size_small"
+                app:chipIcon="@drawable/ic_people"
+                app:chipIconSize="16dp"
+                app:chipMinHeight="32dp"
+                tools:text="50+ empleados" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/infoChipGroup">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/editCompanyButton"
+                style="@style/Widget.HireLink.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Editar"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/primary"
+                app:icon="@drawable/ic_edit"
+                app:iconTint="@color/primary"
+                app:strokeColor="@color/primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteCompanyButton"
+                style="@style/Widget.HireLink.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="Eliminar"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/error"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="@color/error"
+                app:strokeColor="@color/error" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

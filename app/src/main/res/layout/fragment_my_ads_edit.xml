@@ -1,107 +1,443 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragmentMyAdsEdit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="@color/background"
     android:fillViewport="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <!-- Título del formulario -->
+        <!-- Header with gradient -->
+        <View
+            android:id="@+id/headerGradient"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/gradient_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/toolbar" />
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/transparent"
+            android:elevation="0dp"
+            app:navigationIcon="@drawable/ic_close"
+            app:navigationIconTint="@color/white"
+            app:title="Editar Anuncio"
+            app:titleTextColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Status Display -->
         <TextView
-            android:id="@+id/editAdTitle"
+            android:id="@+id/currentStatusText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Editar Anuncio"
-            android:textSize="20sp"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
+            android:background="@drawable/status_background"
+            android:padding="@dimen/margin_small"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
             android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="16dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:text="Estado: ACTIVO" />
 
-        <!-- Título del anuncio -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/titleInputLayout"
-            android:layout_width="match_parent"
+        <!-- Loading Progress Bar -->
+        <ProgressBar
+            android:id="@+id/loadingProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/currentStatusText" />
+
+        <!-- Main Content Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mainContentCard"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Título del anuncio"
-            app:startIconDrawable="@drawable/ic_title">
+            android:layout_marginHorizontal="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
+            app:cardCornerRadius="@dimen/radius_extra_large"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loadingProgressBar">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/titleEditText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapWords" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                android:padding="@dimen/margin_large">
 
-        <!-- Descripción -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/descriptionInputLayout"
-            android:layout_width="match_parent"
+                <!-- Job Information Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Información del Empleo"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_work"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
+
+                <!-- Title Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/titleInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Título del puesto"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_title"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/titleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="2" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- About Job Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/aboutJobInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:hint="Descripción del empleo"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_description"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/aboutJobEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:minLines="3"
+                        android:maxLines="5" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Requirements Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/skillsInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:hint="Requisitos"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_skill"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/skillsEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:minLines="3"
+                        android:maxLines="5" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Job Details Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_extra_large"
+                    android:text="Detalles del Empleo"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_info"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
+
+                <!-- Vacancies and Employment Type Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/vacanciesInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:hint="Vacantes"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_people"
+                        app:startIconTint="@color/secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/vacanciesEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/employmentTypeInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:hint="Tipo de empleo"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_work_small"
+                        app:startIconTint="@color/secondary"
+                        app:endIconMode="dropdown_menu">
+
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                            android:id="@+id/employmentTypeDropdown"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="48dp"
+                            android:paddingVertical="8dp"
+                            android:importantForAccessibility="yes"
+                            android:inputType="none"
+                            android:focusable="false"
+                            android:clickable="true" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <!-- Modality Dropdown -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/modalityInputLayout"
+                    style="@style/Widget.HireLink.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:hint="Modalidad"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_modality"
+                    app:startIconTint="@color/secondary"
+                    app:endIconMode="dropdown_menu">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/modalityDropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:paddingVertical="8dp"
+                        android:importantForAccessibility="yes"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:clickable="true" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Salary and Deadline Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/salaryInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:hint="Salario"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_money"
+                        app:startIconTint="@color/secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/salaryEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/deadlineInputLayout"
+                        style="@style/Widget.HireLink.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:hint="Fecha límite"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_schedule"
+                        app:startIconTint="@color/secondary"
+                        app:endIconMode="custom"
+                        app:endIconDrawable="@drawable/ic_calendar"
+                        app:endIconTint="@color/text_hint">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/deadlineEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:clickable="true" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Action Buttons Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Descripción"
-            android:layout_marginTop="12dp"
-            app:startIconDrawable="@drawable/ic_description">
+            android:layout_marginHorizontal="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginBottom="@dimen/margin_large"
+            app:cardCornerRadius="@dimen/radius_extra_large"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeWidth="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainContentCard">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/descriptionEditText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minLines="4"
-                android:gravity="top"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                android:padding="@dimen/margin_large">
 
-        <!-- Modalidad -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/modalityInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Modalidad"
-            app:endIconMode="dropdown_menu"
-            app:startIconDrawable="@drawable/ic_modality">
+                <!-- Action Buttons Section -->
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Acciones"
+                    android:textColor="@color/primary"
+                    android:drawableStart="@drawable/ic_settings"
+                    android:drawableTint="@color/primary"
+                    android:drawablePadding="@dimen/margin_small"
+                    android:gravity="center_vertical" />
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/modalityDropdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="Seleccionar modalidad"
-                android:importantForAccessibility="yes"
-                android:minHeight="48dp" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:background="@color/divider" />
 
-        <!-- Ubicación -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/locationInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Ubicación"
-            app:startIconDrawable="@drawable/ic_location">
+                <!-- Publish Button (only for DRAFT) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/publishButton"
+                    style="@style/Widget.HireLink.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:minHeight="@dimen/button_height"
+                    android:text="Publicar Anuncio"
+                    android:textSize="@dimen/text_size_medium"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_publish"
+                    app:iconGravity="textStart"
+                    app:backgroundTint="@color/success"
+                    app:cornerRadius="@dimen/radius_large" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/locationEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapWords" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <!-- Save Changes Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/saveAdButton"
+                    style="@style/Widget.HireLink.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:minHeight="@dimen/button_height"
+                    android:text="Guardar Cambios"
+                    android:textSize="@dimen/text_size_medium"
+                    app:icon="@drawable/ic_save"
+                    app:iconGravity="textStart"
+                    app:backgroundTint="@color/primary"
+                    app:cornerRadius="@dimen/radius_large" />
 
-        <!-- Botón para guardar -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/saveAdButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar Cambios"
-            android:layout_marginTop="24dp"
-            style="@style/Widget.MaterialComponents.Button"
-            app:icon="@drawable/ic_save"
-            app:iconPadding="8dp" />
-    </LinearLayout>
+                <!-- Change Status Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/statusButton"
+                    style="@style/Widget.HireLink.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:minHeight="@dimen/button_height"
+                    android:text="Cambiar Estado"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/warning"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_swap_horiz"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/warning"
+                    app:strokeColor="@color/warning" />
 
-</ScrollView>
+                <!-- Discard Changes Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/discardButton"
+                    style="@style/Widget.HireLink.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/button_height"
+                    android:text="Descartar Cambios"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/error"
+                    app:icon="@drawable/ic_close"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/error"
+                    app:strokeColor="@color/error" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

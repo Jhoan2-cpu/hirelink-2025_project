@@ -1,62 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_my_ads_pending_applicants"
+<androidx.recyclerview.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pendingApplicantsRecyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:padding="16dp">
-
-    <!-- Título -->
-    <TextView
-        android:id="@+id/pendingApplicantsTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Postulantes Pendientes"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Contador de pendientes -->
-    <TextView
-        android:id="@+id/pendingCountText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Total: 0"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/pendingApplicantsTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="4dp"/>
-
-    <!-- Lista de postulantes pendientes -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pendingApplicantsRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingTop="8dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/pendingCountText"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Mensaje si la lista está vacía -->
-    <TextView
-        android:id="@+id/emptyPendingApplicantsText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="No hay postulantes pendientes."
-        android:textColor="@color/text_secondary"
-        android:gravity="center"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/pendingApplicantsRecyclerView"
-        app:layout_constraintBottom_toBottomOf="@id/pendingApplicantsRecyclerView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:padding="8dp" />

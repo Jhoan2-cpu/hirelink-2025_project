@@ -1,0 +1,31 @@
+    
+    /**
+     * Filtrar postulaciones activas: ofertas que aún no han llegado a su fecha de cierre
+     */
+    fun getActiveApplications(): List<Application> {
+        val currentTime = System.currentTimeMillis()
+        return _applications.value.filter { application ->
+            val job = getJobInfo(application.jobId)
+            job != null && job.dueDate > currentTime && application.status == ApplicationStatus.PENDING
+        }
+    }
+    
+    /**
+     * Filtrar postulaciones en revisión: ofertas que ya finalizaron y están siendo revisadas
+     */
+    fun getReviewApplications(): List<Application> {
+        val currentTime = System.currentTimeMillis()
+        return _applications.value.filter { application ->
+            val job = getJobInfo(application.jobId)
+            job != null && job.dueDate <= currentTime && application.status == ApplicationStatus.PENDING
+        }
+    }
+    
+    /**
+     * Filtrar postulaciones finalizadas: que han sido aceptadas o rechazadas
+     */
+    fun getFinishedApplications(): List<Application> {
+        return _applications.value.filter { application ->
+            application.status == ApplicationStatus.ACCEPTED || application.status == ApplicationStatus.REJECTED
+        }
+    }

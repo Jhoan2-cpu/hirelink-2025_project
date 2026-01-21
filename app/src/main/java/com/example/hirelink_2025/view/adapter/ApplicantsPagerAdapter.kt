@@ -1,0 +1,88 @@
+package com.example.hirelink_2025.view.adapter
+
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.hirelink_2025.view.ui.fragments.ads.MyAdsAcceptedApplicantsFragment
+import com.example.hirelink_2025.view.ui.fragments.ads.MyAdsPendingApplicantsFragment
+
+class ApplicantsPagerAdapter(
+    activity: FragmentActivity,
+    private val jobId: String
+) : FragmentStateAdapter(activity) {
+
+    private var applicantsAdapter: ApplicantsAdapter? = null
+    private var applicationsAdapter: ApplicationsAdapter? = null
+    private val fragments = mutableListOf<Fragment>()
+
+    override fun getItemCount(): Int = 2
+
+    override fun createFragment(position: Int): Fragment {
+        val fragment = when (position) {
+            0 -> MyAdsAcceptedApplicantsFragment.newInstance(jobId)
+            1 -> MyAdsPendingApplicantsFragment.newInstance(jobId)
+            else -> throw IllegalArgumentException("Invalid position: $position")
+        }
+
+        fragments.add(fragment)
+
+        // Pasar el adapter al fragment hijo
+        applicantsAdapter?.let { adapter ->
+            when (fragment) {
+                is MyAdsAcceptedApplicantsFragment -> fragment.setApplicantsAdapter(adapter)
+                is MyAdsPendingApplicantsFragment -> fragment.setApplicantsAdapter(adapter)
+            }
+        }
+        
+        applicationsAdapter?.let { adapter ->
+            when (fragment) {
+                is MyAdsAcceptedApplicantsFragment -> fragment.setApplicationsAdapter(adapter)
+                is MyAdsPendingApplicantsFragment -> fragment.setApplicationsAdapter(adapter)
+            }
+        }
+
+        return fragment
+    }
+
+    /**
+     * Método para recibir el adapter del fragment PADRE (legacy)
+     */
+    fun setApplicantsAdapter(adapter: ApplicantsAdapter) {
+        this.applicantsAdapter = adapter
+
+        // Pasar el adapter a fragments ya creados
+        fragments.forEach { fragment ->
+            when (fragment) {
+                is MyAdsAcceptedApplicantsFragment -> {
+                    fragment.setApplicantsAdapter(adapter)
+                    fragment.updateFilteredList()
+                }
+                is MyAdsPendingApplicantsFragment -> {
+                    fragment.setApplicantsAdapter(adapter)
+                    fragment.updateFilteredList()
+                }
+            }
+        }
+    }
+
+    /**
+     * Método para recibir el adapter de aplicaciones actualizado
+     */
+    fun setApplicationsAdapter(adapter: ApplicationsAdapter) {
+        this.applicationsAdapter = adapter
+
+        // Pasar el adapter a fragments ya creados
+        fragments.forEach { fragment ->
+            when (fragment) {
+                is MyAdsAcceptedApplicantsFragment -> {
+                    fragment.setApplicationsAdapter(adapter)
+                    fragment.updateFilteredList()
+                }
+                is MyAdsPendingApplicantsFragment -> {
+                    fragment.setApplicationsAdapter(adapter)
+                    fragment.updateFilteredList()
+                }
+            }
+        }
+    }
+}

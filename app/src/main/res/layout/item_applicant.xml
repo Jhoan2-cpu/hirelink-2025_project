@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/applicantCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/margin_medium"
+    android:layout_marginVertical="@dimen/margin_small"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="@dimen/radius_large"
+    app:cardElevation="@dimen/card_elevation"
+    app:cardBackgroundColor="@color/surface"
+    app:strokeWidth="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_large">
+
+        <!-- Profile Avatar -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/avatarCard"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface_variant"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/applicantAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/margin_small"
+                android:src="@drawable/ic_person"
+                android:scaleType="centerInside"
+                app:tint="@color/primary" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Applicant Name -->
+        <TextView
+            android:id="@+id/applicantName"
+            style="@style/TextAppearance.HireLink.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintEnd_toStartOf="@id/statusChip"
+            app:layout_constraintStart_toEndOf="@id/avatarCard"
+            app:layout_constraintTop_toTopOf="@id/avatarCard"
+            tools:text="Juan Carlos Pérez" />
+
+        <!-- Applicant Profession -->
+        <TextView
+            android:id="@+id/applicantProfession"
+            style="@style/TextAppearance.HireLink.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:textColor="@color/text_secondary"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintEnd_toStartOf="@id/statusChip"
+            app:layout_constraintStart_toStartOf="@id/applicantName"
+            app:layout_constraintTop_toBottomOf="@id/applicantName"
+            tools:text="Desarrollador Android Senior" />
+
+        <!-- Experience Years -->
+        <TextView
+            android:id="@+id/experienceYears"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:textColor="@color/text_hint"
+            android:drawableStart="@drawable/ic_work_small"
+            android:drawableTint="@color/text_hint"
+            android:drawablePadding="@dimen/margin_tiny"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toStartOf="@id/statusChip"
+            app:layout_constraintStart_toStartOf="@id/applicantName"
+            app:layout_constraintTop_toBottomOf="@id/applicantProfession"
+            tools:text="5 años de experiencia" />
+
+        <!-- Status Chip -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/statusChip"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:chipIcon="@drawable/ic_pending"
+            app:chipIconSize="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Pendiente" />
+
+        <!-- Skills Chip Group -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/skillsChipGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            app:chipSpacingHorizontal="@dimen/margin_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/avatarCard">
+
+            <!-- Skills will be added programmatically -->
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Contact Information -->
+        <LinearLayout
+            android:id="@+id/contactLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/skillsChipGroup">
+
+            <!-- Email -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="@dimen/margin_tiny"
+                    android:src="@drawable/ic_email"
+                    app:tint="@color/secondary" />
+
+                <TextView
+                    android:id="@+id/applicantEmail"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/text_secondary"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="juan.perez@email.com" />
+
+            </LinearLayout>
+
+            <!-- Phone -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/margin_small"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="@dimen/margin_tiny"
+                    android:src="@drawable/ic_phone"
+                    app:tint="@color/secondary" />
+
+                <TextView
+                    android:id="@+id/applicantPhone"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/text_secondary"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="+51 987654321" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Application Date -->
+        <TextView
+            android:id="@+id/applicationDate"
+            style="@style/TextAppearance.HireLink.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/text_hint"
+            android:drawableStart="@drawable/ic_calendar"
+            android:drawableTint="@color/text_hint"
+            android:drawablePadding="@dimen/margin_tiny"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/contactLayout"
+            tools:text="Aplicó el 16/01/2025" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:id="@+id/actionButtonsLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/applicationDate">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/acceptButton"
+                style="@style/Widget.HireLink.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Aceptar"
+                android:textSize="@dimen/text_size_small"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="textStart"
+                app:iconSize="16dp"
+                app:backgroundTint="@color/success"
+                app:cornerRadius="@dimen/radius_medium" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/rejectButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="Rechazar"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/error"
+                app:icon="@drawable/ic_close"
+                app:iconGravity="textStart"
+                app:iconSize="16dp"
+                app:iconTint="@color/error"
+                app:strokeColor="@color/error"
+                app:cornerRadius="@dimen/radius_medium" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

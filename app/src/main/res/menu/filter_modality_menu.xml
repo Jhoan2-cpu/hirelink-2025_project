@@ -1,0 +1,16 @@
+
+<!-- res/menu/filter_modality_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/mod_presencial"
+        android:title="Presencial" />
+    <item
+        android:id="@+id/mod_remote"
+        android:title="Remoto" />
+    <item
+        android:id="@+id/mod_hybrid"
+        android:title="Híbrido" />
+    <item
+        android:id="@+id/mod_all"
+        android:title="Todos" />
+</menu>

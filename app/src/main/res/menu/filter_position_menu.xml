@@ -1,0 +1,25 @@
+
+<!-- res/menu/filter_position_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/pos_developer"
+        android:title="Desarrollador" />
+    <item
+        android:id="@+id/pos_designer"
+        android:title="Diseñador" />
+    <item
+        android:id="@+id/pos_manager"
+        android:title="Gerente" />
+    <item
+        android:id="@+id/pos_analyst"
+        android:title="Analista" />
+    <item
+        android:id="@+id/pos_marketing"
+        android:title="Marketing" />
+    <item
+        android:id="@+id/pos_sales"
+        android:title="Ventas" />
+    <item
+        android:id="@+id/pos_other"
+        android:title="Otros" />
+</menu>

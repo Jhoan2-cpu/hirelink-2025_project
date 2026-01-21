@@ -1,0 +1,16 @@
+
+<!-- res/menu/filter_date_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/date_last_week"
+        android:title="Última semana" />
+    <item
+        android:id="@+id/date_last_month"
+        android:title="Último mes" />
+    <item
+        android:id="@+id/date_last_3_months"
+        android:title="Últimos 3 meses" />
+    <item
+        android:id="@+id/date_all"
+        android:title="Cualquier fecha" />
+</menu>

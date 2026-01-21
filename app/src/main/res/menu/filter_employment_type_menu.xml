@@ -1,0 +1,22 @@
+
+<!-- res/menu/filter_employment_type_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/emp_full_time"
+        android:title="Tiempo completo" />
+    <item
+        android:id="@+id/emp_part_time"
+        android:title="Tiempo parcial" />
+    <item
+        android:id="@+id/emp_contract"
+        android:title="Contrato" />
+    <item
+        android:id="@+id/emp_freelance"
+        android:title="Freelance" />
+    <item
+        android:id="@+id/emp_internship"
+        android:title="Práctica" />
+    <item
+        android:id="@+id/emp_all"
+        android:title="Todos" />
+</menu>

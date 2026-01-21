@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_medium">
+
+        <!-- Experience Card -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.HireLink.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/elevation_small">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/margin_medium">
+
+                <TextView
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:text="Experiencia Profesional"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold" />
+
+                <!-- Experience Title -->
+                <TextView
+                    android:id="@+id/experienceTitle"
+                    style="@style/TextAppearance.HireLink.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:textColor="@color/primary"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold"
+                    tools:text="Desarrolladora Android" />
+
+                <!-- Experience Description -->
+                <TextView
+                    android:id="@+id/experienceDescription"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_size_small"
+                    tools:text="3 años de experiencia" />
+
+                <!-- Experience Details -->
+                <TextView
+                    android:id="@+id/experienceDetails"
+                    style="@style/TextAppearance.HireLink.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="4dp"
+                    android:textColor="@color/text_primary"
+                    tools:text="Profesión: Desarrolladora Android\nAños de experiencia: 3 años de experiencia\n\nÁreas de especialización:\n• Desarrollo de aplicaciones móviles\n• Arquitectura de software\n• Metodologías ágiles\n• Trabajo en equipo\n• Resolución de problemas\n\nProyectos destacados:\n• Aplicación de comercio electrónico\n• Sistema de gestión empresarial\n• Aplicación de servicios financieros" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
